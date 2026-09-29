@@ -458,6 +458,7 @@ b, strong{ font-weight:750; }
     linear-gradient(160deg, #1F3B2B 0%, #16231C 55%, #0F1913 100%);
   box-shadow:0 1px 0 rgba(255,255,255,.08) inset, var(--shadow-lg);
 }
+:root[data-theme="dark"] .balance-card{ box-shadow:0 0 0 1px rgba(255,255,255,.07) inset, var(--shadow-lg); }
 .balance-card::before{
   content:""; position:absolute; z-index:-1;
   width:260px; height:260px; right:-70px; top:-110px; border-radius:50%;
@@ -1730,7 +1731,7 @@ body.fab-open .fab .icon{ transform:rotate(45deg); }
   box-shadow:0 -1px 0 var(--line);
   margin:0;
 }
-.sheet-actions .btn{ margin:0; min-width:0; }
+.sheet-actions .btn{ margin:0; min-width:0; width:auto; }
 .sheet-actions .btn-text{ order:1; flex:0 0 auto; padding:0 20px; }
 .sheet-actions .btn-primary{ order:2; flex:1 1 0; font-size:15px; letter-spacing:-.01em; padding:12px 12px; }
 .sheet-actions > .btn-text:only-child{ flex:1 1 100%; }
@@ -2177,7 +2178,7 @@ body.tour-on .fab{ transition:none; }
     <p class="period-summary" id="periodSummary"></p>
     <div class="hist-search">
       <input type="search" id="histSearch" autocomplete="off"
-             placeholder="Rechercher un libellé…" data-i18n-placeholder="hist.searchPh"
+             placeholder="Rechercher un libellé…" data-i18n-ph="hist.searchPh"
              aria-label="Rechercher dans l'historique" data-i18n-aria="hist.searchAria">
       <button type="button" id="histSearchClear" aria-label="Effacer la recherche"
               data-i18n-aria="hist.searchClear">✕</button>
