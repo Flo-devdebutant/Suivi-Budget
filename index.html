@@ -1741,7 +1741,7 @@ body.fab-open .fab .icon{ transform:rotate(45deg); }
 .btn{
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
   width:100%; text-align:center; border-radius:16px; padding:15px 14px; min-height:50px;
-  font-size:15.5px; font-weight:800; letter-spacing:-.005em; margin-bottom:10px;
+  font-size:15.5px; font-weight:800; letter-spacing:0; word-spacing:.08em; margin-bottom:10px;
   transition:transform .15s var(--ease-spring), filter .2s ease, box-shadow .2s ease, background-color .2s ease;
 }
 .btn:active{ transform:scale(.97); }
@@ -1903,7 +1903,6 @@ body.tour-on .fab{ transition:none; }
 .tour-bubble{
   position:absolute; left:12px; right:12px; max-width:440px;
   margin-left:auto; margin-right:auto;
-  max-height:52vh; overflow-y:auto; overscroll-behavior:contain;
   background:var(--sheet); color:var(--text);
   border-radius:24px; padding:16px 18px 14px;
   box-shadow:0 30px 60px -18px rgba(0,0,0,.65), 0 0 0 1px rgba(232,199,102,.35);
@@ -1938,7 +1937,9 @@ body.tour-on .fab{ transition:none; }
 [dir="rtl"] .tour-close{ right:auto; left:10px; }
 .tour-close:active{ transform:scale(.9); }
 .tour-title{ margin:0 0 6px; font-family:var(--font-display); font-weight:400; font-size:22px; line-height:1.2; color:var(--text); }
-.tour-text{ margin:0; font-size:14px; line-height:1.55; color:var(--text-2); }
+/* Seul le texte défile s'il est trop long : la bulle elle-même ne doit rien
+   rogner, sinon la flèche qui désigne la cible disparaîtrait. */
+.tour-text{ margin:0; font-size:14px; line-height:1.55; color:var(--text-2); max-height:30vh; overflow-y:auto; overscroll-behavior:contain; }
 .tour-text b{ color:var(--text); }
 .tour-do{
   display:flex; align-items:center; gap:9px; margin:12px 0 0; padding:10px 12px; border-radius:14px;
