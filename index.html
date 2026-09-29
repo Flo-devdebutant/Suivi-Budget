@@ -1597,16 +1597,26 @@ body.fab-open .fab .icon{ transform:rotate(45deg); }
    La fiche est un cadre fixe : un en-tête, un corps qui défile et un pied qui
    garde les boutons d'action toujours à portée de pouce.
    ========================================================================= */
+/* Seul le voile (::before) apparaît en fondu. S'il portait l'opacité du
+   conteneur, la fiche en hériterait : elle glisserait à moitié transparente,
+   son texte flottant par-dessus la page. Le conteneur reste donc opaque et
+   n'est masqué (visibility) qu'une fois la fiche sortie de l'écran. */
 .sheet-overlay{
   position:fixed; inset:0; z-index:50;
-  background:var(--overlay);
-  -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
   display:flex; align-items:flex-end; justify-content:center;
-  opacity:0; pointer-events:none;
-  transition:opacity .3s ease;
+  visibility:hidden; pointer-events:none;
+  transition:visibility 0s linear .5s;
   touch-action:none;
 }
-.sheet-overlay.open{ opacity:1; pointer-events:auto; }
+.sheet-overlay::before{
+  content:""; position:absolute; inset:0; z-index:-1;
+  background:var(--overlay);
+  -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
+  opacity:0;
+  transition:opacity .38s ease;
+}
+.sheet-overlay.open{ visibility:visible; pointer-events:auto; transition:none; }
+.sheet-overlay.open::before{ opacity:1; transition-duration:.3s; }
 #overlayIconPicker{ z-index:60; }
 #overlayConfirm{ z-index:70; }
 
