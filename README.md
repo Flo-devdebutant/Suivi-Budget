@@ -35,6 +35,16 @@ Sur chaque appareil où l'application est ouverte :
 Les données ne sont jamais concernées : elles sont enregistrées sur l'appareil
 à chaque modification.
 
+La version est reconnue à l'empreinte du contenu placé entre les repères
+`<!--@app-->` et `<!--/@app-->`, collés aux balises `<head>` et `<body>` :
+**conservez-les** si vous modifiez `index.html`. Ce qu'un antivirus, un proxy
+ou un CDN ajoute à la page à chaque requête n'est ainsi pas pris pour une
+nouvelle version. Par précaution, une nouvelle version n'est retenue que si
+deux lectures successives la confirment. Et si les rechargements
+s'enchaînent anormalement (plus de trois en un quart d'heure), ils sont
+suspendus : la nouvelle version s'affichera simplement à la prochaine
+ouverture.
+
 > GitHub Pages met environ une minute à publier un changement ; comptez donc
 > jusqu'à trois minutes avant que les appareils ouverts se mettent à jour.
 
