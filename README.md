@@ -62,6 +62,51 @@ affichée immédiatement et la version en ligne récupérée en arrière-plan.
 Le numéro de version affiché en bas des **Réglages** indique aussi si
 l'application est disponible hors ligne.
 
+## Synchronisation entre appareils
+
+La synchronisation passe par **votre propre projet Firebase** (gratuit, sans
+carte bancaire). Le guide pas à pas s'ouvre depuis **Réglages ›
+Synchronisation › Configurer la synchronisation** : il faut le suivre une
+seule fois, sur un premier appareil (environ 5 minutes).
+
+Les règles Firestore à publier dans le projet sont affichées dans le guide,
+avec un bouton pour les copier. Elles ne changent pas d'une version à
+l'autre : un projet déjà configuré n'a jamais à être retouché lors d'une
+mise à jour.
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /syncRooms/{code} {
+      allow get, write: if request.auth != null;
+      allow list: if false;
+    }
+  }
+}
+```
+
+Pour relier les appareils suivants, inutile de repasser par la console
+Firebase : sur un appareil déjà synchronisé, **Ajouter un appareil** affiche
+une *clé d'appareil* (commençant par `SB1.`) qui réunit le projet et le code.
+Collez-la sur le nouvel appareil, dans le champ en bas du guide. Ne la
+partagez qu'avec vos propres appareils.
+
+Le projet commun que proposaient les premières versions n'existe plus. Un
+appareil qui s'en servait l'indique dans les Réglages : ses données sont
+intactes, son code est conservé, et il suffit de le relier à votre projet.
+
+## Raccourcis (ordinateur)
+
+| Touche            | Action |
+|-------------------|--------|
+| `Ctrl K` / `⌘ K`, `/` | Rechercher une opération, une page ou une action |
+| `N`               | Nouvelle opération |
+| `1` à `9`         | Changer de page |
+
+Le **mode discret** (icône d'œil en haut de l'écran) masque les montants,
+par exemple pour consulter l'application en public.
+
 ## Didacticiel
 
 Une visite interactive en 8 chapitres est proposée à la première ouverture,
