@@ -6139,6 +6139,16 @@ function withIconText(v, nom){
 "ar":{"sy.errAuth":"تم رفض المصادقة. فعّل تسجيل الدخول «المجهول» في Firebase ← Authentication ← Sign-in method.","sy.errNetwork":"لا اتصال بالخادم. تحقّق من وصولك إلى الإنترنت.","sy.errNoDb":"لم يُعثر على قاعدة بيانات Firestore. أنشئها في Firebase ← Firestore Database.","sy.errPrecondition":"قاعدة البيانات غير متاحة: تحقّق من أنّ Firestore في الوضع الأصلي وليس وضع Datastore.","sy.errRules":"رفض Firestore الوصول. في وحدة تحكم Firebase ← Firestore Database ← القواعد، اسمح بالقراءة والكتابة على syncRooms للمستخدمين المُصادَق عليهم ثم انشر.","sy.errUnknown":"خطأ غير معروف أثناء المزامنة.","sy.lastPush":"آخر نشر ناجح: {time}"}
 }; for(var L in SUPs){ for(var k in SUPs[L]){ I18N[L][k] = SUPs[L][k]; } } })();
 
+(function(){ var SUPsync = {
+"fr":{"sy.errProject":"Le projet Firebase « {project} » est introuvable ou désactivé : il a sans doute été supprimé. Touchez « Désactiver la synchronisation », puis reliez vos appareils à un autre projet avec « Utiliser mon propre projet Firebase ».","sy.project":"Projet Firebase"},
+"en":{"sy.errProject":"The Firebase project “{project}” cannot be found or is disabled: it has probably been deleted. Tap “Turn off synchronisation”, then link your devices to another project with “Use my own Firebase project”.","sy.project":"Firebase project"},
+"de":{"sy.errProject":"Das Firebase-Projekt „{project}“ wurde nicht gefunden oder ist deaktiviert – vermutlich wurde es gelöscht. Tippen Sie auf „Synchronisierung deaktivieren“ und verbinden Sie Ihre Geräte dann über „Mein eigenes Firebase-Projekt verwenden“ mit einem anderen Projekt.","sy.project":"Firebase-Projekt"},
+"es":{"sy.errProject":"No se encuentra el proyecto de Firebase «{project}» o está desactivado: probablemente se ha eliminado. Toque «Desactivar la sincronización» y vincule sus dispositivos a otro proyecto con «Usar mi propio proyecto Firebase».","sy.project":"Proyecto de Firebase"},
+"pt":{"sy.errProject":"O projeto Firebase «{project}» não foi encontrado ou está desativado: provavelmente foi eliminado. Toque em «Desativar a sincronização» e ligue os seus aparelhos a outro projeto com «Utilizar o meu próprio projeto Firebase».","sy.project":"Projeto Firebase"},
+"it":{"sy.errProject":"Il progetto Firebase «{project}» non è stato trovato o è disattivato: probabilmente è stato eliminato. Tocchi «Disattiva la sincronizzazione», poi colleghi i suoi dispositivi a un altro progetto con «Usare il mio progetto Firebase».","sy.project":"Progetto Firebase"},
+"ar":{"sy.errProject":"تعذّر العثور على مشروع Firebase «{project}» أو أنه معطَّل: ربما حُذف. اضغط «تعطيل المزامنة»، ثم اربط أجهزتك بمشروع آخر عبر «استخدام مشروع Firebase الخاص بي».","sy.project":"مشروع Firebase"}
+}; for(var L in SUPsync){ for(var k in SUPsync[L]){ I18N[L][k] = SUPsync[L][k]; } } })();
+
 (function(){ var SUPt = {
 "fr":{"sy.advancedOwn":"Utiliser mon propre projet Firebase (avancé)","sy.checkingCode":"Vérification…","sy.codeSub":"Créez un nouveau code sur ce premier appareil, puis saisissez ce même code sur vos autres appareils pour les relier.","sy.creatingCode":"Création…","sy.errCodeGen":"Impossible de générer un code unique pour l'instant. Réessayez.","sy.errCodeNotFound":"Ce code n'existe pas. Vérifiez la saisie, ou créez un nouveau code.","sy.intro":"Utilisez vos opérations sur plusieurs appareils, mises à jour automatiquement. Un seul bouton suffit pour vous connecter.","sy.setup":"Utiliser mon propre projet Firebase","sy.setupSub":"Vos données ne transiteront que par votre propre projet, entièrement isolé de celui fourni par défaut. Il vous faut environ 5 minutes pour le créer une seule fois.","sy.syncBtn":"Synchroniser"},
 "en":{"sy.advancedOwn":"Use my own Firebase project (advanced)","sy.checkingCode":"Checking…","sy.codeSub":"Create a new code on this first device, then enter the same code on your other devices to link them.","sy.creatingCode":"Creating…","sy.errCodeGen":"Couldn't generate a unique code right now. Please try again.","sy.errCodeNotFound":"This code doesn't exist. Check what you typed, or create a new code.","sy.intro":"Use your transactions on several devices, updated automatically. One button is all it takes to connect.","sy.setup":"Use my own Firebase project","sy.setupSub":"Your data will only ever pass through your own project, fully isolated from the default one. It takes about 5 minutes to set up, once.","sy.syncBtn":"Synchronise"},
@@ -14445,6 +14455,7 @@ var pushTimer = null;
 var deviceId = null;
 var syncLastError = null;
 var syncLastPushAt = null;
+var lastSyncAttempt = 0;
 
 function activeFirebaseConfig(){ return syncConfig || EMBEDDED_FIREBASE_CONFIG; }
 
@@ -14529,6 +14540,12 @@ function syncUsageRatio(){
 function describeSyncError(err){
   var code = String((err && err.code) || "");
   var msg = String((err && err.message) || err || "");
+  /* Projet supprimé, suspendu ou mal identifié : Google répond lui aussi
+     « accès refusé », mais corriger les règles n'y changerait rien. Ce cas
+     est donc reconnu à part, avant celui des règles. */
+  if(/api-key-not-valid|invalid-api-key|project-not-found/.test(code) ||
+     /api key not valid|consumer|suspended|has been deleted|permission denied on resource project|project[^.]*(?:not found|does not exist|deleted|disabled)|has not been used in project/i.test(msg))
+    return t("sy.errProject", { project: activeFirebaseConfig().projectId || "?" });
   if(code.indexOf("permission-denied") !== -1 || /Missing or insufficient permissions/i.test(msg))
     return t("sy.errRules");
   if(code.indexOf("unauthenticated") !== -1) return t("sy.errAuth");
@@ -14634,12 +14651,26 @@ function generateUniqueSyncCode(essaisRestants){
   });
 }
 
+/* « Synchronisé » ne s'affiche qu'une fois que Firestore a réellement
+   répondu (lecture de la salle ou instantané venu du serveur), et efface
+   l'erreur précédente. Auparavant, l'état passait à « Synchronisé » dès la
+   connexion ouverte, et le message d'une erreur antérieure restait affiché
+   à côté — par exemple « Firestore refuse l'accès » alors que les règles
+   venaient d'être corrigées et que tout fonctionnait. */
+function markSyncHealthy(){
+  syncLastError = null;
+  if(syncStatus !== "on") setSyncStatus("on");
+  else renderSyncCard();
+}
+
 function connectSync(){
   if(!syncCode) return Promise.reject(new Error(t("sy.errMissing")));
+  /* Nouvelle tentative : l'erreur précédente n'est plus d'actualité. */
+  syncLastError = null;
+  lastSyncAttempt = Date.now();
   setSyncStatus("connecting");
   return ensureFirebaseReady().then(function(){
     attachSyncListener();
-    setSyncStatus("on");
     /* Sans cet amorçage, se connecter ne publiait rien : le document de la
        salle n'était créé qu'à la première modification de données. Deux
        appareils pouvaient donc afficher « connecté » en se regardant en chien
@@ -14659,15 +14690,17 @@ function connectSync(){
    - distant plus récent → on ne fait rien, le listener s'en charge. */
 function seedCloudIfNeeded(){
   if(!firestoreDb || !syncCode) return Promise.resolve();
+  /* Pas de catch ici : une lecture refusée doit faire échouer la connexion
+     elle-même (connectSync), et non la laisser annoncer « connecté ». */
   return firestoreDb.collection("syncRooms").doc(syncCode).get().then(function(doc){
+    /* Réponse du serveur (et non de la copie locale hors ligne) : la salle
+       est accessible. Hors ligne, l'état reste « Connexion… » jusqu'au
+       premier instantané du serveur. */
+    if(!doc.metadata || !doc.metadata.fromCache) markSyncHealthy();
     var data = doc.exists ? (doc.data() || {}) : null;
     var localUpdatedAt = state.__syncMeta ? state.__syncMeta.updatedAt : 0;
     if(!data || (!data.state && !data.stateZ)){ pushStateToCloud(true); return; }
     if(!data.updatedAt || localUpdatedAt > data.updatedAt) pushStateToCloud(true);
-  }).catch(function(err){
-    console.error("Sync seed error:", err);
-    syncLastError = describeSyncError(err);
-    setSyncStatus("error");
   });
 }
 
@@ -14675,6 +14708,8 @@ function attachSyncListener(){
   if(syncUnsub){ syncUnsub(); syncUnsub = null; }
   var ref = firestoreDb.collection("syncRooms").doc(syncCode);
   remoteSnapshotHandler = function(doc){
+    /* Premier instantané venu du serveur : la connexion est confirmée. */
+    if(syncStatus === "connecting" && doc && (!doc.metadata || !doc.metadata.fromCache)) markSyncHealthy();
     /* Pendant la visite en données d'exemple, l'instantané est mis de côté :
        il sera appliqué aux vraies données à la sortie. */
     if(demoMode){ demoPendingRemote = doc; return; }
@@ -14771,7 +14806,9 @@ function pushStateToCloud(immediat){
       syncPayloadBytes = JSON.stringify(payload).length;
 
       return firestoreDb.collection("syncRooms").doc(syncCode).set(payload).then(function(){
-        syncLastError = null;
+        /* Une erreur survenue entre-temps (écoute coupée…) garde son message :
+           seule une reconnexion peut la lever. */
+        if(syncStatus !== "error") syncLastError = null;
         syncLastPushAt = now;
         renderSyncCard();
       });
@@ -14812,6 +14849,9 @@ function renderSyncCard(){
       '<span class="status-pill ' + statusClass + '"><i class="sync-dot ' + statusClass + '"></i>' + statusLabel + '</span>' +
     '</div>' +
     '<div class="settings-row"><span class="settings-row-label">' + t("sy.code") + '</span><span class="settings-row-value" style="font-family:var(--font-mono);font-weight:700;letter-spacing:1px;">' + escapeHtml(syncCode) + '</span></div>' +
+    /* Le projet utilisé, pour vérifier d'un coup d'œil que les règles ont été
+       modifiées au bon endroit dans la console Firebase. */
+    '<div class="settings-row"><span class="settings-row-label">' + t("sy.project") + '</span><span class="settings-row-value" style="font-family:var(--font-mono);font-size:12.5px;">' + escapeHtml(activeFirebaseConfig().projectId || "—") + '</span></div>' +
     /* Sans retour visible, impossible de distinguer « rien à envoyer » d'un
        échec silencieux : on montre la dernière publication réussie, ou la cause
        exacte du blocage. */
@@ -15331,7 +15371,12 @@ if(document.fonts && document.fonts.ready){
   document.fonts.ready.then(function(){ publishTopbarHeight(); positionTabIndicator(); });
 }
 
-if(syncConfig && syncCode){
+/* Dès qu'un code existe, que le projet soit celui intégré à l'application
+   ou un projet personnel. (La condition exigeait auparavant un projet
+   personnel : avec le projet intégré, la synchronisation ne redémarrait
+   jamais d'elle-même au lancement, et les modifications restaient sur
+   l'appareil jusqu'à un appui sur « Reconnecter ».) */
+if(syncCode){
   connectSync().catch(function(){ /* affichera l'état "erreur"; l'utilisateur pourra relancer manuellement */ });
 }
 resumeAfterUpdate();
@@ -15343,6 +15388,13 @@ renderVersionLine();
    d'elle-même, sans attendre qu'on touche « Reconnecter ». */
 window.addEventListener("online", function(){
   if(syncCode && syncStatus === "error") connectSync().catch(function(){});
+});
+/* Retour sur l'application (par exemple après avoir corrigé les règles dans
+   la console Firebase) : une synchronisation en erreur est relancée, au plus
+   une fois toutes les 30 secondes. */
+document.addEventListener("visibilitychange", function(){
+  if(document.visibilityState !== "visible") return;
+  if(syncCode && syncStatus === "error" && Date.now() - lastSyncAttempt > 30000) connectSync().catch(function(){});
 });
 
 /* Les statistiques sont bornées par le jour, le mois et l'année en cours. Si
