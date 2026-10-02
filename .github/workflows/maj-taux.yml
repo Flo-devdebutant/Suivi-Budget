@@ -1,0 +1,54 @@
+# Met à jour taux.json chaque matin à partir des sources officielles
+# (service-public.gouv.fr, Insee). Rien n'est publié si les taux n'ont pas
+# changé. En cas d'échec (page officielle modifiée, valeur incohérente), le
+# fichier n'est pas touché et GitHub prévient le propriétaire par courriel.
+name: Mise à jour des taux
+
+on:
+  schedule:
+    - cron: "17 6 * * *"   # chaque jour, vers 8 h à Paris
+  workflow_dispatch:        # bouton « Run workflow » pour lancer à la main
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: maj-taux
+  cancel-in-progress: false
+
+jobs:
+  taux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Lire les taux officiels
+        run: node scripts/maj-taux.mjs
+
+      - name: Publier s'ils ont changé
+        run: |
+          if git diff --quiet -- taux.json; then
+            echo "Taux inchangés."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add taux.json
+          git commit -m "Taux : mise à jour automatique"
+          git push
+          echo "TAUX_CHANGES=1" >> "$GITHUB_ENV"
+
+      # Un envoi fait par le robot ne relance pas toujours la publication du
+      # site : on la demande explicitement.
+      - name: Republier le site
+        if: env.TAUX_CHANGES == '1'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
