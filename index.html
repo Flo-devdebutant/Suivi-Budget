@@ -7935,22 +7935,28 @@ function getGoal(id){
   if(!id) return null;
   return (state.epargneGoals || []).find(function(g){ return g.id === id; }) || null;
 }
+/* Arrondi au centime. Additionner des montants en virgule flottante laisse
+   des restes du type 0,00999999… : l'écran affichait « 0,01 € disponible »
+   mais refusait d'affecter ce dernier centime. « || 0 » évite aussi un
+   « -0,00 € ». */
+function centimes(x){ return Math.round(x * 100) / 100 || 0; }
+
 function computeGoalSolde(goalId){
   var total = 0;
   (state.epargneGoalMovements || []).forEach(function(m){
     if(m.goalId === goalId) total += m.montant;
   });
-  return total;
+  return centimes(total);
 }
 function computeGoalsTotal(){
   var total = 0;
   (state.epargneGoalMovements || []).forEach(function(m){ total += m.montant; });
-  return total;
+  return centimes(total);
 }
 /* Part de l'épargne non encore rattachée à un objectif : c'est ce dans quoi on
    peut puiser pour alimenter un objectif sans toucher aux autres. */
 function computeEpargneUnallocated(){
-  return computeEpargneSolde() - computeGoalsTotal();
+  return centimes(computeEpargneSolde() - computeGoalsTotal());
 }
 function addGoalMovement(goalId, montant, commentaire, sourceTransactionId, dateISO){
   state.epargneGoalMovements.push({
@@ -16224,18 +16230,18 @@ $("btnValiderGoalMove").addEventListener("click", function(){
     /* On ne peut pas affecter plus que ce qui reste non affecté, sinon deux objectifs
        se partageraient deux fois le même argent. */
     var libre = computeEpargneUnallocated();
-    if(amount > libre){
+    if(centimes(amount) > libre){
       err.textContent = t("goal.errMax", { v: fmtMoney(libre) });
       return;
     }
-    addGoalMovement(g.id, amount, t("goal.fundLabel"));
+    addGoalMovement(g.id, centimes(amount), t("goal.fundLabel"));
   } else {
     var soldeGoal = computeGoalSolde(g.id);
-    if(amount > soldeGoal){
+    if(centimes(amount) > soldeGoal){
       err.textContent = t("goal.errOnly", { v: fmtMoney(soldeGoal) });
       return;
     }
-    addGoalMovement(g.id, -amount, t("goal.withdrawLabel"));
+    addGoalMovement(g.id, -centimes(amount), t("goal.withdrawLabel"));
   }
   err.textContent = "";
   saveState(); renderAll(); closeSheet(overlayGoalMove);
