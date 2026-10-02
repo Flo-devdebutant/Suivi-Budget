@@ -2024,6 +2024,28 @@ button.cal-day:hover{ transform:scale(1.06); }
 .color-opt.selected{ box-shadow:0 0 0 2.5px var(--sheet), 0 0 0 4.5px var(--text); transform:scale(1.04); }
 .color-opt:active{ transform:scale(.88); }
 .color-opt:focus-visible{ outline:none; box-shadow:0 0 0 2.5px var(--sheet), 0 0 0 4.5px var(--accent); }
+/* Couleur déjà prise : l'icône de la catégorie qui l'utilise, au centre de
+   la pastille (taille relative à la pastille, qui varie selon l'écran). */
+.color-opt.used{ container-type:inline-size; display:flex; align-items:center; justify-content:center; }
+.color-used{
+  font-size:14px; font-size:54cqw; line-height:1; pointer-events:none;
+  filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.35));
+}
+.color-used-n{
+  position:absolute; right:-3px; bottom:-3px; min-width:15px; height:15px; padding:0 3px; border-radius:999px;
+  font-size:9.5px; font-weight:800; line-height:15px; text-align:center; color:var(--text);
+  background:var(--sheet); box-shadow:0 0 0 1px var(--line-2); pointer-events:none;
+}
+[dir="rtl"] .color-used-n{ right:auto; left:-3px; }
+.color-legend{ margin:-2px 4px 10px; font-size:12px; line-height:1.45; color:var(--text-3); }
+.color-extra{ margin-top:-2px; }
+.color-extra-label{ margin:0 4px 8px; font-size:12px; font-weight:700; color:var(--text-3); }
+/* Avertissement discret : partager une couleur reste permis. */
+.color-used-hint{
+  margin:8px 2px 0; padding:8px 12px; border-radius:12px;
+  font-size:12.5px; font-weight:650; line-height:1.45; color:var(--warn); background:var(--warn-soft);
+}
+.color-used-hint::before{ content:"⚠︎"; margin-inline-end:6px; }
 
 /* Couleur libre : le sélecteur natif, posé (invisible) sur toute la ligne
    pour qu'un appui n'importe où l'ouvre, y compris sur Safari. */
@@ -3890,7 +3912,13 @@ body.tour-on .fab{ transition:none; }
       <svg class="icon" style="color:var(--paper-line)"><use href="#icon-chevron"/></svg>
     </button>
     <label class="field-label" id="categoryColorLabel" data-i18n="common.color">Couleur</label>
+    <p class="color-legend" id="colorLegend" data-i18n="col.legend" hidden>Une icône sur une pastille indique la catégorie qui l'utilise déjà.</p>
     <div class="color-grid" id="colorGrid"></div>
+    <!-- Couleurs hors nuancier déjà choisies pour d'autres catégories. -->
+    <div class="color-extra" id="colorExtra" hidden>
+      <p class="color-extra-label" data-i18n="col.extra">Autres couleurs déjà utilisées</p>
+      <div class="color-grid" id="colorExtraGrid"></div>
+    </div>
     <!-- N'importe quelle couleur, en plus du nuancier : le sélecteur natif du système. -->
     <label class="color-custom" id="colorCustom">
       <span class="color-custom-swatch" id="colorCustomSwatch" aria-hidden="true"></span>
@@ -3898,6 +3926,7 @@ body.tour-on .fab{ transition:none; }
       <span class="color-custom-hex" id="colorCustomHex"></span>
       <input type="color" id="colorCustomInput" class="color-custom-input" value="#2e7d4f" aria-label="Choisir une autre couleur" data-i18n-aria="col.customAria">
     </label>
+    <p class="color-used-hint" id="colorUsedHint" role="status" hidden></p>
     <p class="field-hint" id="categoryParentHint" style="display:none;"></p>
     <p class="field-error" id="categoryError"></p>
     <div class="sheet-actions">
@@ -7409,6 +7438,17 @@ function withIconText(v, nom){
 "it":{"col.coral":"Corallo","col.apricot":"Albicocca","col.yellow":"Giallo","col.pistachio":"Pistacchio","col.mint":"Menta","col.aquamarine":"Acquamarina","col.sky":"Celeste","col.lavender":"Lavanda","col.blush":"Rosa cipria","col.sand":"Sabbia","col.red":"Rosso","col.orange":"Arancione","col.amber":"Ambra","col.lime":"Lime","col.emerald":"Smeraldo","col.cyan":"Ciano","col.azure":"Azzurro","col.indigo":"Indaco","col.fuchsia":"Fucsia","col.copper":"Rame","col.burgundy":"Bordeaux","col.rust":"Ruggine","col.bronze":"Bronzo","col.khaki":"Cachi","col.fir":"Verde abete","col.petrol":"Blu petrolio","col.navy":"Blu navy","col.aubergine":"Melanzana","col.plum":"Prugna","col.anthracite":"Antracite","col.custom":"Altro colore","col.customAria":"Scegli un altro colore"},
 "ar":{"col.coral":"مرجاني","col.apricot":"مشمشي","col.yellow":"أصفر","col.pistachio":"فستقي","col.mint":"نعناعي","col.aquamarine":"زبرجدي","col.sky":"سماوي","col.lavender":"خزامي","col.blush":"وردي فاتح","col.sand":"رملي","col.red":"أحمر","col.orange":"برتقالي","col.amber":"كهرماني","col.lime":"ليموني","col.emerald":"زمردي","col.cyan":"سيان","col.azure":"لازوردي","col.indigo":"نيلي","col.fuchsia":"فوشي","col.copper":"نحاسي","col.burgundy":"عنابي","col.rust":"صدئي","col.bronze":"برونزي","col.khaki":"كاكي","col.fir":"أخضر صنوبري","col.petrol":"أزرق بترولي","col.navy":"كحلي","col.aubergine":"باذنجاني","col.plum":"برقوقي","col.anthracite":"فحمي","col.custom":"لون آخر","col.customAria":"اختيار لون آخر"}
 }; for(var L in SUPCOL){ for(var k in SUPCOL[L]){ I18N[L][k] = SUPCOL[L][k]; } } })();
+
+/* Couleurs déjà prises dans le nuancier. */
+(function(){ var SUPCOL2 = {
+"fr":{"col.sep":", ","col.usedBy":"Déjà utilisée par {names}","col.closeTo":"Très proche de la couleur de {names}","col.legend":"Une icône sur une pastille indique la catégorie qui l'utilise déjà.","col.extra":"Autres couleurs déjà utilisées"},
+"en":{"col.sep":", ","col.usedBy":"Already used by {names}","col.closeTo":"Very close to the colour of {names}","col.legend":"An icon on a swatch shows the category already using it.","col.extra":"Other colours already in use"},
+"de":{"col.sep":", ","col.usedBy":"Bereits verwendet von {names}","col.closeTo":"Sehr ähnlich wie die Farbe von {names}","col.legend":"Ein Symbol auf einem Farbfeld zeigt die Kategorie, die es bereits verwendet.","col.extra":"Weitere bereits verwendete Farben"},
+"es":{"col.sep":", ","col.usedBy":"Ya lo usa {names}","col.closeTo":"Muy parecido al color de {names}","col.legend":"Un icono sobre un color indica la categoría que ya lo usa.","col.extra":"Otros colores ya usados"},
+"pt":{"col.sep":", ","col.usedBy":"Já usada por {names}","col.closeTo":"Muito próxima da cor de {names}","col.legend":"Um ícone sobre uma cor indica a categoria que já a usa.","col.extra":"Outras cores já usadas"},
+"it":{"col.sep":", ","col.usedBy":"Già usato da {names}","col.closeTo":"Molto simile al colore di {names}","col.legend":"Un'icona su un colore indica la categoria che lo usa già.","col.extra":"Altri colori già usati"},
+"ar":{"col.sep":"، ","col.usedBy":"مستخدم بالفعل في {names}","col.closeTo":"قريب جدًا من لون {names}","col.legend":"تشير الأيقونة على اللون إلى الفئة التي تستخدمه بالفعل.","col.extra":"ألوان أخرى مستخدمة بالفعل"}
+}; for(var L in SUPCOL2){ for(var k in SUPCOL2[L]){ I18N[L][k] = SUPCOL2[L][k]; } } })();
 
 var STORAGE_KEY = "suiviBudget.v2";
 var storageAvailable = true;
@@ -16630,19 +16670,66 @@ function normaliserCouleur(v){
   var m = /^#?([0-9a-fA-F]{6})$/.exec(String(v || "").trim());
   return m ? "#" + m[1].toUpperCase() : null;
 }
-/* Les libellés suivent la langue : le nuancier est reconstruit à chaque
-   ouverture de la fiche (quarante pastilles, rien de coûteux). */
+/* Couleurs déjà prises par les autres catégories. Les sous-catégories
+   suivent la couleur de leur parent : seules les catégories principales
+   comptent, hors celle qu'on modifie. */
+var couleursPrises = {};
+function calculerCouleursPrises(){
+  couleursPrises = {};
+  var moi = categoryEditState.editing;
+  state.categories.forEach(function(c){
+    if(c.parentId || (moi && c.id === moi.id)) return;
+    var col = normaliserCouleur(c.couleur);
+    if(col) (couleursPrises[col] = couleursPrises[col] || []).push(c);
+  });
+}
+/* Pour une nouvelle catégorie, on propose une teinte encore libre : d'abord
+   la rangée d'origine, puis les vives, les foncées et les claires. */
+function premiereCouleurLibre(){
+  var ordre = [2, 1, 3, 0];
+  for(var i = 0; i < ordre.length; i++){
+    var rangee = COLOR_ROWS[ordre[i]];
+    for(var j = 0; j < rangee.length; j++) if(!couleursPrises[rangee[j][0]]) return rangee[j][0];
+  }
+  return COLOR_DEFAULT;
+}
+function nomsCategoriesCouleur(liste){
+  return liste.map(function(c){ return withIconText(c.emoji, c.nom); }).join(t("col.sep"));
+}
+/* Une pastille. Si la couleur est déjà prise, l'icône de la catégorie qui
+   l'utilise s'y affiche (avec leur nombre s'il y en a plusieurs) et son nom
+   complète l'infobulle et le libellé lu par les lecteurs d'écran. */
+function pastilleCouleur(col, nom){
+  var b = document.createElement("button"); b.type = "button"; b.className = "color-opt"; b.style.background = col;
+  var libelle = nom ? t("col.aria", { name: nom }) : col, titre = nom || col, prises = couleursPrises[col];
+  if(prises){
+    var qui = t("col.usedBy", { names: nomsCategoriesCouleur(prises) });
+    b.classList.add("used");
+    b.innerHTML = '<span class="color-used" aria-hidden="true">' + escapeHtml(iconText(prises[0].emoji) || "•") + '</span>' +
+      (prises.length > 1 ? '<span class="color-used-n" aria-hidden="true">' + prises.length + '</span>' : '');
+    libelle += " · " + qui; titre += " · " + qui;
+  }
+  b.setAttribute("data-color", col);
+  b.setAttribute("aria-label", libelle);
+  b.setAttribute("title", titre);
+  b.addEventListener("click", function(){ choisirCouleurCategorie(col); });
+  return b;
+}
+/* Les libellés suivent la langue et les couleurs prises changent d'une
+   catégorie à l'autre : le nuancier est reconstruit à chaque ouverture de la
+   fiche (une quarantaine de pastilles, rien de coûteux). */
 function renderColorGrid(){
   colorGridHost.innerHTML = "";
+  var marquees = 0;
   COLOR_OPTIONS.forEach(function(col, i){
-    var b = document.createElement("button"); b.type = "button"; b.className = "color-opt"; b.style.background = col;
-    var nom = t(COLOR_NAMES[i] || "col.grey");
-    b.setAttribute("data-color", col);
-    b.setAttribute("aria-label", t("col.aria", { name: nom }));
-    b.setAttribute("title", nom);
-    b.addEventListener("click", function(){ choisirCouleurCategorie(col); });
-    colorGridHost.appendChild(b);
+    if(couleursPrises[col]) marquees++;
+    colorGridHost.appendChild(pastilleCouleur(col, t(COLOR_NAMES[i] || "col.grey")));
   });
+  var hote = $("colorExtraGrid"), hors = Object.keys(couleursPrises).filter(function(col){ return COLOR_OPTIONS.indexOf(col) === -1; });
+  hote.innerHTML = "";
+  hors.forEach(function(col){ hote.appendChild(pastilleCouleur(col, "")); });
+  $("colorExtra").hidden = !hors.length;
+  $("colorLegend").hidden = !(marquees || hors.length);
 }
 function choisirCouleurCategorie(col){
   categoryEditState.couleur = normaliserCouleur(col) || COLOR_DEFAULT;
@@ -16650,12 +16737,13 @@ function choisirCouleurCategorie(col){
 }
 /* Met en évidence la couleur choisie : une pastille du nuancier, ou la ligne
    « Autre couleur » avec son code quand elle n'en fait pas partie. L'aperçu
-   de l'icône prend la teinte, comme dans les listes. */
+   de l'icône prend la teinte, comme dans les listes. Si une autre catégorie
+   a déjà cette couleur (ou, pour une couleur libre, une teinte que l'œil
+   confondrait), on le signale sans l'interdire. */
 function majNuancier(){
-  var col = normaliserCouleur(categoryEditState.couleur) || COLOR_DEFAULT, connue = false;
-  Array.prototype.forEach.call(colorGridHost.querySelectorAll(".color-opt"), function(x){
+  var col = normaliserCouleur(categoryEditState.couleur) || COLOR_DEFAULT, connue = COLOR_OPTIONS.indexOf(col) !== -1;
+  Array.prototype.forEach.call(document.querySelectorAll("#colorGrid .color-opt, #colorExtraGrid .color-opt"), function(x){
     var on = x.getAttribute("data-color") === col;
-    if(on) connue = true;
     x.classList.toggle("selected", on);
     x.setAttribute("aria-pressed", on ? "true" : "false");
   });
@@ -16664,7 +16752,19 @@ function majNuancier(){
   $("colorCustomHex").textContent = connue ? "" : col;
   $("colorCustomInput").value = col.toLowerCase();
   $("catIconBox").style.background = col + "24";
+
+  var avis = "", memes = couleursPrises[col];
+  if(memes) avis = t("col.usedBy", { names: nomsCategoriesCouleur(memes) });
+  else if(!connue){
+    var proches = [];
+    Object.keys(couleursPrises).forEach(function(k){ if(couleursProches(k, col)) proches = proches.concat(couleursPrises[k]); });
+    if(proches.length) avis = t("col.closeTo", { names: nomsCategoriesCouleur(proches) });
+  }
+  var hint = $("colorUsedHint");
+  hint.textContent = avis;
+  hint.hidden = !avis || !!categoryEditState.parentId;
 }
+calculerCouleursPrises();
 renderColorGrid();
 $("colorCustomInput").addEventListener("input", function(){
   var c = normaliserCouleur(this.value);
@@ -16676,7 +16776,8 @@ function openCategoryEditSheet(cat, parentId){
   categoryEditState.parentId = cat ? (cat.parentId || null) : (parentId || null);
   var parent = categoryEditState.parentId ? getCategory(categoryEditState.parentId) : null;
   categoryEditState.emoji = cat ? cat.emoji : (categoryEditState.parentId ? "🔹" : "🏷️");
-  categoryEditState.couleur = normaliserCouleur(cat ? cat.couleur : (parent ? parent.couleur : "")) || COLOR_DEFAULT;
+  calculerCouleursPrises();
+  categoryEditState.couleur = normaliserCouleur(cat ? cat.couleur : (parent ? parent.couleur : premiereCouleurLibre())) || COLOR_DEFAULT;
 
   $("categoryEditTitle").textContent = t(cat ? (parent ? "cat.editSub" : "cat.editTitle") : (parent ? "cat.newSub" : "cat.newTitle"));
   $("categoryName").value = cat ? cat.nom : "";
@@ -16690,6 +16791,8 @@ function openCategoryEditSheet(cat, parentId){
   $("categoryColorLabel").style.display = parent ? "none" : "block";
   $("colorGrid").style.display = parent ? "none" : "grid";
   $("colorCustom").style.display = parent ? "none" : "flex";
+  $("colorExtra").style.display = parent ? "none" : "";
+  $("colorLegend").style.display = parent ? "none" : "";
   $("categoryParentHint").style.display = parent ? "block" : "none";
   if(parent) $("categoryParentHint").textContent = t("cat.parentHint", { parent: parent.emoji + " " + parent.nom });
 
