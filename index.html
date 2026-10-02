@@ -1457,16 +1457,17 @@ h1,h2,h3{ margin:0; }
 .donut-plate{ opacity:.9; }
 /* Chaque part : un secteur plein, qui sort légèrement de l'anneau au survol
    ou quand elle est choisie (décalage le long de son axe, voir --px/--py). */
-.donut-seg{
-  cursor:pointer;
-  transition:transform .38s var(--ease-spring), opacity .25s ease;
-}
+.donut-seg{ cursor:pointer; transition:opacity .25s ease; }
+/* Seule la couche visible se déplace ; la zone de détection (.ds-hit),
+   transparente, reste fixe et reçoit seule le pointeur. */
+.donut-seg .ds-vis{ pointer-events:none; transition:transform .38s var(--ease-spring); }
+.donut-seg .ds-hit{ fill:transparent; stroke:none; pointer-events:all; }
 .donut-seg .ds-gloss{ stroke:rgba(255,255,255,.42); stroke-width:.8; }
 :root[data-theme="dark"] .donut-seg .ds-gloss{ stroke:rgba(255,255,255,.2); }
-.donut-seg.hot, .donut-seg.sel{ transform:translate(var(--px), var(--py)); }
+.donut-seg.hot .ds-vis, .donut-seg.sel .ds-vis{ transform:translate(var(--px), var(--py)); }
 .donut-seg.dim{ opacity:.55; }
-.donut-sub{ animation:fadeIn .4s var(--ease-out) both; }
-@media (prefers-reduced-motion: reduce){ .donut-seg{ transition:opacity .2s ease; } }
+.donut-sub{ animation:fadeIn .4s var(--ease-out) both; pointer-events:visiblePainted; }
+@media (prefers-reduced-motion: reduce){ .donut-seg .ds-vis{ transition:none; } }
 @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
 .donut-center{
   position:absolute; inset:22%; border-radius:50%;
@@ -13402,14 +13403,22 @@ function buildDonutInto(host, filterFn, focusId, onFocus, opts){
       });
     }
 
+    /* Deux couches : la part visible, qui sort de l'anneau au survol, et une
+       zone de détection fixe qui couvre sa place d'origine et sa position
+       sortie (écarts compris). Sans elle, la part sortait de sous le
+       pointeur, perdait le survol, revenait, le reprenait… et clignotait. */
+    var zone = donutSectorPath(cx, cy, RI - 3, RO + POP + 3, a[0] - GAP / 2, a[1] + GAP / 2, 0);
     var g = '<g class="donut-seg' + (focusId && !sel ? ' dim' : '') + (sel ? ' sel' : '') + '" data-cat="' + escapeHtml(c.id) + '" data-i="' + i + '"' +
-        ' style="--px:' + (Math.sin(milieu) * POP).toFixed(2) + 'px;--py:' + (-Math.cos(milieu) * POP).toFixed(2) + 'px"' +
-        (sel ? ' filter="url(#' + uid + '-glow)"' : '') + '>' +
+        ' style="--px:' + (Math.sin(milieu) * POP).toFixed(2) + 'px;--py:' + (-Math.cos(milieu) * POP).toFixed(2) + 'px">' +
         '<title>' + escapeHtml(c.nom + " · " + fmtMoney(c.montant)) + '</title>' +
-        '<path class="ds ds-base" fill="url(#' + uid + '-g' + i + ')" d="' + d + '"/>' +
-        '<path class="ds ds-bevel" fill="url(#' + uid + '-bevel)" d="' + d + '"/>' +
-        '<path class="ds ds-gloss" fill="url(#' + uid + '-gloss)" d="' + d + '"/>' +
-        sousCouronne + '</g>';
+        '<g class="ds-vis"' + (sel ? ' filter="url(#' + uid + '-glow)"' : '') + '>' +
+          '<path class="ds ds-base" fill="url(#' + uid + '-g' + i + ')" d="' + d + '"/>' +
+          '<path class="ds ds-bevel" fill="url(#' + uid + '-bevel)" d="' + d + '"/>' +
+          '<path class="ds ds-gloss" fill="url(#' + uid + '-gloss)" d="' + d + '"/>' +
+          sousCouronne +
+        '</g>' +
+        '<path class="ds-hit" d="' + zone + '"/>' +
+        '</g>';
     /* La part choisie est dessinée en dernier : rien ne passe sur elle. */
     if(sel) segSel = g; else segs += g;
   });
@@ -13509,14 +13518,14 @@ function buildDonutInto(host, filterFn, focusId, onFocus, opts){
       centre.innerHTML = centreHtml(item);
       Array.prototype.forEach.call(host.querySelectorAll(".donut-seg"), function(o){ o.classList.toggle("dim", o !== sl); });
       sl.classList.add("hot");
-      sl.setAttribute("filter", "url(#" + uid + "-glow)");
+      sl.querySelector(".ds-vis").setAttribute("filter", "url(#" + uid + "-glow)");
     });
     sl.addEventListener("pointerleave", function(e){
       if(focusId || e.pointerType !== "mouse") return;
       centre.innerHTML = centreHtml(null);
       Array.prototype.forEach.call(host.querySelectorAll(".donut-seg"), function(o){ o.classList.remove("dim"); });
       sl.classList.remove("hot");
-      sl.removeAttribute("filter");
+      sl.querySelector(".ds-vis").removeAttribute("filter");
     });
   });
   var opsBtn = host.querySelector(".donut-ops");
