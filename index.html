@@ -1973,6 +1973,9 @@ button.cal-day:hover{ transform:scale(1.06); }
 .icon-jump{
   position:sticky; top:-1px; z-index:3; display:flex; gap:6px; overflow-x:auto; scrollbar-width:none;
   margin:0 -4px 6px; padding:8px 4px; background:var(--sheet, var(--surface));
+  /* Masque aussi la marge haute de la fiche, où les icônes défilaient
+     encore au-dessus de la rangée. */
+  box-shadow:0 -8px 0 var(--sheet, var(--surface));
 }
 .icon-jump::-webkit-scrollbar{ display:none; }
 .icon-jump-chip{
@@ -1981,10 +1984,13 @@ button.cal-day:hover{ transform:scale(1.06); }
   background:var(--surface-2); box-shadow:0 0 0 1px var(--line) inset;
 }
 .icon-jump-chip:hover{ color:var(--text); background:var(--surface-3); }
-.icon-section-title{ scroll-margin-top:56px; }
+.icon-jump-chip.active{ color:var(--on-accent); background:var(--accent); box-shadow:none; }
+/* Titres non collants : la rangée de raccourcis les recouvrirait de toute
+   façon, et une position collante fausse le calcul des sauts vers une
+   famille déjà dépassée. */
 .icon-section-title{
   margin:16px 0 8px; font-size:12px; font-weight:750; color:var(--text-3);
-  position:sticky; top:-2px; z-index:2; background:var(--sheet); padding:6px 0;
+  padding:6px 0; scroll-margin-top:56px;
 }
 .icon-sections > .icon-section-title:first-child{ margin-top:0; }
 .icon-grid{ display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; }
@@ -16038,10 +16044,8 @@ function renderIconSections(){
       chip.type = "button";
       chip.className = "icon-jump-chip";
       chip.innerHTML = '<span aria-hidden="true">' + escapeHtml(sec.icons[0] || "") + '</span>' + escapeHtml(t("ic." + sec.key));
-      chip.addEventListener("click", function(){
-        var cible = document.getElementById("icsec-" + sec.key);
-        if(cible) cible.scrollIntoView({ block:"start", behavior:"smooth" });
-      });
+      chip.setAttribute("data-sec", sec.key);
+      chip.addEventListener("click", function(){ iconJumpTo(sec.key); });
       saut.appendChild(chip);
     });
   }
@@ -16086,15 +16090,97 @@ function renderIconSections(){
   });
 }
 
+/* Conteneur qui fait défiler la liste des icônes (le corps de la fiche). */
+function iconScroller(){
+  var el = $("iconSections");
+  while(el && el !== document.body){
+    if(el.scrollHeight > el.clientHeight + 2 && /(auto|scroll)/.test(getComputedStyle(el).overflowY)) return el;
+    el = el.parentElement;
+  }
+  return null;
+}
+/* Amène une famille d'icônes juste sous la rangée de raccourcis. Le
+   défilement est calculé et appliqué au corps de la fiche lui-même :
+   scrollIntoView, utilisé auparavant, visait des titres collants et
+   restait sans effet vers une famille déjà dépassée. */
+function iconJumpTo(key){
+  var sc = iconScroller(), cible = document.getElementById("icsec-" + key), saut = $("iconJump");
+  if(!sc || !cible) return;
+  var haut = cible.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop - (saut ? saut.offsetHeight : 0) - 6;
+  if(key === ICON_SECTIONS[0].key) haut = Math.min(haut, 0) || 0;
+  haut = Math.max(0, Math.min(haut, sc.scrollHeight - sc.clientHeight));
+  var doux = true;
+  try{ doux = !window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){}
+  /* Pendant le défilement, la famille choisie reste en évidence, même si la
+     fin de liste l'empêche d'arriver tout en haut. */
+  iconJumpLock = key;
+  clearTimeout(iconJumpLockTimer);
+  iconJumpLockTimer = setTimeout(function(){ iconJumpLock = null; }, 900);
+  var depart = sc.scrollTop;
+  try{ sc.scrollTo({ top: haut, behavior: doux ? "smooth" : "auto" }); }catch(e2){ sc.scrollTop = haut; }
+  /* Filet de sécurité : si le défilement doux n'a pas démarré, on y va
+     directement. Il ne faut pas l'interrompre en cours de route : le
+     navigateur dépasserait alors la cible. */
+  setTimeout(function(){ if(sc.scrollTop === depart && Math.abs(depart - haut) > 4) sc.scrollTop = haut; }, 160);
+  marquerFamilleIcones(key);
+}
+var iconJumpLock = null, iconJumpLockTimer = null, iconFamilleActive = null;
+/* Raccourci de la famille visible, mis en évidence. La rangée ne se recale
+   que lorsque la famille change, pour ne jamais déplacer un bouton sous le
+   doigt ou la souris. */
+function marquerFamilleIcones(key){
+  var saut = $("iconJump");
+  if(!saut) return;
+  var change = key !== iconFamilleActive;
+  iconFamilleActive = key;
+  Array.prototype.forEach.call(saut.querySelectorAll(".icon-jump-chip"), function(c){
+    var actif = c.getAttribute("data-sec") === key;
+    c.classList.toggle("active", actif);
+    if(actif && change){
+      var g = c.offsetLeft - saut.scrollLeft, d = g + c.offsetWidth;
+      if(g < 0 || d > saut.clientWidth) saut.scrollLeft = c.offsetLeft - 12;
+    }
+  });
+}
+var iconSpyBound = null;
+function suivreFamilleIcones(){
+  var sc = iconScroller();
+  if(!sc || iconSpyBound === sc) return;
+  iconSpyBound = sc;
+  var prevu = false;
+  sc.addEventListener("scroll", function(){
+    if(prevu || !overlayIconPicker.classList.contains("open")) return;
+    prevu = true;
+    requestAnimationFrame(function(){
+      prevu = false;
+      var saut = $("iconJump"); if(!saut || iconJumpLock) return;
+      var limite = saut.getBoundingClientRect().bottom + 8, cle = ICON_SECTIONS[0].key;
+      Array.prototype.forEach.call($("iconSections").querySelectorAll(".icon-section-title"), function(t){
+        if(t.getBoundingClientRect().top <= limite) cle = t.id.replace("icsec-", "");
+      });
+      /* Tout en bas, la dernière famille est la bonne. */
+      if(sc.scrollTop >= sc.scrollHeight - sc.clientHeight - 2) cle = ICON_SECTIONS[ICON_SECTIONS.length - 1].key;
+      marquerFamilleIcones(cle);
+    });
+  }, { passive: true });
+}
+
 function openIconPicker(current, onPick){
+  iconFamilleActive = null;
   iconPickerCurrent = normalizeIcon(current) || null;
   iconPickerOnPick = onPick;
   renderIconSections();
   openSheet(overlayIconPicker);
   /* On amène la sélection en vue plutôt que de laisser l'utilisateur la chercher. */
   setTimeout(function(){
-    var sel = $("iconSections").querySelector(".icon-opt.selected");
-    if(sel && sel.scrollIntoView) sel.scrollIntoView({ block:"center" });
+    suivreFamilleIcones();
+    var sel = $("iconSections").querySelector(".icon-opt.selected"), sc = iconScroller();
+    if(sel && sc){
+      sc.scrollTop = Math.max(0, sel.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop - sc.clientHeight / 2);
+    }
+    var titres = $("iconSections").querySelectorAll(".icon-section-title"), saut = $("iconJump"), cle = ICON_SECTIONS[0].key;
+    if(saut) Array.prototype.forEach.call(titres, function(t){ if(t.getBoundingClientRect().top <= saut.getBoundingClientRect().bottom + 8) cle = t.id.replace("icsec-", ""); });
+    marquerFamilleIcones(cle);
   }, 60);
 }
 
