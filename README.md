@@ -102,10 +102,26 @@ intactes, son code est conservé, et il suffit de le relier à votre projet.
 |-------------------|--------|
 | `Ctrl K` / `⌘ K`, `/` | Rechercher une opération, une page ou une action |
 | `N`               | Nouvelle opération |
-| `1` à `9`         | Changer de page |
+| `1` à `9`, `0`    | Changer de page (`8` : Investissement, `0` : Réglages) |
 
 Le **mode discret** (icône d'œil en haut de l'écran) masque les montants,
 par exemple pour consulter l'application en public.
+
+## Investissement
+
+L'onglet **Investissement** aide à faire fructifier son épargne en privilégiant
+la sécurité. Il part des chiffres de l'utilisateur (épargne, dépenses
+habituelles, effort d'épargne) et propose une méthode en trois étapes :
+épargne de précaution, projets à 2–8 ans, puis long terme. On y trouve aussi un
+test de profil simplifié, un simulateur (intérêts composés, fourchette pour les
+placements risqués, effet de l'inflation, plafonds des livrets), un comparatif
+des placements du plus sûr au plus risqué et les principaux risques, arnaques
+comprises.
+
+Ce sont des informations générales, pas un conseil en investissement
+personnalisé. Les taux des livrets réglementés sont révisés au 1er février et
+au 1er août : ils se mettent à jour dans l'objet `INV` de `index.html`
+(vérifiés le 2 octobre 2026).
 
 ## Didacticiel
 
