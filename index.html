@@ -1281,6 +1281,10 @@ h1,h2,h3{ margin:0; }
 .menu-tile .menu-row-icon{ width:40px; height:40px; }
 .menu-tile .menu-row-title{ font-size:15px; }
 .menu-tile .menu-row-sub{ font-size:12px; }
+/* Nombre impair de tuiles : la dernière prend toute la largeur, en ligne,
+   plutôt que de rester seule sur une demi-rangée. */
+.menu-grid > .menu-tile:last-child:nth-child(odd){ grid-column:1 / -1; flex-direction:row; align-items:center; min-height:0; }
+[dir="rtl"] .menu-grid > .menu-tile:last-child:nth-child(odd){ align-items:center; }
 .menu-list{ margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
 .menu-row{
   display:flex; align-items:center; gap:13px; width:100%;
@@ -2935,6 +2939,163 @@ body.tour-on .fab{ transition:none; }
 .up-sum-next-r b{ font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-.02em; }
 .up-sum-next-r b.in{ color:var(--pos); } .up-sum-next-r b.out{ color:var(--text); } .up-sum-next-r b.sav{ color:var(--gold-ink); }
 
+/* =========================================================================
+   INVESTISSEMENT
+   ========================================================================= */
+.inv-notice{
+  display:flex; gap:10px; align-items:flex-start; margin:6px 0 0; padding:12px 14px; border-radius:16px;
+  font-size:13px; line-height:1.5; font-weight:600; color:var(--text-2);
+  background:var(--blue-soft); box-shadow:0 0 0 1px var(--line) inset;
+}
+.inv-notice::before{ content:"ℹ︎"; flex-shrink:0; font-weight:800; color:var(--blue); }
+
+/* Point de départ */
+.inv-kpis{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; margin-bottom:14px; }
+.inv-kpi{ display:flex; flex-direction:column; gap:3px; min-width:0; padding:12px; border-radius:14px; background:var(--surface-2); }
+.inv-kpi-label{ font-size:11.5px; font-weight:750; color:var(--text-3); line-height:1.3; min-height:2.6em; }
+.inv-kpi-value{ font-size:17px; font-weight:800; letter-spacing:-.02em; color:var(--text); font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.inv-kpi-sub{ font-size:11.5px; color:var(--text-3); line-height:1.35; }
+@media (max-width:420px){ .inv-kpi-value{ font-size:15px; } .inv-kpi{ padding:10px; } }
+.inv-next{ padding:12px 14px; border-radius:14px; background:var(--surface-2); box-shadow:0 0 0 1px var(--line) inset; }
+.inv-next.tone-warn{ background:var(--warn-soft); }
+.inv-next.tone-good{ background:var(--pos-soft); }
+.inv-next-label{ display:block; margin-bottom:4px; font-size:11.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--text-3); }
+.inv-next p{ margin:0; font-size:14px; line-height:1.55; color:var(--text); }
+
+/* Étapes */
+.inv-steps{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; }
+.inv-step{ display:flex; gap:14px; padding:12px 0; border-top:1px solid var(--line); }
+.inv-step:first-child{ border-top:none; padding-top:0; }
+.inv-step:last-child{ padding-bottom:0; }
+.inv-step-num{
+  flex-shrink:0; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:800; color:var(--text-2); background:var(--surface-2); box-shadow:0 0 0 1px var(--line-2) inset;
+}
+.inv-step.is-now .inv-step-num{ color:var(--on-accent); background:var(--accent); box-shadow:none; }
+.inv-step.is-done .inv-step-num{ color:#fff; background:var(--pos); box-shadow:none; }
+.inv-step-body{ flex:1; min-width:0; }
+.inv-step-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+.inv-step-head h3{ margin:0; font-size:15px; font-weight:800; letter-spacing:-.015em; color:var(--text); }
+.inv-step.is-later .inv-step-head h3{ color:var(--text-2); }
+.inv-step-sub{ margin:4px 0 6px; font-size:13px; line-height:1.5; color:var(--text-2); }
+.inv-step-where{ margin:0 0 8px; font-size:13px; line-height:1.5; color:var(--text-2); }
+.inv-step-where b{ color:var(--text); font-weight:750; }
+.inv-chip{ font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px; background:var(--surface-2); color:var(--text-3); white-space:nowrap; }
+.inv-chip.st-now{ background:var(--gold-soft); color:var(--gold-ink); }
+.inv-chip.st-done{ background:var(--pos-soft); color:var(--pos); }
+
+/* Niveau de risque : cinq points */
+.inv-risk{ display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:750; color:var(--text-2); }
+.inv-dots{ display:inline-flex; gap:3px; }
+.inv-dots i{ width:7px; height:7px; border-radius:50%; background:var(--line-2); }
+.inv-risk.lv1 .inv-dots i.on, .inv-risk.lv2 .inv-dots i.on{ background:var(--pos); }
+.inv-risk.lv3 .inv-dots i.on{ background:var(--warn); }
+.inv-risk.lv4 .inv-dots i.on, .inv-risk.lv5 .inv-dots i.on{ background:var(--neg); }
+.inv-risk.lv4, .inv-risk.lv5{ color:var(--neg); }
+
+.inv-progress{ position:relative; height:8px; margin:12px 0 6px; border-radius:999px; background:var(--surface-3); }
+.inv-progress-fill{ height:100%; border-radius:999px; background:linear-gradient(90deg, var(--gold-2), var(--gold)); transition:width .9s var(--ease-out); }
+.inv-progress-fill.complete{ background:linear-gradient(90deg, var(--pos-2), var(--pos)); }
+.inv-progress-mark{ position:absolute; top:-3px; width:2px; height:14px; border-radius:2px; background:var(--text-3); transform:translateX(-1px); }
+.inv-progress-legend{ display:flex; justify-content:space-between; gap:8px; margin:0; font-size:11.5px; font-weight:650; color:var(--text-3); font-variant-numeric:tabular-nums; }
+.inv-progress-legend span:first-child{ color:var(--text); font-weight:800; }
+
+/* Profil */
+.inv-intro{ margin:0 0 6px; font-size:13px; line-height:1.5; color:var(--text-2); }
+.inv-q{ margin:14px 0 0; padding:0; border:none; min-width:0; }
+.inv-q legend{ padding:0; margin-bottom:8px; font-size:13.5px; font-weight:750; line-height:1.4; color:var(--text); }
+.inv-q-opts{ display:flex; flex-wrap:wrap; gap:7px; }
+.inv-q-opts .filter-chip{ white-space:normal; text-align:start; line-height:1.3; }
+.inv-q-hint{ margin:7px 2px 0; font-size:12px; color:var(--text-3); }
+.inv-result{ margin-top:18px; padding:14px; border-radius:16px; background:var(--surface-2); }
+.inv-result-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.inv-result-label{ font-size:11.5px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--text-3); }
+.inv-result-name{ font-size:18px; font-weight:800; letter-spacing:-.02em; color:var(--text); }
+.inv-result-desc{ margin:6px 0 10px; font-size:13px; line-height:1.55; color:var(--text-2); }
+.inv-result-why{ margin:-4px 0 10px; font-size:12.5px; font-weight:650; color:var(--warn); }
+.inv-alloc{ display:flex; height:12px; border-radius:999px; overflow:hidden; gap:2px; }
+.inv-alloc-safe{ background:linear-gradient(90deg, var(--pos-2), var(--pos)); }
+.inv-alloc-eq{ background:linear-gradient(90deg, var(--blue), var(--violet)); }
+.inv-alloc-legend{ display:flex; flex-wrap:wrap; gap:6px 14px; margin:8px 0 0; font-size:12px; font-weight:700; color:var(--text-2); }
+.inv-alloc-legend i{ display:inline-block; width:9px; height:9px; border-radius:3px; margin-inline-end:6px; vertical-align:-1px; }
+.inv-alloc-legend .sw-safe{ background:var(--pos); }
+.inv-alloc-legend .sw-eq{ background:var(--blue); }
+.inv-result-amount{ margin:10px 0 0; font-size:13px; line-height:1.5; font-weight:650; color:var(--text); }
+.inv-note{ margin:10px 0 0; font-size:11.5px; line-height:1.5; color:var(--text-3); }
+.inv-reset{ margin-top:8px; }
+
+/* Simulateur */
+.inv-sim-fields{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.inv-field{ display:block; min-width:0; }
+.inv-field .field-label{ margin-top:4px; }
+.inv-field .amount-prefix{ font-size:15px; }
+.inv-field .amount-field input{ font-size:18px; letter-spacing:-.02em; padding:10px 12px 10px 8px; }
+/* Curseur de durée, dessiné à la main : le style natif disparaissait sur
+   le fond clair. */
+.inv-range{ -webkit-appearance:none; appearance:none; display:block; width:100%; height:28px; margin:0 0 4px; background:transparent; cursor:pointer; }
+.inv-range::-webkit-slider-runnable-track{ height:6px; border-radius:999px; background:var(--surface-3); box-shadow:0 0 0 1px var(--line) inset; }
+.inv-range::-moz-range-track{ height:6px; border-radius:999px; background:var(--surface-3); box-shadow:0 0 0 1px var(--line) inset; }
+.inv-range::-webkit-slider-thumb{ -webkit-appearance:none; width:22px; height:22px; margin-top:-8px; border-radius:50%; background:var(--accent); border:3px solid var(--surface); box-shadow:var(--shadow-sm), 0 0 0 1px var(--line-2); }
+.inv-range::-moz-range-thumb{ width:16px; height:16px; border-radius:50%; background:var(--accent); border:3px solid var(--surface); box-shadow:var(--shadow-sm), 0 0 0 1px var(--line-2); }
+.inv-range:focus-visible{ outline:none; }
+.inv-range:focus-visible::-webkit-slider-thumb{ box-shadow:0 0 0 3px var(--ring); }
+.inv-sim-prods{ flex-wrap:wrap; gap:7px; }
+.inv-sim-result{ display:flex; flex-direction:column; gap:3px; margin:16px 0 10px; }
+.inv-sim-label{ font-size:12px; font-weight:750; color:var(--text-3); }
+.inv-sim-value{ font-size:28px; font-weight:800; letter-spacing:-.03em; color:var(--text); font-variant-numeric:tabular-nums; }
+.inv-sim-range{ font-size:13px; font-weight:700; color:var(--text-2); }
+.inv-sim-split{ display:flex; flex-wrap:wrap; gap:4px 16px; margin-top:4px; font-size:12.5px; font-weight:650; color:var(--text-2); }
+.inv-chart-wrap{ margin:4px 0 6px; }
+.inv-chart{ display:block; width:100%; height:150px; overflow:visible; }
+.inv-chart path, .inv-chart line{ vector-effect:non-scaling-stroke; }
+.inv-grid{ stroke:var(--chart-grid); stroke-width:1; }
+.inv-band{ fill:var(--blue-soft); stroke:none; }
+.inv-area{ fill:var(--chart-fill); stroke:none; opacity:.7; }
+.inv-line{ fill:none; stroke:var(--chart-line); stroke-width:2.5; stroke-linejoin:round; }
+.inv-paid{ fill:none; stroke:var(--gold); stroke-width:2; stroke-dasharray:5 4; }
+.inv-chart-legend{ display:flex; flex-wrap:wrap; gap:6px 14px; margin-top:8px; font-size:11.5px; font-weight:700; color:var(--text-3); }
+.inv-chart-legend i{ display:inline-block; width:14px; height:3px; border-radius:2px; margin-inline-end:6px; vertical-align:3px; }
+.inv-chart-legend .lg-line{ background:var(--chart-line); }
+.inv-chart-legend .lg-paid{ background:repeating-linear-gradient(90deg, var(--gold) 0 4px, transparent 4px 7px); }
+.inv-chart-legend .lg-band{ height:9px; vertical-align:-1px; background:var(--blue-soft); box-shadow:0 0 0 1px var(--line-2) inset; }
+.inv-sim-note{ margin:8px 0 0; font-size:12.5px; line-height:1.5; color:var(--text-2); }
+.inv-sim-note.warn{ padding:8px 12px; border-radius:12px; font-weight:650; color:var(--warn); background:var(--warn-soft); }
+.inv-sim-hyp{ margin:10px 0 0; font-size:11.5px; line-height:1.5; color:var(--text-3); }
+
+/* Placements */
+.inv-products{ display:grid; grid-template-columns:repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap:12px; }
+.inv-prod{
+  display:flex; flex-direction:column; padding:16px; border-radius:var(--radius-lg);
+  background:var(--surface); box-shadow:var(--shadow-sm), 0 0 0 1px var(--line);
+}
+.inv-prod-head{ display:flex; flex-direction:column; gap:6px; }
+.inv-prod-head h3{ margin:0; font-size:15px; font-weight:800; letter-spacing:-.015em; color:var(--text); }
+.inv-prod-tag{ margin:8px 0 10px; font-size:13px; line-height:1.5; color:var(--text-2); }
+.inv-prod-rows{ margin:0; display:flex; flex-direction:column; gap:7px; }
+.inv-prod-rows div{ display:grid; grid-template-columns:96px 1fr; gap:8px; font-size:12.5px; line-height:1.45; }
+.inv-prod-rows dt{ color:var(--text-3); font-weight:700; }
+.inv-prod-rows dd{ margin:0; color:var(--text); font-weight:600; }
+.inv-prod-warn{ margin:12px 0 0; padding:8px 11px; border-radius:12px; font-size:12px; line-height:1.5; font-weight:650; color:var(--warn); background:var(--warn-soft); }
+.inv-avoid{ background:var(--neg-soft); box-shadow:0 0 0 1px var(--line) inset; }
+.inv-avoid ul{ margin:10px 0 0; padding-inline-start:18px; display:flex; flex-direction:column; gap:7px; font-size:12.5px; line-height:1.5; color:var(--text); }
+
+/* Risques et règles */
+.inv-riskrow{ display:flex; gap:12px; padding:12px 0; border-top:1px solid var(--line); }
+.inv-riskrow:first-child{ border-top:none; padding-top:0; }
+.inv-riskrow:last-child{ padding-bottom:0; }
+.inv-riskrow-ic{ flex-shrink:0; width:36px; height:36px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; background:var(--surface-2); }
+.inv-riskrow h3{ margin:0 0 3px; font-size:14px; font-weight:800; color:var(--text); }
+.inv-riskrow p{ margin:0; font-size:13px; line-height:1.55; color:var(--text-2); }
+.inv-rules{ margin:0; padding-inline-start:22px; display:flex; flex-direction:column; gap:10px; font-size:13.5px; line-height:1.5; color:var(--text); }
+.inv-rules li::marker{ font-weight:800; color:var(--gold-ink); }
+
+.inv-legal{ margin:4px 2px 8px; font-size:11.5px; line-height:1.6; color:var(--text-3); }
+.inv-legal p{ margin:0 0 8px; }
+.inv-links{ display:flex; flex-wrap:wrap; gap:8px 16px; }
+.inv-links a{ color:var(--text-2); font-weight:700; text-decoration:underline; text-underline-offset:2px; }
+
+.mi-invest{ background:var(--gold-soft) !important; color:var(--gold-ink) !important; }
+
 </style>
 <!--/@app--></head>
 <body><!--@app-->
@@ -2955,6 +3116,7 @@ body.tour-on .fab{ transition:none; }
   <symbol id="icon-menu" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="6" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="18" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="18" r="2.2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
   <symbol id="icon-analyse" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5 A8.5 8.5 0 0 1 20.5 12 L12 12 Z" fill="currentColor" opacity="0.5" stroke="none"/><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
   <symbol id="icon-stats" viewBox="0 0 24 24"><line x1="4" y1="20" x2="20" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="5.5" y="11" width="3.6" height="6" rx="1.2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10.9" y="6.5" width="3.6" height="10.5" rx="1.2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="16.3" y="13" width="3.6" height="4" rx="1.2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="icon-invest" viewBox="0 0 24 24"><path d="M12 20v-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 13.5c0-3.9 2.6-6.5 7-6.5 0 3.9-2.6 6.5-7 6.5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 15.5c0-3-2.1-5-5.5-5 0 3 2.1 5 5.5 5Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M6.5 20h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="icon-bank" viewBox="0 0 24 24"><path d="M3.5 9.5 12 4l8.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 10v7M9.8 10v7M14.2 10v7M18.5 10v7M3.5 20h17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M3.5 12.3V4.8a1.3 1.3 0 0 1 1.3-1.3h7.5l8.2 8.2a1.3 1.3 0 0 1 0 1.8l-7.5 7.5a1.3 1.3 0 0 1-1.8 0Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="8.3" cy="8.3" r="1.5" fill="currentColor"/></symbol>
   <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l.9 11.2A2 2 0 0 0 8.9 20h6.2a2 2 0 0 0 2-1.8L18 7M9 7V4.5h6V7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -3002,6 +3164,7 @@ body.tour-on .fab{ transition:none; }
       <p class="side-group" data-i18n="side.gAnalysis">Comprendre</p>
       <button type="button" class="side-item" data-page="analyse"><svg class="icon"><use href="#icon-analyse"/></svg><span data-i18n="nav.analysis">Analyse</span></button>
       <button type="button" class="side-item" data-page="stats"><svg class="icon"><use href="#icon-stats"/></svg><span data-i18n="nav.stats">Statistiques</span></button>
+      <button type="button" class="side-item" data-page="invest"><svg class="icon"><use href="#icon-invest"/></svg><span data-i18n="nav.invest">Investissement</span></button>
       <div class="side-sep" aria-hidden="true"></div>
       <p class="side-group" data-i18n="side.gOrganize">Organiser</p>
       <button type="button" class="side-item" data-page="categories"><svg class="icon"><use href="#icon-tag"/></svg><span data-i18n="set.categories">Catégories</span></button>
@@ -3375,6 +3538,43 @@ body.tour-on .fab{ transition:none; }
   </section>
 
   <!-- ============ PAGE: CATÉGORIES ============ -->
+  <section class="page" id="page-invest">
+    <div class="grid">
+      <div class="blk span-12"><p class="inv-notice" id="invNotice" role="note"></p></div>
+      <div class="blk span-5">
+        <div class="section-head"><h2 data-i18n="inv.hStart">Votre point de départ</h2></div>
+        <div class="card" id="invStart"></div>
+      </div>
+      <div class="blk span-7">
+        <div class="section-head"><h2 data-i18n="inv.hSteps">La méthode, étape par étape</h2></div>
+        <div class="card" id="invSteps"></div>
+      </div>
+      <div class="blk span-5">
+        <div class="section-head"><h2 data-i18n="inv.hProfile">Votre profil d'épargnant</h2></div>
+        <div class="card" id="invProfile"></div>
+      </div>
+      <div class="blk span-7">
+        <div class="section-head"><h2 data-i18n="inv.hSim">Simulateur</h2></div>
+        <p class="section-sub" data-i18n="inv.simSub">Estimez ce que deviendrait votre épargne, selon le placement et la durée.</p>
+        <div class="card" id="invSim"></div>
+      </div>
+      <div class="blk span-12">
+        <div class="section-head"><h2 data-i18n="inv.hProducts">Les placements, du plus sûr au plus risqué</h2></div>
+        <p class="section-sub" data-i18n="inv.productsSub">Exemples de placements disponibles en France.</p>
+        <div class="inv-products" id="invProducts"></div>
+      </div>
+      <div class="blk span-7">
+        <div class="section-head"><h2 data-i18n="inv.hRisks">Les risques à connaître</h2></div>
+        <div class="card" id="invRisks"></div>
+      </div>
+      <div class="blk span-5">
+        <div class="section-head"><h2 data-i18n="inv.hRules">Les règles d'or</h2></div>
+        <div class="card" id="invRules"></div>
+      </div>
+      <div class="blk span-12"><div class="inv-legal" id="invLegal"></div></div>
+    </div>
+  </section>
+
   <section class="page" id="page-categories">
     <div class="grid">
       <div class="blk span-12">
@@ -3673,6 +3873,13 @@ body.tour-on .fab{ transition:none; }
         <span class="menu-row-text">
           <span class="menu-row-title" data-i18n="nav.stats">Statistiques</span>
           <span class="menu-row-sub" data-i18n="menu.stats.sub">Analyse, tendances et répartition</span>
+        </span>
+      </button>
+      <button type="button" class="menu-row menu-tile" data-menupage="invest">
+        <span class="menu-row-icon mi-invest"><svg class="icon"><use href="#icon-invest"/></svg></span>
+        <span class="menu-row-text">
+          <span class="menu-row-title" data-i18n="nav.invest">Investissement</span>
+          <span class="menu-row-sub" data-i18n="menu.invest.sub">Méthode prudente, simulateur et risques</span>
         </span>
       </button>
       <button type="button" class="menu-row menu-tile" data-menupage="categories">
@@ -7333,6 +7540,17 @@ function withIconText(v, nom){
 "ar":{"in.balNeg":"رصيدك سالب: {v}.","in.balNegNext":"رصيدك سالب: {v}. الدخل المتوقع التالي: {inc} في {date}.","in.balDip":"قد ينخفض رصيدك إلى {v} في {date} بسبب الدفعة «{label}» ({amount}) المقررة في ذلك اليوم.","in.balDipNoLabel":"قد ينخفض رصيدك إلى {v} في {date} بسبب دفعة مبرمجة بقيمة {amount}.","in.overIncome":"مصاريف هذا الشهر ({exp}) تتجاوز دخلك ({inc}) بمقدار {v}.","in.overIncomeAll":"مصاريف هذا الشهر ({exp}) تتجاوز دخلك بالفعل، بما في ذلك الدخل المنتظر ({inc} إجمالًا).","in.budgetOver2":"تم تجاوز ميزانية «{cat}» بمقدار {over}: أُنفق {used} من أصل {budget}.","in.budgetRisk":"بالوتيرة المعتادة، ستتجاوز ميزانية «{cat}» ({budget}) بنحو {over} قبل نهاية الشهر (أُنفق {used} حتى الآن).","in.budgetRiskSched":"مع الدفعات المبرمجة، ستتجاوز ميزانية «{cat}» ({budget}) بمقدار {over} قبل نهاية الشهر.","in.budgetLow":"استُخدم {pct}% من ميزانية «{cat}»، والأيام المتبقية: {n}، والمبلغ المتبقي: {left}.","in.budgetLow_1":"استُخدم {pct}% من ميزانية «{cat}»، ويتبقى يوم واحد، والمبلغ المتبقي: {left}.","in.paceUp":"حتى {date}، أنفقت {now} هذا الشهر: أكثر بـ{diff} من المعتاد في هذا التاريخ ({ref}).","in.paceDown":"حتى {date}، أنفقت {now} هذا الشهر: أقل بـ{diff} من المعتاد في هذا التاريخ ({ref}).","in.paceSame":"حتى {date}، مصاريف هذا الشهر ({now}) في مستواها المعتاد لهذا التاريخ ({ref}).","in.paceUpPrev":"حتى {date}، أنفقت {now} هذا الشهر: أكثر بـ{diff} مما أنفقته في {month} حتى التاريخ نفسه ({ref}).","in.paceDownPrev":"حتى {date}، أنفقت {now} هذا الشهر: أقل بـ{diff} مما أنفقته في {month} حتى التاريخ نفسه ({ref}).","in.paceSamePrev":"حتى {date}، مصاريف هذا الشهر ({now}) في مستوى {month} نفسه حتى التاريخ نفسه ({ref}).","in.catPaceUp":"مصاريف «{cat}»: {now} هذا الشهر، مقابل {ref} عادةً في هذا التاريخ (أكثر بـ{pct}).","in.catPaceNew":"مصاريف «{cat}»: {now} هذا الشهر، بينما تكون عادةً شبه معدومة في هذا التاريخ.","in.catPaceDown":"مصاريف «{cat}»: {now} هذا الشهر، مقابل {ref} عادةً في هذا التاريخ (أقل بـ{pct}).","in.recapSurplus":"في {month}، حققت فائضًا قدره {v}: {inc} من الدخل مقابل {exp} من المصاريف.","in.recapDeficit":"في {month}، تجاوزت مصاريفك ({exp}) دخلك ({inc}) بمقدار {v}.","in.recapSaved":"في {month}، ادخرت {v}، أي {pct}% من دخلك.","in.recapWithdrawn":"في {month}، سحبت {v} من مدخراتك.","in.recapCatUp":"في {month}، بلغت مصاريف «{cat}» {now}، مقابل {ref} عادةً (أكثر بـ{pct}).","in.recapCatNew":"في {month}، بلغت مصاريف «{cat}» {now}، بينما كانت شبه معدومة في الأشهر السابقة.","in.recapCatDown":"في {month}، بلغت مصاريف «{cat}» {now}، مقابل {ref} عادةً (أقل بـ{pct}).","in.savedMonth":"ادخرت {v} هذا الشهر.","in.savedMonthPct":"ادخرت {v} هذا الشهر، أي {pct}% من دخل الشهر.","in.withdrawnMonth":"سحبت {v} من مدخراتك هذا الشهر.","in.priceUp":"ارتفع «{label}» من {before} إلى {now} شهريًا: أكثر بـ{diff} كل شهر، أي زيادة قدرها {year} في السنة.","in.priceDown":"انخفض «{label}» من {before} إلى {now} شهريًا: أقل بـ{diff} كل شهر، أي توفير {year} في السنة.","in.unusual":"مصروف غير معتاد في {date}: «{label}»، {v} في «{cat}»، أي نحو {k} أضعاف مصروفك المعتاد في هذه الفئة ({med}).","in.unusualNoLabel":"مصروف غير معتاد في {date}: {v} في «{cat}»، أي نحو {k} أضعاف مصروفك المعتاد في هذه الفئة ({med}).","in.unusualTypo":"إذا كان خطأً في الإدخال، صحّحه من السجل.","in.goalReached2":"تم بلوغ هدف «{name}»: {now} من أصل {target}.","in.goalEtaProg":"مع تحويلك المبرمج البالغ {rate} شهريًا، ستبلغ هدف «{name}» نحو {when}. يتبقى {left}.","in.goalEtaHist":"بوتيرتك في الأشهر الأخيرة ({rate} شهريًا)، ستبلغ هدف «{name}» نحو {when}. يتبقى {left}.","in.goalSoon":"هدف «{name}»: يتبقى {left} فقط، ويُتوقع إكماله قبل نهاية الشهر بوتيرتك الحالية ({rate} شهريًا).","in.goalSlow":"بهذه الوتيرة ({rate} شهريًا)، ستحتاج إلى أكثر من 10 سنوات لبلوغ هدف «{name}»: يتبقى {left}.","in.goalIdle":"لا مساهمة في هدف «{name}» منذ {n} يومًا: يتبقى {left}.","in.goalIdle_1":"لا مساهمة في هدف «{name}» منذ يوم واحد: يتبقى {left}.","in.fixedLoad":"مصاريفك المتكررة المبرمجة ({n}) تبلغ {v} شهريًا، أي {pct}% من دخلك المعتاد.","in.fixedLoadNoInc":"مصاريفك المتكررة المبرمجة ({n}) تبلغ {v} شهريًا.","in.runway2":"مدخراتك ({v}) تكفي لتغطية مصاريفك المعتادة ({avg} شهريًا) لمدة تقارب {n} من الأشهر.","in.runway2_1":"مدخراتك ({v}) تكفي لتغطية مصاريفك المعتادة ({avg} شهريًا) لمدة شهر واحد تقريبًا.","in.runwayLow":"مدخراتك ({v}) تغطي أقل من شهر من مصاريفك المعتادة ({avg} شهريًا).","in.uncat":"{pct}% من مصاريفك خلال آخر 30 يومًا ({v}) بلا فئة: صنّفها لتحليل أدق.","in.empty":"لا توجد بعد عمليات كافية لاستخلاص ملاحظات موثوقة.<br>ستظهر خلال أسابيع استخدامك الأولى.","st.analysisSub":"ملاحظات محسوبة من عملياتك. «المعتاد» يعني وسيط أشهرك الكاملة الأخيرة (ثلاثة كحد أقصى)."}
 }; for(var L in SUPIN){ for(var k in SUPIN[L]){ I18N[L][k] = SUPIN[L][k]; } } })();
 
+/* Onglet Investissement. */
+(function(){ var SUPINV = {
+"fr":{"nav.invest":"Investissement","page.invest.title":"Investissement","page.invest.sub":"Faire fructifier votre épargne, en sécurité","menu.invest.sub":"Méthode prudente, simulateur et risques","inv.notice":"Ces informations sont générales et pédagogiques : elles ne constituent pas un conseil en investissement personnalisé. Elles privilégient la sécurité de votre argent et signalent chaque risque.","inv.hStart":"Votre point de départ","inv.hSteps":"La méthode, étape par étape","inv.hProfile":"Votre profil d'épargnant","inv.hSim":"Simulateur","inv.simSub":"Estimez ce que deviendrait votre épargne, selon le placement et la durée.","inv.hProducts":"Les placements, du plus sûr au plus risqué","inv.productsSub":"Exemples de placements disponibles en France, avec les taux en vigueur à la date de vérification.","inv.hRisks":"Les risques à connaître","inv.hRules":"Les règles d'or","inv.kSavings":"Épargne actuelle","inv.kCover":"soit {n} mois de dépenses","inv.kCover_1":"soit 1 mois de dépenses","inv.kSpend":"Dépenses habituelles","inv.kSave":"Mis de côté","inv.perMonth":"par mois","inv.perMonthAvg":"par mois, d'habitude","inv.nextLabel":"Prochaine étape conseillée","inv.nextNoData":"Utilisez l'application encore quelques semaines : ces conseils s'appuieront alors sur vos vraies dépenses. Les principes ci-dessous restent valables dès maintenant.","inv.nextBalance":"Avant d'épargner ou d'investir, rééquilibrez votre budget : vos dépenses habituelles ({exp}) dépassent vos revenus habituels ({inc}).","inv.nextStep1":"Priorité : votre épargne de précaution. Visez au moins {t3}, soit 3 mois de dépenses ; il vous manque {gap}.","inv.nextStep1Pace":"À votre rythme ({save} par mois), vous y serez vers {when}.","inv.nextStep1Year":"En mettant {v} de côté chaque mois, vous y serez dans un an.","inv.whereSafe":"Où la placer : un Livret A ou un LDDS ({a} net, sans risque), ou un LEP ({lep}) si vos revenus y donnent droit.","inv.nextStep1b":"Bonne base : votre épargne couvre {n} mois de dépenses. Complétez-la jusqu'à 6 mois ({t6}) avant d'investir à long terme.","inv.nextStep2":"Votre épargne de précaution est complète ({n} mois de dépenses). Les {v} au-delà de 6 mois peuvent être placés selon l'échéance de vos projets : voir les étapes 2 et 3.","inv.s1Title":"Épargne de précaution","inv.s1Sub":"3 à 6 mois de dépenses, disponibles à tout moment pour faire face à un imprévu : panne, perte d'emploi, frais de santé.","inv.s1Where":"Livret A, LDDS, LEP.","inv.s2Title":"Projets à 2–8 ans","inv.s2Sub":"Voiture, travaux, apport immobilier : de l'argent dont vous connaissez l'échéance.","inv.s2Where":"fonds en euros d'assurance vie, compte à terme.","inv.s3Title":"Long terme : 8 ans et plus","inv.s3Sub":"Retraite, patrimoine : uniquement de l'argent dont vous n'aurez pas besoin avant longtemps.","inv.s3Where":"fonds indiciels (ETF) d'actions du monde entier, via un PEA ou une assurance vie.","inv.where":"Où :","inv.riskNone":"Aucun risque de perte","inv.riskVeryLow":"Risque très faible","inv.riskHigh":"Perte en capital possible","inv.stDone":"Atteinte","inv.stNow":"Étape en cours","inv.stLater":"Ensuite","inv.progressAria":"Épargne de précaution : {have} sur {target}","inv.mark3":"3 mois : {v}","inv.mark6":"6 mois : {v}","inv.pIntro":"Quatre questions pour savoir quelle part de risque vous convient. Sans réponse, le profil prudent s'applique.","inv.q1":"Dans combien de temps pourriez-vous avoir besoin de cet argent ?","inv.q1a":"Moins de 2 ans","inv.q1b":"2 à 8 ans","inv.q1c":"Plus de 8 ans","inv.q2":"Votre placement perd 20 % en quelques mois. Que faites-vous ?","inv.q2a":"Je vends pour arrêter les pertes","inv.q2b":"J'attends, mais inquiet","inv.q2c":"Je garde le cap, c'était prévu","inv.q3":"Avez-vous une épargne de précaution (au moins 3 mois de dépenses) ?","inv.q3a":"Non","inv.q3b":"En partie","inv.q3c":"Oui","inv.q3hint":"D'après vos données : {n} mois de dépenses de côté.","inv.q3hint_1":"D'après vos données : 1 mois de dépenses de côté.","inv.q4":"Comment jugez-vous vos connaissances en placements ?","inv.q4a":"Débutant","inv.q4b":"Quelques notions","inv.q4c":"À l'aise","inv.pResult":"Votre profil","inv.pDefault":"Profil appliqué","inv.profPrudent":"Prudent","inv.profPrudentDesc":"La sécurité avant tout : votre argent reste sur des placements garantis (livrets, fonds en euros). C'est le bon choix tant que l'épargne de précaution n'est pas constituée ou si l'horizon est court.","inv.profBalanced":"Équilibré","inv.profBalancedDesc":"Une petite part en actions diversifiées, le reste en sécurité. Les actions ne concernent que l'argent placé pour 8 ans ou plus.","inv.profDynamic":"Dynamique","inv.profDynamicDesc":"Une part plus importante en actions diversifiées, toujours limitée à l'argent placé pour 8 ans ou plus, avec une moitié qui reste sécurisée.","inv.whyPrudent":"Profil prudent appliqué : {reason}.","inv.whyHorizon":"horizon de moins de 2 ans","inv.whyReaction":"une baisse vous pousserait à vendre","inv.whyReserve":"pas encore d'épargne de précaution","inv.allocAria":"Répartition conseillée : {safe} % sécurisé, {eq} % en actions diversifiées","inv.allocSafe":"Sécurisé : {pct} %","inv.allocEq":"Actions diversifiées : {pct} %","inv.allocAmount":"Pour les {v} au-delà de votre épargne de précaution : {safe} sécurisés et {eq} en actions diversifiées, à investir progressivement, mois après mois.","inv.allocAmountSafe":"Les {v} au-delà de votre épargne de précaution peuvent rester sur des placements garantis, comme un fonds en euros.","inv.pNote":"Test simplifié : il ne remplace pas le questionnaire obligatoire de votre banque ou de votre assureur.","inv.pReset":"Recommencer le test","inv.simStart":"Somme de départ","inv.simMonthly":"Versement mensuel","inv.simYears":"Durée","inv.years":"{n} ans","inv.years_1":"1 an","inv.simWhere":"Placement","inv.optLivret":"Livret A · {r}","inv.optLep":"LEP · {r}","inv.optEuro":"Fonds en euros · ≈ {r}","inv.optEq":"Actions monde","inv.optProfile":"Selon mon profil","inv.simResult":"Capital estimé dans {n} ans","inv.simResult_1":"Capital estimé dans 1 an","inv.simRange":"Selon les marchés : entre {low} et {high}","inv.simPaid":"Versé : {v}","inv.simGain":"Intérêts et gains : {v}","inv.simLoss":"Perte : {v}","inv.simReal":"Avec une inflation de {inf} par an, cela représenterait environ {v} en euros d'aujourd'hui.","inv.capLivret":"Le Livret A est plafonné à {a} : la simulation arrête les versements une fois ce plafond atteint. Au-delà, un LDDS (plafond de {b}) ou un fonds en euros peut prendre le relais.","inv.capLep":"Le LEP est plafonné à {v} : la simulation arrête les versements une fois ce plafond atteint. Au-delà, un Livret A ou un LDDS peut prendre le relais.","inv.shortHorizon":"Moins de 8 ans, c'est trop court pour des actions : en cas de baisse, vous risquez de devoir vendre à perte.","inv.hypLivret":"Taux net en vigueur du {from} au {to}, puis révisé deux fois par an : le résultat suppose qu'il reste stable. Exonéré d'impôt et de prélèvements sociaux.","inv.hypLep":"Taux net en vigueur depuis le {from}, révisé deux fois par an : le résultat suppose qu'il reste stable. Exonéré d'impôt.","inv.hypEuro":"Rendement moyen des fonds en euros en {year} ({r}), non garanti pour l'avenir, avant prélèvements sociaux et selon les frais du contrat.","inv.hypEq":"Hypothèses illustratives de {low}, {mid} et {high} par an, frais déduits, qui ne préjugent pas des performances futures. Une baisse de 30 à 50 % en quelques mois s'est déjà produite.","inv.hypProfile":"Mélange de votre profil : {safe} % en fonds en euros ({r}) et {eq} % en actions (hypothèse centrale de {mid} par an). Rien n'est garanti sur la part en actions.","inv.hypProfileSafe":"Profil prudent : tout en fonds en euros ({r} en moyenne l'an dernier, non garanti pour l'avenir).","inv.chartAria":"Évolution estimée du capital","inv.lgCapital":"Capital estimé","inv.lgPaid":"Sommes versées","inv.lgRange":"Fourchette selon les marchés","inv.row_yield":"Rendement","inv.row_avail":"Disponibilité","inv.row_cap":"Plafond","inv.row_tax":"Fiscalité","inv.row_guar":"Garantie","inv.row_cond":"Conditions","inv.r1":"Aucun risque de perte","inv.r2":"Capital garanti","inv.r3":"Baisses modérées possibles","inv.r4":"Perte en capital possible","inv.r5":"Perte totale possible","inv.p_livret":"Livret A et LDDS","inv.p_livretTag":"Le réflexe pour l'épargne de précaution : disponible, sans risque, sans impôt.","inv.pLivretYield":"{r} net depuis le {from}, révisé deux fois par an","inv.pLivretCap":"{a} (Livret A) et {b} (LDDS)","inv.p_lep":"LEP (livret d'épargne populaire)","inv.p_lepTag":"Le placement sans risque le mieux rémunéré, réservé aux revenus modestes.","inv.pLepYield":"{r} net, révisé deux fois par an","inv.pLepCond":"Revenu fiscal de référence d'au plus {v} pour une part ({year})","inv.p_euro":"Fonds en euros (assurance vie)","inv.p_euroTag":"Pour les projets à 2–8 ans : le capital est garanti par l'assureur.","inv.pEuroYield":"≈ {r} en moyenne en {year}, variable selon les contrats et non garanti pour l'avenir","inv.pEuroTax":"Prélèvements sociaux sur les gains ; fiscalité allégée après 8 ans","inv.pEuroGuar":"Garanti par l'assureur, et par un fonds de garantie jusqu'à {v} par assureur","inv.pEuroWarn":"Comparez les frais : beaucoup de contrats en ligne n'en prennent pas sur les versements. Certains imposent une part d'unités de compte, qui ne sont pas garanties.","inv.p_term":"Compte à terme","inv.p_termTag":"Un taux fixe connu d'avance, pour une durée bloquée.","inv.pTermYield":"Fixé à l'ouverture, selon la banque et la durée","inv.pTermAvail":"Bloqué jusqu'à l'échéance, pénalités en cas de retrait anticipé","inv.p_bond":"Fonds obligataires","inv.p_bondTag":"Prêter à des États et à des entreprises : moins risqué que les actions, mais pas sans risque.","inv.pBondTax":"Selon l'enveloppe (assurance vie, compte-titres)","inv.pBondWarn":"Quand les taux d'intérêt montent, leur valeur baisse : en 2022, de nombreux fonds obligataires ont perdu plus de 10 %.","inv.p_etf":"Fonds indiciels actions monde (ETF)","inv.p_etfTag":"Des milliers d'entreprises du monde entier dans un seul fonds : la façon la plus simple et la moins chère de viser le long terme.","inv.pEtfYield":"Non garanti ; historiquement 6 à 8 % par an en moyenne sur de longues périodes, avec de fortes variations","inv.pEtfAvail":"Revente en quelques jours, mais vendre pendant une baisse fige la perte","inv.pEtfCap":"PEA : {v} de versements","inv.pEtfTax":"PEA : après 5 ans, gains exonérés d'impôt sur le revenu (prélèvements sociaux dus)","inv.pEtfWarn":"Environ −40 % en 2008, −30 % en quelques semaines en 2020 : il faut pouvoir attendre plusieurs années que les cours remontent.","inv.availAny":"À tout moment","inv.availDays":"Sous quelques jours","inv.capNone":"Aucun","inv.taxFree":"Aucun impôt ni prélèvement social","inv.taxIncome":"Intérêts imposables","inv.guarState":"Garanti par l'État","inv.guarFgdr":"Fonds de garantie des dépôts, jusqu'à {v} par banque","inv.guarNone":"Aucune garantie en capital","inv.yieldVar":"Variable, non garanti","inv.avoidTitle":"À éviter si vous débutez","inv.avoid_a1":"Cryptoactifs : très volatils, une perte totale est possible.","inv.avoid_a2":"Actions d'une seule entreprise : tout repose sur un seul pari.","inv.avoid_a3":"Produits à effet de levier (CFD, forex, options) : la plupart des particuliers y perdent de l'argent.","inv.avoid_a4":"Placements « atypiques » (vin, montres, forêts, bétail…) : difficiles à revendre, souvent proposés par des escrocs.","inv.avoid_a5":"Toute promesse de rendement élevé « sans risque » : c'est le signe d'une arnaque.","inv.rkCapital":"Perte en capital","inv.rkCapitalTxt":"La valeur d'un placement non garanti peut baisser : vous pouvez récupérer moins que ce que vous avez versé.","inv.rkInflation":"Inflation","inv.rkInflationTxt":"Si un placement rapporte moins que la hausse des prix, votre pouvoir d'achat diminue. En {month}, les prix ont augmenté de {inf} sur un an (Insee) : à {r}, le Livret A ne compense pas cette hausse.","inv.rkInflationTxtOk":"Si un placement rapporte moins que la hausse des prix, votre pouvoir d'achat diminue. En {month}, les prix ont augmenté de {inf} sur un an (Insee) : à {r}, le Livret A compense cette hausse.","inv.rkLiquidity":"Disponibilité","inv.rkLiquidityTxt":"Certains placements bloquent votre argent ou obligent à vendre au mauvais moment. Gardez toujours votre épargne de précaution disponible.","inv.rkFees":"Frais","inv.rkFeesTxt":"Ils se répètent chaque année : 1 % de frais en plus coûte environ {v} sur 20 ans pour {base} placés à 5 % par an.","inv.rkConc":"Concentration","inv.rkConcTxt":"Tout miser sur une entreprise, un secteur ou un pays expose à une chute brutale. Un fonds indiciel monde répartit le risque.","inv.rkScam":"Arnaques","inv.rkScamTxt":"Rendement élevé et « sans risque » ne vont jamais ensemble. Vérifiez qu'un intermédiaire est autorisé (registre ORIAS), consultez les listes noires de l'AMF et méfiez-vous des contacts venus des réseaux sociaux.","inv.rkBank":"Faillite d'un établissement","inv.rkBankTxt":"Vos dépôts sont garantis jusqu'à {a} par banque, et vos contrats d'assurance vie jusqu'à {b} par assureur. Les livrets réglementés sont garantis par l'État.","inv.g1":"Constituez d'abord votre épargne de précaution.","inv.g2":"N'investissez en actions que l'argent dont vous n'aurez pas besoin avant 8 ans.","inv.g3":"Diversifiez : un fonds indiciel monde plutôt que quelques actions.","inv.g4":"Investissez un peu chaque mois : vous lissez les hauts et les bas.","inv.g5":"Surveillez les frais : ils grignotent le rendement chaque année.","inv.g6":"Ne vendez pas dans la panique : les baisses font partie du chemin.","inv.g7":"Si c'est trop beau pour être vrai, c'est une arnaque.","inv.legal":"Informations à caractère général, qui ne constituent ni un conseil en investissement personnalisé, ni une incitation à acheter un produit. Les performances passées ne préjugent pas des performances futures. Taux vérifiés le {date} auprès de service-public.gouv.fr, de l'ACPR et de l'Insee : ils évoluent, vérifiez-les avant toute décision. Pour un conseil adapté à votre situation, adressez-vous à un conseiller en investissements financiers immatriculé à l'ORIAS.","inv.linkRates":"Taux officiels des livrets","inv.linkAmf":"Listes noires de l'AMF","inv.linkOrias":"Vérifier un intermédiaire (ORIAS)"},
+"en":{"nav.invest":"Investing","page.invest.title":"Investing","page.invest.sub":"Grow your savings, safely","menu.invest.sub":"Cautious method, simulator and risks","inv.notice":"This is general, educational information, not personalised investment advice. It puts the safety of your money first and flags every risk.","inv.hStart":"Your starting point","inv.hSteps":"The method, step by step","inv.hProfile":"Your saver profile","inv.hSim":"Simulator","inv.simSub":"Estimate how your savings could grow, depending on the product and the time frame.","inv.hProducts":"Products, from safest to riskiest","inv.productsSub":"Examples of products available in France, with the rates in force on the date they were checked.","inv.hRisks":"Risks to know","inv.hRules":"Golden rules","inv.kSavings":"Current savings","inv.kCover":"{n} months of spending","inv.kCover_1":"1 month of spending","inv.kSpend":"Usual spending","inv.kSave":"Put aside","inv.perMonth":"a month","inv.perMonthAvg":"a month, usually","inv.nextLabel":"Suggested next step","inv.nextNoData":"Keep using the app for a few more weeks: this advice will then be based on your real spending. The principles below apply right away.","inv.nextBalance":"Before saving or investing, rebalance your budget: your usual spending ({exp}) exceeds your usual income ({inc}).","inv.nextStep1":"Priority: your emergency fund. Aim for at least {t3}, that is 3 months of spending; you are {gap} short.","inv.nextStep1Pace":"At your pace ({save} a month), you will get there around {when}.","inv.nextStep1Year":"By putting {v} aside each month, you will get there within a year.","inv.whereSafe":"Where to keep it: a Livret A or LDDS ({a} net, risk-free), or a LEP ({lep}) if your income makes you eligible.","inv.nextStep1b":"Good base: your savings cover {n} months of spending. Build them up to 6 months ({t6}) before investing for the long term.","inv.nextStep2":"Your emergency fund is complete ({n} months of spending). The {v} beyond 6 months can be placed according to when you will need it: see steps 2 and 3.","inv.s1Title":"Emergency fund","inv.s1Sub":"3 to 6 months of spending, available at any time for the unexpected: a breakdown, job loss, medical costs.","inv.s1Where":"Livret A, LDDS, LEP.","inv.s2Title":"Projects in 2–8 years","inv.s2Sub":"A car, home improvements, a deposit on a home: money whose deadline you know.","inv.s2Where":"euro funds in life insurance, term deposits.","inv.s3Title":"Long term: 8 years and more","inv.s3Sub":"Retirement, wealth: only money you will not need for a long time.","inv.s3Where":"index funds (ETFs) of shares from around the world, through a PEA or life insurance.","inv.where":"Where:","inv.riskNone":"No risk of loss","inv.riskVeryLow":"Very low risk","inv.riskHigh":"Capital loss possible","inv.stDone":"Reached","inv.stNow":"Current step","inv.stLater":"Next","inv.progressAria":"Emergency fund: {have} out of {target}","inv.mark3":"3 months: {v}","inv.mark6":"6 months: {v}","inv.pIntro":"Four questions to find out how much risk suits you. Without answers, the cautious profile applies.","inv.q1":"When might you need this money?","inv.q1a":"In less than 2 years","inv.q1b":"In 2 to 8 years","inv.q1c":"In more than 8 years","inv.q2":"Your investment loses 20% in a few months. What do you do?","inv.q2a":"I sell to stop the losses","inv.q2b":"I wait, but I worry","inv.q2c":"I stay the course, it was expected","inv.q3":"Do you have an emergency fund (at least 3 months of spending)?","inv.q3a":"No","inv.q3b":"Partly","inv.q3c":"Yes","inv.q3hint":"According to your data: {n} months of spending set aside.","inv.q3hint_1":"According to your data: 1 month of spending set aside.","inv.q4":"How would you rate your knowledge of investing?","inv.q4a":"Beginner","inv.q4b":"Some knowledge","inv.q4c":"Confident","inv.pResult":"Your profile","inv.pDefault":"Profile applied","inv.profPrudent":"Cautious","inv.profPrudentDesc":"Safety first: your money stays in guaranteed products (savings accounts, euro funds). It is the right choice until your emergency fund is in place or if your time frame is short.","inv.profBalanced":"Balanced","inv.profBalancedDesc":"A small share in diversified shares, the rest kept safe. Shares only concern money invested for 8 years or more.","inv.profDynamic":"Dynamic","inv.profDynamicDesc":"A larger share in diversified shares, still limited to money invested for 8 years or more, with half kept safe.","inv.whyPrudent":"Cautious profile applied: {reason}.","inv.whyHorizon":"time frame under 2 years","inv.whyReaction":"a fall would make you sell","inv.whyReserve":"no emergency fund yet","inv.allocAria":"Suggested split: {safe}% safe, {eq}% in diversified shares","inv.allocSafe":"Safe: {pct}%","inv.allocEq":"Diversified shares: {pct}%","inv.allocAmount":"For the {v} beyond your emergency fund: {safe} kept safe and {eq} in diversified shares, invested gradually, month after month.","inv.allocAmountSafe":"The {v} beyond your emergency fund can stay in guaranteed products, such as a euro fund.","inv.pNote":"Simplified test: it does not replace the mandatory questionnaire from your bank or insurer.","inv.pReset":"Restart the test","inv.simStart":"Starting amount","inv.simMonthly":"Monthly payment","inv.simYears":"Duration","inv.years":"{n} years","inv.years_1":"1 year","inv.simWhere":"Product","inv.optLivret":"Livret A · {r}","inv.optLep":"LEP · {r}","inv.optEuro":"Euro fund · ≈ {r}","inv.optEq":"World shares","inv.optProfile":"Based on my profile","inv.simResult":"Estimated capital in {n} years","inv.simResult_1":"Estimated capital in 1 year","inv.simRange":"Depending on the markets: between {low} and {high}","inv.simPaid":"Paid in: {v}","inv.simGain":"Interest and gains: {v}","inv.simLoss":"Loss: {v}","inv.simReal":"With inflation of {inf} a year, this would be worth about {v} in today's money.","inv.capLivret":"The Livret A is capped at {a}: the simulation stops payments once this cap is reached. Beyond that, an LDDS (capped at {b}) or a euro fund can take over.","inv.capLep":"The LEP is capped at {v}: the simulation stops payments once this cap is reached. Beyond that, a Livret A or an LDDS can take over.","inv.shortHorizon":"Less than 8 years is too short for shares: after a fall, you may have to sell at a loss.","inv.hypLivret":"Net rate in force from {from} to {to}, then reviewed twice a year: the result assumes it stays the same. Free of tax and social charges.","inv.hypLep":"Net rate in force since {from}, reviewed twice a year: the result assumes it stays the same. Tax-free.","inv.hypEuro":"Average return of euro funds in {year} ({r}), not guaranteed for the future, before social charges and depending on the contract's fees.","inv.hypEq":"Illustrative assumptions of {low}, {mid} and {high} a year, after fees, which say nothing about future performance. Falls of 30 to 50% within a few months have already happened.","inv.hypProfile":"Your profile's mix: {safe}% in euro funds ({r}) and {eq}% in shares (central assumption of {mid} a year). Nothing is guaranteed on the shares part.","inv.hypProfileSafe":"Cautious profile: everything in euro funds ({r} on average last year, not guaranteed for the future).","inv.chartAria":"Estimated growth of the capital","inv.lgCapital":"Estimated capital","inv.lgPaid":"Amounts paid in","inv.lgRange":"Range depending on the markets","inv.row_yield":"Return","inv.row_avail":"Access","inv.row_cap":"Limit","inv.row_tax":"Tax","inv.row_guar":"Guarantee","inv.row_cond":"Conditions","inv.r1":"No risk of loss","inv.r2":"Capital guaranteed","inv.r3":"Moderate falls possible","inv.r4":"Capital loss possible","inv.r5":"Total loss possible","inv.p_livret":"Livret A and LDDS","inv.p_livretTag":"The go-to choice for an emergency fund: available, risk-free, tax-free.","inv.pLivretYield":"{r} net since {from}, reviewed twice a year","inv.pLivretCap":"{a} (Livret A) and {b} (LDDS)","inv.p_lep":"LEP (popular savings account)","inv.p_lepTag":"The best-paying risk-free product, reserved for modest incomes.","inv.pLepYield":"{r} net, reviewed twice a year","inv.pLepCond":"Reference taxable income of no more than {v} for one tax share ({year})","inv.p_euro":"Euro funds (life insurance)","inv.p_euroTag":"For projects in 2–8 years: the capital is guaranteed by the insurer.","inv.pEuroYield":"≈ {r} on average in {year}, varies by contract and not guaranteed for the future","inv.pEuroTax":"Social charges on gains; lighter taxation after 8 years","inv.pEuroGuar":"Guaranteed by the insurer, and by a guarantee fund up to {v} per insurer","inv.pEuroWarn":"Compare the fees: many online contracts charge none on payments. Some require a share of unit-linked funds, which are not guaranteed.","inv.p_term":"Term deposit","inv.p_termTag":"A fixed rate known in advance, for a locked period.","inv.pTermYield":"Set when opened, depending on the bank and the duration","inv.pTermAvail":"Locked until maturity, penalties for early withdrawal","inv.p_bond":"Bond funds","inv.p_bondTag":"Lending to governments and companies: less risky than shares, but not risk-free.","inv.pBondTax":"Depends on the wrapper (life insurance, securities account)","inv.pBondWarn":"When interest rates rise, their value falls: in 2022, many bond funds lost more than 10%.","inv.p_etf":"World share index funds (ETFs)","inv.p_etfTag":"Thousands of companies from around the world in one fund: the simplest and cheapest way to invest for the long term.","inv.pEtfYield":"Not guaranteed; historically 6 to 8% a year on average over long periods, with large swings","inv.pEtfAvail":"Can be sold within days, but selling during a fall locks in the loss","inv.pEtfCap":"PEA: {v} of payments","inv.pEtfTax":"PEA: after 5 years, gains are free of income tax (social charges due)","inv.pEtfWarn":"About −40% in 2008, −30% within a few weeks in 2020: you must be able to wait several years for prices to recover.","inv.availAny":"At any time","inv.availDays":"Within a few days","inv.capNone":"None","inv.taxFree":"No tax or social charges","inv.taxIncome":"Interest is taxable","inv.guarState":"Guaranteed by the State","inv.guarFgdr":"Deposit guarantee fund, up to {v} per bank","inv.guarNone":"No capital guarantee","inv.yieldVar":"Variable, not guaranteed","inv.avoidTitle":"Best avoided as a beginner","inv.avoid_a1":"Crypto-assets: very volatile, a total loss is possible.","inv.avoid_a2":"Shares in a single company: everything rests on one bet.","inv.avoid_a3":"Leveraged products (CFDs, forex, options): most private investors lose money on them.","inv.avoid_a4":"“Alternative” investments (wine, watches, forests, livestock…): hard to sell, often offered by fraudsters.","inv.avoid_a5":"Any promise of a high “risk-free” return: it is the sign of a scam.","inv.rkCapital":"Capital loss","inv.rkCapitalTxt":"The value of a non-guaranteed investment can fall: you may get back less than you paid in.","inv.rkInflation":"Inflation","inv.rkInflationTxt":"If an investment earns less than price rises, your purchasing power shrinks. In {month}, prices rose {inf} over a year (Insee): at {r}, the Livret A does not make up for it.","inv.rkInflationTxtOk":"If an investment earns less than price rises, your purchasing power shrinks. In {month}, prices rose {inf} over a year (Insee): at {r}, the Livret A makes up for it.","inv.rkLiquidity":"Access to your money","inv.rkLiquidityTxt":"Some products lock your money away or force you to sell at the wrong time. Always keep your emergency fund available.","inv.rkFees":"Fees","inv.rkFeesTxt":"They recur every year: 1% more in fees costs about {v} over 20 years on {base} invested at 5% a year.","inv.rkConc":"Concentration","inv.rkConcTxt":"Betting everything on one company, sector or country exposes you to a sharp fall. A world index fund spreads the risk.","inv.rkScam":"Scams","inv.rkScamTxt":"High returns and “risk-free” never go together. Check that an intermediary is authorised (ORIAS register), consult the AMF blacklists and beware of contacts from social media.","inv.rkBank":"Failure of an institution","inv.rkBankTxt":"Your deposits are guaranteed up to {a} per bank, and your life insurance contracts up to {b} per insurer. Regulated savings accounts are guaranteed by the State.","inv.g1":"Build your emergency fund first.","inv.g2":"Only invest in shares money you will not need for 8 years.","inv.g3":"Diversify: a world index fund rather than a few shares.","inv.g4":"Invest a little every month: you smooth out the highs and lows.","inv.g5":"Watch the fees: they eat into returns every year.","inv.g6":"Do not sell in a panic: falls are part of the journey.","inv.g7":"If it seems too good to be true, it is a scam.","inv.legal":"General information, which is neither personalised investment advice nor an invitation to buy a product. Past performance is no guide to future performance. Rates checked on {date} with service-public.gouv.fr, the ACPR and Insee: they change, so check them before any decision. For advice suited to your situation, consult a financial investment adviser registered with ORIAS.","inv.linkRates":"Official savings account rates","inv.linkAmf":"AMF blacklists","inv.linkOrias":"Check an intermediary (ORIAS)"},
+"de":{"nav.invest":"Geldanlage","page.invest.title":"Geldanlage","page.invest.sub":"Ihr Erspartes vermehren – mit Sicherheit","menu.invest.sub":"Vorsichtige Methode, Rechner und Risiken","inv.notice":"Diese Informationen sind allgemein und dienen der Aufklärung: Sie sind keine persönliche Anlageberatung. Sie stellen die Sicherheit Ihres Geldes an erste Stelle und benennen jedes Risiko.","inv.hStart":"Ihr Ausgangspunkt","inv.hSteps":"Die Methode, Schritt für Schritt","inv.hProfile":"Ihr Sparerprofil","inv.hSim":"Rechner","inv.simSub":"Schätzen Sie, wie sich Ihr Erspartes je nach Anlage und Dauer entwickeln könnte.","inv.hProducts":"Anlagen, von der sichersten bis zur riskantesten","inv.productsSub":"Beispiele für in Frankreich verfügbare Anlagen, mit den zum Prüfdatum geltenden Zinssätzen.","inv.hRisks":"Risiken, die Sie kennen sollten","inv.hRules":"Goldene Regeln","inv.kSavings":"Aktuelle Ersparnisse","inv.kCover":"das sind {n} Monate Ausgaben","inv.kCover_1":"das ist 1 Monat Ausgaben","inv.kSpend":"Übliche Ausgaben","inv.kSave":"Zurückgelegt","inv.perMonth":"pro Monat","inv.perMonthAvg":"pro Monat, üblicherweise","inv.nextLabel":"Empfohlener nächster Schritt","inv.nextNoData":"Nutzen Sie die App noch einige Wochen: Dann stützen sich diese Hinweise auf Ihre tatsächlichen Ausgaben. Die folgenden Grundsätze gelten schon jetzt.","inv.nextBalance":"Bevor Sie sparen oder anlegen, gleichen Sie Ihr Budget aus: Ihre üblichen Ausgaben ({exp}) übersteigen Ihre üblichen Einnahmen ({inc}).","inv.nextStep1":"Vorrang hat Ihr Notgroschen. Peilen Sie mindestens {t3} an, also 3 Monate Ausgaben; es fehlen Ihnen noch {gap}.","inv.nextStep1Pace":"In Ihrem Tempo ({save} pro Monat) erreichen Sie das etwa im {when}.","inv.nextStep1Year":"Wenn Sie jeden Monat {v} zurücklegen, erreichen Sie das in einem Jahr.","inv.whereSafe":"Wo anlegen: auf einem Livret A oder LDDS ({a} netto, ohne Risiko) oder einem LEP ({lep}), wenn Ihr Einkommen dazu berechtigt.","inv.nextStep1b":"Gute Grundlage: Ihre Ersparnisse decken {n} Monate Ausgaben. Bauen Sie sie auf 6 Monate ({t6}) aus, bevor Sie langfristig anlegen.","inv.nextStep2":"Ihr Notgroschen ist vollständig ({n} Monate Ausgaben). Die {v} über 6 Monate hinaus können je nach Fälligkeit Ihrer Vorhaben angelegt werden: siehe Schritte 2 und 3.","inv.s1Title":"Notgroschen","inv.s1Sub":"3 bis 6 Monate Ausgaben, jederzeit verfügbar für Unvorhergesehenes: Panne, Jobverlust, Gesundheitskosten.","inv.s1Where":"Livret A, LDDS, LEP.","inv.s2Title":"Vorhaben in 2–8 Jahren","inv.s2Sub":"Auto, Renovierung, Eigenkapital für eine Immobilie: Geld, dessen Fälligkeit Sie kennen.","inv.s2Where":"Euro-Fonds einer Lebensversicherung, Festgeld.","inv.s3Title":"Langfristig: 8 Jahre und mehr","inv.s3Sub":"Altersvorsorge, Vermögen: nur Geld, das Sie lange nicht brauchen werden.","inv.s3Where":"Indexfonds (ETF) auf Aktien aus aller Welt, über einen PEA oder eine Lebensversicherung.","inv.where":"Wo:","inv.riskNone":"Kein Verlustrisiko","inv.riskVeryLow":"Sehr geringes Risiko","inv.riskHigh":"Kapitalverlust möglich","inv.stDone":"Erreicht","inv.stNow":"Aktueller Schritt","inv.stLater":"Danach","inv.progressAria":"Notgroschen: {have} von {target}","inv.mark3":"3 Monate: {v}","inv.mark6":"6 Monate: {v}","inv.pIntro":"Vier Fragen, um herauszufinden, welcher Risikoanteil zu Ihnen passt. Ohne Antwort gilt das vorsichtige Profil.","inv.q1":"Wann könnten Sie dieses Geld brauchen?","inv.q1a":"In weniger als 2 Jahren","inv.q1b":"In 2 bis 8 Jahren","inv.q1c":"In mehr als 8 Jahren","inv.q2":"Ihre Anlage verliert in wenigen Monaten 20 %. Was tun Sie?","inv.q2a":"Ich verkaufe, um die Verluste zu stoppen","inv.q2b":"Ich warte, aber besorgt","inv.q2c":"Ich bleibe dabei, das war einkalkuliert","inv.q3":"Haben Sie einen Notgroschen (mindestens 3 Monate Ausgaben)?","inv.q3a":"Nein","inv.q3b":"Teilweise","inv.q3c":"Ja","inv.q3hint":"Laut Ihren Daten: {n} Monate Ausgaben zurückgelegt.","inv.q3hint_1":"Laut Ihren Daten: 1 Monat Ausgaben zurückgelegt.","inv.q4":"Wie schätzen Sie Ihre Kenntnisse über Geldanlagen ein?","inv.q4a":"Anfänger","inv.q4b":"Einige Grundkenntnisse","inv.q4c":"Sicher","inv.pResult":"Ihr Profil","inv.pDefault":"Angewandtes Profil","inv.profPrudent":"Vorsichtig","inv.profPrudentDesc":"Sicherheit zuerst: Ihr Geld bleibt in garantierten Anlagen (Sparbücher, Euro-Fonds). Das ist die richtige Wahl, solange der Notgroschen fehlt oder der Anlagehorizont kurz ist.","inv.profBalanced":"Ausgewogen","inv.profBalancedDesc":"Ein kleiner Anteil in breit gestreuten Aktien, der Rest sicher. Aktien betreffen nur Geld, das für 8 Jahre oder länger angelegt wird.","inv.profDynamic":"Dynamisch","inv.profDynamicDesc":"Ein größerer Anteil in breit gestreuten Aktien, weiterhin nur für Geld, das 8 Jahre oder länger angelegt wird, und eine Hälfte bleibt sicher.","inv.whyPrudent":"Vorsichtiges Profil angewandt: {reason}.","inv.whyHorizon":"Anlagehorizont unter 2 Jahren","inv.whyReaction":"ein Kursrückgang würde Sie zum Verkauf bewegen","inv.whyReserve":"noch kein Notgroschen","inv.allocAria":"Empfohlene Aufteilung: {safe} % sicher, {eq} % in breit gestreuten Aktien","inv.allocSafe":"Sicher: {pct} %","inv.allocEq":"Breit gestreute Aktien: {pct} %","inv.allocAmount":"Für die {v} über Ihren Notgroschen hinaus: {safe} sicher und {eq} in breit gestreuten Aktien, schrittweise Monat für Monat angelegt.","inv.allocAmountSafe":"Die {v} über Ihren Notgroschen hinaus können in garantierten Anlagen bleiben, etwa einem Euro-Fonds.","inv.pNote":"Vereinfachter Test: Er ersetzt nicht den vorgeschriebenen Fragebogen Ihrer Bank oder Versicherung.","inv.pReset":"Test neu beginnen","inv.simStart":"Startbetrag","inv.simMonthly":"Monatliche Einzahlung","inv.simYears":"Dauer","inv.years":"{n} Jahre","inv.years_1":"1 Jahr","inv.simWhere":"Anlage","inv.optLivret":"Livret A · {r}","inv.optLep":"LEP · {r}","inv.optEuro":"Euro-Fonds · ≈ {r}","inv.optEq":"Weltaktien","inv.optProfile":"Nach meinem Profil","inv.simResult":"Geschätztes Kapital in {n} Jahren","inv.simResult_1":"Geschätztes Kapital in 1 Jahr","inv.simRange":"Je nach Marktentwicklung: zwischen {low} und {high}","inv.simPaid":"Eingezahlt: {v}","inv.simGain":"Zinsen und Erträge: {v}","inv.simLoss":"Verlust: {v}","inv.simReal":"Bei einer Inflation von {inf} pro Jahr entspräche das etwa {v} in heutigem Geld.","inv.capLivret":"Das Livret A ist auf {a} begrenzt: Die Simulation stoppt die Einzahlungen, sobald diese Grenze erreicht ist. Darüber hinaus kann ein LDDS (Grenze {b}) oder ein Euro-Fonds übernehmen.","inv.capLep":"Das LEP ist auf {v} begrenzt: Die Simulation stoppt die Einzahlungen, sobald diese Grenze erreicht ist. Darüber hinaus kann ein Livret A oder ein LDDS übernehmen.","inv.shortHorizon":"Weniger als 8 Jahre sind für Aktien zu kurz: Nach einem Rückgang müssten Sie womöglich mit Verlust verkaufen.","inv.hypLivret":"Nettozins gültig vom {from} bis {to}, danach zweimal jährlich angepasst: Das Ergebnis setzt voraus, dass er gleich bleibt. Frei von Steuern und Sozialabgaben.","inv.hypLep":"Nettozins gültig seit dem {from}, zweimal jährlich angepasst: Das Ergebnis setzt voraus, dass er gleich bleibt. Steuerfrei.","inv.hypEuro":"Durchschnittliche Rendite der Euro-Fonds {year} ({r}), für die Zukunft nicht garantiert, vor Sozialabgaben und je nach Vertragskosten.","inv.hypEq":"Veranschaulichende Annahmen von {low}, {mid} und {high} pro Jahr nach Kosten, die nichts über künftige Wertentwicklungen aussagen. Rückgänge von 30 bis 50 % innerhalb weniger Monate hat es bereits gegeben.","inv.hypProfile":"Mischung Ihres Profils: {safe} % in Euro-Fonds ({r}) und {eq} % in Aktien (mittlere Annahme {mid} pro Jahr). Für den Aktienanteil ist nichts garantiert.","inv.hypProfileSafe":"Vorsichtiges Profil: alles in Euro-Fonds (im Vorjahr durchschnittlich {r}, für die Zukunft nicht garantiert).","inv.chartAria":"Geschätzte Entwicklung des Kapitals","inv.lgCapital":"Geschätztes Kapital","inv.lgPaid":"Eingezahlte Beträge","inv.lgRange":"Spanne je nach Markt","inv.row_yield":"Rendite","inv.row_avail":"Verfügbarkeit","inv.row_cap":"Obergrenze","inv.row_tax":"Steuern","inv.row_guar":"Absicherung","inv.row_cond":"Bedingungen","inv.r1":"Kein Verlustrisiko","inv.r2":"Kapital garantiert","inv.r3":"Moderate Rückgänge möglich","inv.r4":"Kapitalverlust möglich","inv.r5":"Totalverlust möglich","inv.p_livret":"Livret A und LDDS","inv.p_livretTag":"Die erste Wahl für den Notgroschen: verfügbar, ohne Risiko, steuerfrei.","inv.pLivretYield":"{r} netto seit dem {from}, zweimal jährlich angepasst","inv.pLivretCap":"{a} (Livret A) und {b} (LDDS)","inv.p_lep":"LEP (Volkssparbuch)","inv.p_lepTag":"Die bestverzinste risikofreie Anlage, Haushalten mit geringem Einkommen vorbehalten.","inv.pLepYield":"{r} netto, zweimal jährlich angepasst","inv.pLepCond":"Steuerliches Referenzeinkommen von höchstens {v} für einen Steueranteil ({year})","inv.p_euro":"Euro-Fonds (Lebensversicherung)","inv.p_euroTag":"Für Vorhaben in 2–8 Jahren: Das Kapital ist vom Versicherer garantiert.","inv.pEuroYield":"≈ {r} im Durchschnitt {year}, je nach Vertrag unterschiedlich und für die Zukunft nicht garantiert","inv.pEuroTax":"Sozialabgaben auf Erträge; günstigere Besteuerung nach 8 Jahren","inv.pEuroGuar":"Vom Versicherer garantiert und durch einen Garantiefonds bis {v} pro Versicherer abgesichert","inv.pEuroWarn":"Vergleichen Sie die Kosten: Viele Online-Verträge erheben keine Ausgabeaufschläge. Manche schreiben einen Anteil fondsgebundener Einheiten vor, die nicht garantiert sind.","inv.p_term":"Festgeld","inv.p_termTag":"Ein im Voraus bekannter fester Zins für eine feste Laufzeit.","inv.pTermYield":"Bei Eröffnung festgelegt, je nach Bank und Laufzeit","inv.pTermAvail":"Bis zur Fälligkeit gebunden, Strafzinsen bei vorzeitiger Auflösung","inv.p_bond":"Anleihefonds","inv.p_bondTag":"Staaten und Unternehmen Geld leihen: weniger riskant als Aktien, aber nicht risikofrei.","inv.pBondTax":"Je nach Anlageform (Lebensversicherung, Wertpapierdepot)","inv.pBondWarn":"Wenn die Zinsen steigen, sinkt ihr Wert: 2022 haben viele Anleihefonds mehr als 10 % verloren.","inv.p_etf":"Indexfonds auf Weltaktien (ETF)","inv.p_etfTag":"Tausende Unternehmen aus aller Welt in einem Fonds: der einfachste und günstigste Weg, langfristig anzulegen.","inv.pEtfYield":"Nicht garantiert; historisch über lange Zeiträume durchschnittlich 6 bis 8 % pro Jahr, mit starken Schwankungen","inv.pEtfAvail":"In wenigen Tagen verkäuflich, aber ein Verkauf im Kursrückgang besiegelt den Verlust","inv.pEtfCap":"PEA: {v} an Einzahlungen","inv.pEtfTax":"PEA: nach 5 Jahren Erträge frei von Einkommensteuer (Sozialabgaben fällig)","inv.pEtfWarn":"Etwa −40 % im Jahr 2008, −30 % innerhalb weniger Wochen im Jahr 2020: Sie müssen mehrere Jahre auf eine Erholung warten können.","inv.availAny":"Jederzeit","inv.availDays":"Innerhalb weniger Tage","inv.capNone":"Keine","inv.taxFree":"Keine Steuern, keine Sozialabgaben","inv.taxIncome":"Zinsen steuerpflichtig","inv.guarState":"Vom Staat garantiert","inv.guarFgdr":"Einlagensicherung bis {v} pro Bank","inv.guarNone":"Keine Kapitalgarantie","inv.yieldVar":"Schwankend, nicht garantiert","inv.avoidTitle":"Für Einsteiger besser zu meiden","inv.avoid_a1":"Kryptowerte: sehr schwankungsanfällig, ein Totalverlust ist möglich.","inv.avoid_a2":"Aktien eines einzelnen Unternehmens: alles hängt an einer einzigen Wette.","inv.avoid_a3":"Hebelprodukte (CFD, Forex, Optionen): Die meisten Privatanleger verlieren damit Geld.","inv.avoid_a4":"„Alternative“ Anlagen (Wein, Uhren, Wälder, Vieh …): schwer verkäuflich, oft von Betrügern angeboten.","inv.avoid_a5":"Jedes Versprechen hoher Rendite „ohne Risiko“: Das ist das Zeichen eines Betrugs.","inv.rkCapital":"Kapitalverlust","inv.rkCapitalTxt":"Der Wert einer nicht garantierten Anlage kann sinken: Sie bekommen womöglich weniger zurück, als Sie eingezahlt haben.","inv.rkInflation":"Inflation","inv.rkInflationTxt":"Bringt eine Anlage weniger als der Preisanstieg, sinkt Ihre Kaufkraft. Im {month} stiegen die Preise binnen eines Jahres um {inf} (Insee): Mit {r} gleicht das Livret A diesen Anstieg nicht aus.","inv.rkInflationTxtOk":"Bringt eine Anlage weniger als der Preisanstieg, sinkt Ihre Kaufkraft. Im {month} stiegen die Preise binnen eines Jahres um {inf} (Insee): Mit {r} gleicht das Livret A diesen Anstieg aus.","inv.rkLiquidity":"Verfügbarkeit","inv.rkLiquidityTxt":"Manche Anlagen binden Ihr Geld oder zwingen zum Verkauf im falschen Moment. Halten Sie Ihren Notgroschen immer verfügbar.","inv.rkFees":"Kosten","inv.rkFeesTxt":"Sie fallen jedes Jahr an: 1 % mehr Kosten kostet über 20 Jahre etwa {v} bei {base}, angelegt zu 5 % pro Jahr.","inv.rkConc":"Klumpenrisiko","inv.rkConcTxt":"Alles auf ein Unternehmen, eine Branche oder ein Land zu setzen, setzt Sie einem jähen Absturz aus. Ein Welt-Indexfonds verteilt das Risiko.","inv.rkScam":"Betrug","inv.rkScamTxt":"Hohe Rendite und „ohne Risiko“ passen nie zusammen. Prüfen Sie, ob ein Vermittler zugelassen ist (ORIAS-Register), sehen Sie in die schwarzen Listen der AMF und misstrauen Sie Kontakten aus sozialen Netzwerken.","inv.rkBank":"Pleite eines Instituts","inv.rkBankTxt":"Ihre Einlagen sind bis {a} pro Bank abgesichert, Ihre Lebensversicherungsverträge bis {b} pro Versicherer. Die regulierten Sparbücher sind vom Staat garantiert.","inv.g1":"Bauen Sie zuerst Ihren Notgroschen auf.","inv.g2":"Legen Sie in Aktien nur Geld an, das Sie 8 Jahre lang nicht brauchen.","inv.g3":"Streuen Sie breit: ein Welt-Indexfonds statt einiger Einzelaktien.","inv.g4":"Legen Sie jeden Monat ein wenig an: So glätten Sie Hochs und Tiefs.","inv.g5":"Achten Sie auf die Kosten: Sie schmälern die Rendite jedes Jahr.","inv.g6":"Verkaufen Sie nicht in Panik: Rückgänge gehören dazu.","inv.g7":"Was zu schön klingt, um wahr zu sein, ist Betrug.","inv.legal":"Allgemeine Informationen, die weder eine persönliche Anlageberatung noch eine Aufforderung zum Kauf eines Produkts darstellen. Vergangene Wertentwicklungen sind kein verlässlicher Indikator für künftige. Zinssätze geprüft am {date} bei service-public.gouv.fr, der ACPR und dem Insee: Sie ändern sich, prüfen Sie sie vor jeder Entscheidung. Für eine auf Ihre Lage zugeschnittene Beratung wenden Sie sich an einen bei der ORIAS eingetragenen Finanzanlageberater.","inv.linkRates":"Offizielle Zinssätze der Sparbücher","inv.linkAmf":"Schwarze Listen der AMF","inv.linkOrias":"Vermittler prüfen (ORIAS)"},
+"es":{"nav.invest":"Inversión","page.invest.title":"Inversión","page.invest.sub":"Hacer crecer sus ahorros, con seguridad","menu.invest.sub":"Método prudente, simulador y riesgos","inv.notice":"Esta información es general y educativa: no constituye un asesoramiento de inversión personalizado. Da prioridad a la seguridad de su dinero y señala cada riesgo.","inv.hStart":"Su punto de partida","inv.hSteps":"El método, paso a paso","inv.hProfile":"Su perfil de ahorrador","inv.hSim":"Simulador","inv.simSub":"Calcule cómo podrían evolucionar sus ahorros según el producto y el plazo.","inv.hProducts":"Los productos, del más seguro al más arriesgado","inv.productsSub":"Ejemplos de productos disponibles en Francia, con los tipos vigentes en la fecha de verificación.","inv.hRisks":"Los riesgos que hay que conocer","inv.hRules":"Las reglas de oro","inv.kSavings":"Ahorro actual","inv.kCover":"es decir, {n} meses de gastos","inv.kCover_1":"es decir, 1 mes de gastos","inv.kSpend":"Gastos habituales","inv.kSave":"Ahorrado","inv.perMonth":"al mes","inv.perMonthAvg":"al mes, habitualmente","inv.nextLabel":"Próximo paso recomendado","inv.nextNoData":"Siga usando la aplicación unas semanas más: estos consejos se basarán entonces en sus gastos reales. Los principios siguientes ya son válidos.","inv.nextBalance":"Antes de ahorrar o invertir, equilibre su presupuesto: sus gastos habituales ({exp}) superan sus ingresos habituales ({inc}).","inv.nextStep1":"Prioridad: su fondo de emergencia. Apunte al menos a {t3}, es decir, 3 meses de gastos; le faltan {gap}.","inv.nextStep1Pace":"A su ritmo ({save} al mes), lo alcanzará hacia {when}.","inv.nextStep1Year":"Ahorrando {v} cada mes, lo alcanzará en un año.","inv.whereSafe":"Dónde colocarlo: en un Livret A o un LDDS ({a} neto, sin riesgo), o en un LEP ({lep}) si sus ingresos le dan derecho.","inv.nextStep1b":"Buena base: sus ahorros cubren {n} meses de gastos. Complételos hasta 6 meses ({t6}) antes de invertir a largo plazo.","inv.nextStep2":"Su fondo de emergencia está completo ({n} meses de gastos). Los {v} que superan los 6 meses pueden colocarse según el plazo de sus proyectos: vea los pasos 2 y 3.","inv.s1Title":"Fondo de emergencia","inv.s1Sub":"De 3 a 6 meses de gastos, disponibles en todo momento para imprevistos: una avería, la pérdida del empleo, gastos médicos.","inv.s1Where":"Livret A, LDDS, LEP.","inv.s2Title":"Proyectos a 2–8 años","inv.s2Sub":"Coche, reformas, entrada de una vivienda: dinero cuyo plazo conoce.","inv.s2Where":"fondos en euros de un seguro de vida, depósito a plazo.","inv.s3Title":"Largo plazo: 8 años o más","inv.s3Sub":"Jubilación, patrimonio: solo dinero que no necesitará en mucho tiempo.","inv.s3Where":"fondos indexados (ETF) de acciones de todo el mundo, a través de un PEA o un seguro de vida.","inv.where":"Dónde:","inv.riskNone":"Sin riesgo de pérdida","inv.riskVeryLow":"Riesgo muy bajo","inv.riskHigh":"Posible pérdida de capital","inv.stDone":"Alcanzado","inv.stNow":"Paso actual","inv.stLater":"Después","inv.progressAria":"Fondo de emergencia: {have} de {target}","inv.mark3":"3 meses: {v}","inv.mark6":"6 meses: {v}","inv.pIntro":"Cuatro preguntas para saber qué parte de riesgo le conviene. Sin respuesta, se aplica el perfil prudente.","inv.q1":"¿Dentro de cuánto tiempo podría necesitar este dinero?","inv.q1a":"Menos de 2 años","inv.q1b":"De 2 a 8 años","inv.q1c":"Más de 8 años","inv.q2":"Su inversión pierde un 20 % en pocos meses. ¿Qué hace?","inv.q2a":"Vendo para frenar las pérdidas","inv.q2b":"Espero, pero preocupado","inv.q2c":"Mantengo el rumbo, estaba previsto","inv.q3":"¿Tiene un fondo de emergencia (al menos 3 meses de gastos)?","inv.q3a":"No","inv.q3b":"En parte","inv.q3c":"Sí","inv.q3hint":"Según sus datos: {n} meses de gastos ahorrados.","inv.q3hint_1":"Según sus datos: 1 mes de gastos ahorrado.","inv.q4":"¿Cómo valora sus conocimientos sobre inversión?","inv.q4a":"Principiante","inv.q4b":"Algunas nociones","inv.q4c":"Con soltura","inv.pResult":"Su perfil","inv.pDefault":"Perfil aplicado","inv.profPrudent":"Prudente","inv.profPrudentDesc":"La seguridad ante todo: su dinero se queda en productos garantizados (libretas, fondos en euros). Es la elección acertada mientras no tenga fondo de emergencia o si el plazo es corto.","inv.profBalanced":"Equilibrado","inv.profBalancedDesc":"Una pequeña parte en acciones diversificadas y el resto seguro. Las acciones solo afectan al dinero invertido a 8 años o más.","inv.profDynamic":"Dinámico","inv.profDynamicDesc":"Una parte mayor en acciones diversificadas, siempre limitada al dinero invertido a 8 años o más, con una mitad que sigue segura.","inv.whyPrudent":"Perfil prudente aplicado: {reason}.","inv.whyHorizon":"plazo de menos de 2 años","inv.whyReaction":"una caída le llevaría a vender","inv.whyReserve":"aún no tiene fondo de emergencia","inv.allocAria":"Reparto recomendado: {safe} % seguro, {eq} % en acciones diversificadas","inv.allocSafe":"Seguro: {pct} %","inv.allocEq":"Acciones diversificadas: {pct} %","inv.allocAmount":"Para los {v} que superan su fondo de emergencia: {safe} seguros y {eq} en acciones diversificadas, invertidos poco a poco, mes a mes.","inv.allocAmountSafe":"Los {v} que superan su fondo de emergencia pueden quedarse en productos garantizados, como un fondo en euros.","inv.pNote":"Test simplificado: no sustituye al cuestionario obligatorio de su banco o aseguradora.","inv.pReset":"Repetir el test","inv.simStart":"Importe inicial","inv.simMonthly":"Aportación mensual","inv.simYears":"Duración","inv.years":"{n} años","inv.years_1":"1 año","inv.simWhere":"Producto","inv.optLivret":"Livret A · {r}","inv.optLep":"LEP · {r}","inv.optEuro":"Fondo en euros · ≈ {r}","inv.optEq":"Acciones mundiales","inv.optProfile":"Según mi perfil","inv.simResult":"Capital estimado dentro de {n} años","inv.simResult_1":"Capital estimado dentro de 1 año","inv.simRange":"Según los mercados: entre {low} y {high}","inv.simPaid":"Aportado: {v}","inv.simGain":"Intereses y ganancias: {v}","inv.simLoss":"Pérdida: {v}","inv.simReal":"Con una inflación del {inf} anual, equivaldría a unos {v} de hoy.","inv.capLivret":"El Livret A tiene un tope de {a}: la simulación deja de hacer aportaciones al alcanzarlo. Por encima, un LDDS (tope de {b}) o un fondo en euros pueden tomar el relevo.","inv.capLep":"El LEP tiene un tope de {v}: la simulación deja de hacer aportaciones al alcanzarlo. Por encima, un Livret A o un LDDS pueden tomar el relevo.","inv.shortHorizon":"Menos de 8 años es demasiado poco para las acciones: tras una caída, podría tener que vender con pérdidas.","inv.hypLivret":"Tipo neto vigente del {from} al {to}, revisado después dos veces al año: el resultado supone que no cambia. Exento de impuestos y cotizaciones sociales.","inv.hypLep":"Tipo neto vigente desde el {from}, revisado dos veces al año: el resultado supone que no cambia. Exento de impuestos.","inv.hypEuro":"Rentabilidad media de los fondos en euros en {year} ({r}), no garantizada para el futuro, antes de cotizaciones sociales y según los gastos del contrato.","inv.hypEq":"Hipótesis ilustrativas del {low}, {mid} y {high} anual, deducidos los gastos, que no prejuzgan rentabilidades futuras. Ya se han producido caídas del 30 al 50 % en pocos meses.","inv.hypProfile":"Mezcla de su perfil: {safe} % en fondos en euros ({r}) y {eq} % en acciones (hipótesis central del {mid} anual). Nada está garantizado en la parte en acciones.","inv.hypProfileSafe":"Perfil prudente: todo en fondos en euros ({r} de media el año pasado, no garantizado para el futuro).","inv.chartAria":"Evolución estimada del capital","inv.lgCapital":"Capital estimado","inv.lgPaid":"Importes aportados","inv.lgRange":"Horquilla según los mercados","inv.row_yield":"Rentabilidad","inv.row_avail":"Disponibilidad","inv.row_cap":"Tope","inv.row_tax":"Fiscalidad","inv.row_guar":"Garantía","inv.row_cond":"Condiciones","inv.r1":"Sin riesgo de pérdida","inv.r2":"Capital garantizado","inv.r3":"Posibles caídas moderadas","inv.r4":"Posible pérdida de capital","inv.r5":"Posible pérdida total","inv.p_livret":"Livret A y LDDS","inv.p_livretTag":"El reflejo para el fondo de emergencia: disponible, sin riesgo y sin impuestos.","inv.pLivretYield":"{r} neto desde el {from}, revisado dos veces al año","inv.pLivretCap":"{a} (Livret A) y {b} (LDDS)","inv.p_lep":"LEP (libreta de ahorro popular)","inv.p_lepTag":"El producto sin riesgo mejor remunerado, reservado a ingresos modestos.","inv.pLepYield":"{r} neto, revisado dos veces al año","inv.pLepCond":"Renta fiscal de referencia de como máximo {v} para una parte ({year})","inv.p_euro":"Fondos en euros (seguro de vida)","inv.p_euroTag":"Para proyectos a 2–8 años: la aseguradora garantiza el capital.","inv.pEuroYield":"≈ {r} de media en {year}, variable según el contrato y no garantizado para el futuro","inv.pEuroTax":"Cotizaciones sociales sobre las ganancias; fiscalidad más ligera a partir de 8 años","inv.pEuroGuar":"Garantizado por la aseguradora y por un fondo de garantía de hasta {v} por aseguradora","inv.pEuroWarn":"Compare los gastos: muchos contratos en línea no cobran comisión por aportación. Algunos imponen una parte en unidades de cuenta, que no están garantizadas.","inv.p_term":"Depósito a plazo","inv.p_termTag":"Un tipo fijo conocido de antemano, durante un periodo bloqueado.","inv.pTermYield":"Fijado al abrirlo, según el banco y la duración","inv.pTermAvail":"Bloqueado hasta el vencimiento, con penalización si se retira antes","inv.p_bond":"Fondos de bonos","inv.p_bondTag":"Prestar a Estados y empresas: menos arriesgado que las acciones, pero no sin riesgo.","inv.pBondTax":"Según el vehículo (seguro de vida, cuenta de valores)","inv.pBondWarn":"Cuando los tipos de interés suben, su valor baja: en 2022, muchos fondos de bonos perdieron más del 10 %.","inv.p_etf":"Fondos indexados de acciones mundiales (ETF)","inv.p_etfTag":"Miles de empresas de todo el mundo en un solo fondo: la forma más sencilla y barata de invertir a largo plazo.","inv.pEtfYield":"No garantizada; históricamente entre el 6 y el 8 % anual de media en periodos largos, con fuertes variaciones","inv.pEtfAvail":"Se vende en pocos días, pero vender durante una caída consolida la pérdida","inv.pEtfCap":"PEA: {v} de aportaciones","inv.pEtfTax":"PEA: a partir de 5 años, ganancias exentas del impuesto sobre la renta (se pagan cotizaciones sociales)","inv.pEtfWarn":"Alrededor de −40 % en 2008 y −30 % en pocas semanas en 2020: hay que poder esperar varios años a que las cotizaciones se recuperen.","inv.availAny":"En cualquier momento","inv.availDays":"En pocos días","inv.capNone":"Ninguno","inv.taxFree":"Sin impuestos ni cotizaciones sociales","inv.taxIncome":"Intereses sujetos a impuestos","inv.guarState":"Garantizado por el Estado","inv.guarFgdr":"Fondo de garantía de depósitos, hasta {v} por banco","inv.guarNone":"Sin garantía de capital","inv.yieldVar":"Variable, no garantizada","inv.avoidTitle":"Mejor evitar si está empezando","inv.avoid_a1":"Criptoactivos: muy volátiles, es posible perderlo todo.","inv.avoid_a2":"Acciones de una sola empresa: todo depende de una única apuesta.","inv.avoid_a3":"Productos apalancados (CFD, forex, opciones): la mayoría de los particulares pierde dinero con ellos.","inv.avoid_a4":"Inversiones «atípicas» (vino, relojes, bosques, ganado…): difíciles de revender, a menudo ofrecidas por estafadores.","inv.avoid_a5":"Cualquier promesa de alta rentabilidad «sin riesgo»: es la señal de una estafa.","inv.rkCapital":"Pérdida de capital","inv.rkCapitalTxt":"El valor de una inversión no garantizada puede bajar: puede recuperar menos de lo que aportó.","inv.rkInflation":"Inflación","inv.rkInflationTxt":"Si una inversión rinde menos que la subida de los precios, su poder adquisitivo disminuye. En {month}, los precios subieron un {inf} en un año (Insee): al {r}, el Livret A no compensa esa subida.","inv.rkInflationTxtOk":"Si una inversión rinde menos que la subida de los precios, su poder adquisitivo disminuye. En {month}, los precios subieron un {inf} en un año (Insee): al {r}, el Livret A compensa esa subida.","inv.rkLiquidity":"Disponibilidad","inv.rkLiquidityTxt":"Algunos productos bloquean su dinero u obligan a vender en mal momento. Mantenga siempre disponible su fondo de emergencia.","inv.rkFees":"Gastos","inv.rkFeesTxt":"Se repiten cada año: un 1 % más de gastos cuesta unos {v} en 20 años sobre {base} invertidos al 5 % anual.","inv.rkConc":"Concentración","inv.rkConcTxt":"Apostarlo todo a una empresa, un sector o un país expone a una caída brusca. Un fondo indexado mundial reparte el riesgo.","inv.rkScam":"Estafas","inv.rkScamTxt":"Alta rentabilidad y «sin riesgo» nunca van juntos. Compruebe que un intermediario está autorizado (registro ORIAS), consulte las listas negras de la AMF y desconfíe de los contactos llegados por redes sociales.","inv.rkBank":"Quiebra de una entidad","inv.rkBankTxt":"Sus depósitos están garantizados hasta {a} por banco, y sus contratos de seguro de vida hasta {b} por aseguradora. Las libretas reguladas están garantizadas por el Estado.","inv.g1":"Constituya primero su fondo de emergencia.","inv.g2":"Invierta en acciones solo el dinero que no necesitará antes de 8 años.","inv.g3":"Diversifique: un fondo indexado mundial mejor que unas pocas acciones.","inv.g4":"Invierta un poco cada mes: así suaviza los altibajos.","inv.g5":"Vigile los gastos: reducen la rentabilidad cada año.","inv.g6":"No venda presa del pánico: las caídas forman parte del camino.","inv.g7":"Si parece demasiado bueno para ser verdad, es una estafa.","inv.legal":"Información de carácter general, que no constituye ni un asesoramiento de inversión personalizado ni una invitación a comprar un producto. Las rentabilidades pasadas no prejuzgan las futuras. Tipos verificados el {date} en service-public.gouv.fr, la ACPR y el Insee: cambian, compruébelos antes de cualquier decisión. Para un consejo adaptado a su situación, diríjase a un asesor de inversiones financieras inscrito en el ORIAS.","inv.linkRates":"Tipos oficiales de las libretas","inv.linkAmf":"Listas negras de la AMF","inv.linkOrias":"Comprobar un intermediario (ORIAS)"},
+"pt":{"nav.invest":"Investimento","page.invest.title":"Investimento","page.invest.sub":"Fazer crescer as suas poupanças, com segurança","menu.invest.sub":"Método prudente, simulador e riscos","inv.notice":"Estas informações são gerais e pedagógicas: não constituem um aconselhamento de investimento personalizado. Dão prioridade à segurança do seu dinheiro e assinalam cada risco.","inv.hStart":"O seu ponto de partida","inv.hSteps":"O método, passo a passo","inv.hProfile":"O seu perfil de aforrador","inv.hSim":"Simulador","inv.simSub":"Calcule como poderiam evoluir as suas poupanças, consoante o produto e o prazo.","inv.hProducts":"As aplicações, da mais segura à mais arriscada","inv.productsSub":"Exemplos de aplicações disponíveis em França, com as taxas em vigor na data de verificação.","inv.hRisks":"Os riscos a conhecer","inv.hRules":"As regras de ouro","inv.kSavings":"Poupança atual","inv.kCover":"ou seja, {n} meses de despesas","inv.kCover_1":"ou seja, 1 mês de despesas","inv.kSpend":"Despesas habituais","inv.kSave":"Posto de parte","inv.perMonth":"por mês","inv.perMonthAvg":"por mês, habitualmente","inv.nextLabel":"Próximo passo recomendado","inv.nextNoData":"Continue a usar a aplicação durante mais algumas semanas: estes conselhos passarão então a basear-se nas suas despesas reais. Os princípios abaixo já são válidos.","inv.nextBalance":"Antes de poupar ou investir, reequilibre o seu orçamento: as suas despesas habituais ({exp}) ultrapassam as suas receitas habituais ({inc}).","inv.nextStep1":"Prioridade: o seu fundo de emergência. Aponte para pelo menos {t3}, ou seja, 3 meses de despesas; faltam-lhe {gap}.","inv.nextStep1Pace":"Ao seu ritmo ({save} por mês), lá chegará por volta de {when}.","inv.nextStep1Year":"Pondo de parte {v} todos os meses, lá chegará dentro de um ano.","inv.whereSafe":"Onde o colocar: num Livret A ou LDDS ({a} líquido, sem risco), ou num LEP ({lep}) se os seus rendimentos lhe derem direito.","inv.nextStep1b":"Boa base: as suas poupanças cobrem {n} meses de despesas. Complete-as até 6 meses ({t6}) antes de investir a longo prazo.","inv.nextStep2":"O seu fundo de emergência está completo ({n} meses de despesas). Os {v} acima de 6 meses podem ser aplicados consoante o prazo dos seus projetos: veja os passos 2 e 3.","inv.s1Title":"Fundo de emergência","inv.s1Sub":"3 a 6 meses de despesas, disponíveis a qualquer momento para imprevistos: uma avaria, a perda do emprego, despesas de saúde.","inv.s1Where":"Livret A, LDDS, LEP.","inv.s2Title":"Projetos a 2–8 anos","inv.s2Sub":"Carro, obras, entrada para uma casa: dinheiro cujo prazo conhece.","inv.s2Where":"fundos em euros de um seguro de vida, depósito a prazo.","inv.s3Title":"Longo prazo: 8 anos ou mais","inv.s3Sub":"Reforma, património: apenas dinheiro de que não vai precisar durante muito tempo.","inv.s3Where":"fundos de índice (ETF) de ações de todo o mundo, através de um PEA ou de um seguro de vida.","inv.where":"Onde:","inv.riskNone":"Sem risco de perda","inv.riskVeryLow":"Risco muito baixo","inv.riskHigh":"Perda de capital possível","inv.stDone":"Atingido","inv.stNow":"Passo atual","inv.stLater":"Depois","inv.progressAria":"Fundo de emergência: {have} de {target}","inv.mark3":"3 meses: {v}","inv.mark6":"6 meses: {v}","inv.pIntro":"Quatro perguntas para saber que parte de risco lhe convém. Sem resposta, aplica-se o perfil prudente.","inv.q1":"Daqui a quanto tempo poderá precisar deste dinheiro?","inv.q1a":"Menos de 2 anos","inv.q1b":"2 a 8 anos","inv.q1c":"Mais de 8 anos","inv.q2":"A sua aplicação perde 20% em poucos meses. O que faz?","inv.q2a":"Vendo para travar as perdas","inv.q2b":"Espero, mas preocupado","inv.q2c":"Mantenho o rumo, estava previsto","inv.q3":"Tem um fundo de emergência (pelo menos 3 meses de despesas)?","inv.q3a":"Não","inv.q3b":"Em parte","inv.q3c":"Sim","inv.q3hint":"Segundo os seus dados: {n} meses de despesas postos de parte.","inv.q3hint_1":"Segundo os seus dados: 1 mês de despesas posto de parte.","inv.q4":"Como avalia os seus conhecimentos sobre aplicações financeiras?","inv.q4a":"Principiante","inv.q4b":"Algumas noções","inv.q4c":"À vontade","inv.pResult":"O seu perfil","inv.pDefault":"Perfil aplicado","inv.profPrudent":"Prudente","inv.profPrudentDesc":"A segurança acima de tudo: o seu dinheiro fica em aplicações garantidas (cadernetas, fundos em euros). É a escolha certa enquanto o fundo de emergência não estiver constituído ou se o prazo for curto.","inv.profBalanced":"Equilibrado","inv.profBalancedDesc":"Uma pequena parte em ações diversificadas e o resto em segurança. As ações só dizem respeito ao dinheiro aplicado a 8 anos ou mais.","inv.profDynamic":"Dinâmico","inv.profDynamicDesc":"Uma parte maior em ações diversificadas, sempre limitada ao dinheiro aplicado a 8 anos ou mais, com metade que se mantém segura.","inv.whyPrudent":"Perfil prudente aplicado: {reason}.","inv.whyHorizon":"prazo inferior a 2 anos","inv.whyReaction":"uma queda levá-lo-ia a vender","inv.whyReserve":"ainda sem fundo de emergência","inv.allocAria":"Repartição recomendada: {safe}% seguro, {eq}% em ações diversificadas","inv.allocSafe":"Seguro: {pct}%","inv.allocEq":"Ações diversificadas: {pct}%","inv.allocAmount":"Para os {v} acima do seu fundo de emergência: {safe} em segurança e {eq} em ações diversificadas, investidos aos poucos, mês a mês.","inv.allocAmountSafe":"Os {v} acima do seu fundo de emergência podem ficar em aplicações garantidas, como um fundo em euros.","inv.pNote":"Teste simplificado: não substitui o questionário obrigatório do seu banco ou da sua seguradora.","inv.pReset":"Recomeçar o teste","inv.simStart":"Montante inicial","inv.simMonthly":"Entrega mensal","inv.simYears":"Duração","inv.years":"{n} anos","inv.years_1":"1 ano","inv.simWhere":"Aplicação","inv.optLivret":"Livret A · {r}","inv.optLep":"LEP · {r}","inv.optEuro":"Fundo em euros · ≈ {r}","inv.optEq":"Ações mundiais","inv.optProfile":"Segundo o meu perfil","inv.simResult":"Capital estimado daqui a {n} anos","inv.simResult_1":"Capital estimado daqui a 1 ano","inv.simRange":"Consoante os mercados: entre {low} e {high}","inv.simPaid":"Entregue: {v}","inv.simGain":"Juros e ganhos: {v}","inv.simLoss":"Perda: {v}","inv.simReal":"Com uma inflação de {inf} ao ano, isso equivaleria a cerca de {v} em euros de hoje.","inv.capLivret":"O Livret A tem um limite de {a}: a simulação deixa de fazer entregas quando o limite é atingido. Acima disso, um LDDS (limite de {b}) ou um fundo em euros pode assumir o testemunho.","inv.capLep":"O LEP tem um limite de {v}: a simulação deixa de fazer entregas quando o limite é atingido. Acima disso, um Livret A ou um LDDS pode assumir o testemunho.","inv.shortHorizon":"Menos de 8 anos é demasiado curto para ações: após uma queda, poderá ter de vender com prejuízo.","inv.hypLivret":"Taxa líquida em vigor de {from} a {to}, revista depois duas vezes por ano: o resultado supõe que se mantém. Isenta de impostos e contribuições sociais.","inv.hypLep":"Taxa líquida em vigor desde {from}, revista duas vezes por ano: o resultado supõe que se mantém. Isenta de impostos.","inv.hypEuro":"Rendimento médio dos fundos em euros em {year} ({r}), não garantido para o futuro, antes de contribuições sociais e consoante os encargos do contrato.","inv.hypEq":"Hipóteses ilustrativas de {low}, {mid} e {high} ao ano, líquidas de encargos, que não antecipam rendimentos futuros. Já houve quedas de 30 a 50% em poucos meses.","inv.hypProfile":"Combinação do seu perfil: {safe}% em fundos em euros ({r}) e {eq}% em ações (hipótese central de {mid} ao ano). Nada é garantido na parte em ações.","inv.hypProfileSafe":"Perfil prudente: tudo em fundos em euros ({r} em média no ano passado, não garantido para o futuro).","inv.chartAria":"Evolução estimada do capital","inv.lgCapital":"Capital estimado","inv.lgPaid":"Montantes entregues","inv.lgRange":"Intervalo consoante os mercados","inv.row_yield":"Rendimento","inv.row_avail":"Disponibilidade","inv.row_cap":"Limite","inv.row_tax":"Fiscalidade","inv.row_guar":"Garantia","inv.row_cond":"Condições","inv.r1":"Sem risco de perda","inv.r2":"Capital garantido","inv.r3":"Quedas moderadas possíveis","inv.r4":"Perda de capital possível","inv.r5":"Perda total possível","inv.p_livret":"Livret A e LDDS","inv.p_livretTag":"O reflexo para o fundo de emergência: disponível, sem risco e sem impostos.","inv.pLivretYield":"{r} líquido desde {from}, revisto duas vezes por ano","inv.pLivretCap":"{a} (Livret A) e {b} (LDDS)","inv.p_lep":"LEP (caderneta de poupança popular)","inv.p_lepTag":"A aplicação sem risco mais bem remunerada, reservada a rendimentos modestos.","inv.pLepYield":"{r} líquido, revisto duas vezes por ano","inv.pLepCond":"Rendimento fiscal de referência de, no máximo, {v} para uma parte ({year})","inv.p_euro":"Fundos em euros (seguro de vida)","inv.p_euroTag":"Para projetos a 2–8 anos: o capital é garantido pela seguradora.","inv.pEuroYield":"≈ {r} em média em {year}, variável consoante o contrato e não garantido para o futuro","inv.pEuroTax":"Contribuições sociais sobre os ganhos; fiscalidade mais leve após 8 anos","inv.pEuroGuar":"Garantido pela seguradora e por um fundo de garantia até {v} por seguradora","inv.pEuroWarn":"Compare os encargos: muitos contratos online não cobram comissão sobre as entregas. Alguns impõem uma parte em unidades de conta, que não são garantidas.","inv.p_term":"Depósito a prazo","inv.p_termTag":"Uma taxa fixa conhecida de antemão, por um período bloqueado.","inv.pTermYield":"Fixada na abertura, consoante o banco e a duração","inv.pTermAvail":"Bloqueado até ao vencimento, com penalização em caso de levantamento antecipado","inv.p_bond":"Fundos de obrigações","inv.p_bondTag":"Emprestar a Estados e empresas: menos arriscado do que as ações, mas não sem risco.","inv.pBondTax":"Consoante o veículo (seguro de vida, conta de títulos)","inv.pBondWarn":"Quando as taxas de juro sobem, o seu valor desce: em 2022, muitos fundos de obrigações perderam mais de 10%.","inv.p_etf":"Fundos de índice de ações mundiais (ETF)","inv.p_etfTag":"Milhares de empresas de todo o mundo num só fundo: a forma mais simples e barata de investir a longo prazo.","inv.pEtfYield":"Não garantido; historicamente 6 a 8% ao ano em média em períodos longos, com fortes variações","inv.pEtfAvail":"Vende-se em poucos dias, mas vender durante uma queda consolida a perda","inv.pEtfCap":"PEA: {v} de entregas","inv.pEtfTax":"PEA: após 5 anos, ganhos isentos de imposto sobre o rendimento (contribuições sociais devidas)","inv.pEtfWarn":"Cerca de −40% em 2008 e −30% em poucas semanas em 2020: é preciso poder esperar vários anos que as cotações recuperem.","inv.availAny":"A qualquer momento","inv.availDays":"Em poucos dias","inv.capNone":"Nenhum","inv.taxFree":"Sem impostos nem contribuições sociais","inv.taxIncome":"Juros tributáveis","inv.guarState":"Garantido pelo Estado","inv.guarFgdr":"Fundo de garantia de depósitos, até {v} por banco","inv.guarNone":"Sem garantia de capital","inv.yieldVar":"Variável, não garantido","inv.avoidTitle":"A evitar se está a começar","inv.avoid_a1":"Criptoativos: muito voláteis, é possível perder tudo.","inv.avoid_a2":"Ações de uma só empresa: tudo assenta numa única aposta.","inv.avoid_a3":"Produtos alavancados (CFD, forex, opções): a maioria dos particulares perde dinheiro com eles.","inv.avoid_a4":"Aplicações «atípicas» (vinho, relógios, florestas, gado…): difíceis de revender, muitas vezes propostas por burlões.","inv.avoid_a5":"Qualquer promessa de rendimento elevado «sem risco»: é sinal de burla.","inv.rkCapital":"Perda de capital","inv.rkCapitalTxt":"O valor de uma aplicação não garantida pode descer: pode recuperar menos do que entregou.","inv.rkInflation":"Inflação","inv.rkInflationTxt":"Se uma aplicação render menos do que a subida dos preços, o seu poder de compra diminui. Em {month}, os preços subiram {inf} num ano (Insee): a {r}, o Livret A não compensa essa subida.","inv.rkInflationTxtOk":"Se uma aplicação render menos do que a subida dos preços, o seu poder de compra diminui. Em {month}, os preços subiram {inf} num ano (Insee): a {r}, o Livret A compensa essa subida.","inv.rkLiquidity":"Disponibilidade","inv.rkLiquidityTxt":"Algumas aplicações bloqueiam o seu dinheiro ou obrigam a vender no pior momento. Mantenha sempre disponível o seu fundo de emergência.","inv.rkFees":"Encargos","inv.rkFeesTxt":"Repetem-se todos os anos: mais 1% de encargos custa cerca de {v} em 20 anos sobre {base} aplicados a 5% ao ano.","inv.rkConc":"Concentração","inv.rkConcTxt":"Apostar tudo numa empresa, num setor ou num país expõe a uma queda brutal. Um fundo de índice mundial reparte o risco.","inv.rkScam":"Burlas","inv.rkScamTxt":"Rendimento elevado e «sem risco» nunca andam juntos. Verifique se um intermediário está autorizado (registo ORIAS), consulte as listas negras da AMF e desconfie de contactos vindos das redes sociais.","inv.rkBank":"Falência de uma instituição","inv.rkBankTxt":"Os seus depósitos estão garantidos até {a} por banco, e os seus contratos de seguro de vida até {b} por seguradora. As cadernetas regulamentadas são garantidas pelo Estado.","inv.g1":"Constitua primeiro o seu fundo de emergência.","inv.g2":"Invista em ações apenas o dinheiro de que não precisará antes de 8 anos.","inv.g3":"Diversifique: um fundo de índice mundial em vez de algumas ações.","inv.g4":"Invista um pouco todos os meses: suaviza os altos e baixos.","inv.g5":"Vigie os encargos: reduzem o rendimento todos os anos.","inv.g6":"Não venda em pânico: as quedas fazem parte do caminho.","inv.g7":"Se parece bom demais para ser verdade, é burla.","inv.legal":"Informações de caráter geral, que não constituem nem um aconselhamento de investimento personalizado nem um convite à compra de um produto. Os rendimentos passados não garantem rendimentos futuros. Taxas verificadas a {date} junto de service-public.gouv.fr, da ACPR e do Insee: evoluem, verifique-as antes de qualquer decisão. Para um conselho adaptado à sua situação, dirija-se a um consultor de investimentos financeiros inscrito no ORIAS.","inv.linkRates":"Taxas oficiais das cadernetas","inv.linkAmf":"Listas negras da AMF","inv.linkOrias":"Verificar um intermediário (ORIAS)"},
+"it":{"nav.invest":"Investimenti","page.invest.title":"Investimenti","page.invest.sub":"Far crescere i suoi risparmi, in sicurezza","menu.invest.sub":"Metodo prudente, simulatore e rischi","inv.notice":"Queste informazioni sono generali e didattiche: non costituiscono una consulenza d'investimento personalizzata. Danno priorità alla sicurezza del suo denaro e segnalano ogni rischio.","inv.hStart":"Il suo punto di partenza","inv.hSteps":"Il metodo, passo dopo passo","inv.hProfile":"Il suo profilo di risparmiatore","inv.hSim":"Simulatore","inv.simSub":"Stimi come potrebbero evolvere i suoi risparmi, in base al prodotto e alla durata.","inv.hProducts":"I prodotti, dal più sicuro al più rischioso","inv.productsSub":"Esempi di prodotti disponibili in Francia, con i tassi in vigore alla data di verifica.","inv.hRisks":"I rischi da conoscere","inv.hRules":"Le regole d'oro","inv.kSavings":"Risparmi attuali","inv.kCover":"cioè {n} mesi di spese","inv.kCover_1":"cioè 1 mese di spese","inv.kSpend":"Spese abituali","inv.kSave":"Messo da parte","inv.perMonth":"al mese","inv.perMonthAvg":"al mese, di solito","inv.nextLabel":"Prossimo passo consigliato","inv.nextNoData":"Usi l'applicazione ancora qualche settimana: questi consigli si baseranno allora sulle sue spese reali. I principi qui sotto valgono già da ora.","inv.nextBalance":"Prima di risparmiare o investire, riequilibri il suo budget: le sue spese abituali ({exp}) superano le sue entrate abituali ({inc}).","inv.nextStep1":"Priorità: il suo fondo di emergenza. Punti ad almeno {t3}, cioè 3 mesi di spese; le mancano {gap}.","inv.nextStep1Pace":"Al suo ritmo ({save} al mese), ci arriverà verso {when}.","inv.nextStep1Year":"Mettendo da parte {v} ogni mese, ci arriverà in un anno.","inv.whereSafe":"Dove tenerlo: su un Livret A o un LDDS ({a} netto, senza rischio), o su un LEP ({lep}) se il suo reddito le dà diritto.","inv.nextStep1b":"Buona base: i suoi risparmi coprono {n} mesi di spese. Li completi fino a 6 mesi ({t6}) prima di investire a lungo termine.","inv.nextStep2":"Il suo fondo di emergenza è completo ({n} mesi di spese). I {v} oltre i 6 mesi possono essere investiti in base alla scadenza dei suoi progetti: veda i passi 2 e 3.","inv.s1Title":"Fondo di emergenza","inv.s1Sub":"Da 3 a 6 mesi di spese, disponibili in ogni momento per gli imprevisti: un guasto, la perdita del lavoro, spese mediche.","inv.s1Where":"Livret A, LDDS, LEP.","inv.s2Title":"Progetti a 2–8 anni","inv.s2Sub":"Auto, lavori, anticipo per una casa: denaro di cui conosce la scadenza.","inv.s2Where":"fondi in euro di un'assicurazione vita, conto deposito vincolato.","inv.s3Title":"Lungo termine: 8 anni e oltre","inv.s3Sub":"Pensione, patrimonio: solo denaro di cui non avrà bisogno per molto tempo.","inv.s3Where":"fondi indicizzati (ETF) di azioni di tutto il mondo, tramite un PEA o un'assicurazione vita.","inv.where":"Dove:","inv.riskNone":"Nessun rischio di perdita","inv.riskVeryLow":"Rischio molto basso","inv.riskHigh":"Possibile perdita di capitale","inv.stDone":"Raggiunto","inv.stNow":"Passo in corso","inv.stLater":"In seguito","inv.progressAria":"Fondo di emergenza: {have} su {target}","inv.mark3":"3 mesi: {v}","inv.mark6":"6 mesi: {v}","inv.pIntro":"Quattro domande per capire quale quota di rischio fa per lei. Senza risposta, si applica il profilo prudente.","inv.q1":"Tra quanto tempo potrebbe aver bisogno di questo denaro?","inv.q1a":"Meno di 2 anni","inv.q1b":"Da 2 a 8 anni","inv.q1c":"Più di 8 anni","inv.q2":"Il suo investimento perde il 20% in pochi mesi. Che cosa fa?","inv.q2a":"Vendo per fermare le perdite","inv.q2b":"Aspetto, ma preoccupato","inv.q2c":"Tengo la rotta, era previsto","inv.q3":"Ha un fondo di emergenza (almeno 3 mesi di spese)?","inv.q3a":"No","inv.q3b":"In parte","inv.q3c":"Sì","inv.q3hint":"Secondo i suoi dati: {n} mesi di spese messi da parte.","inv.q3hint_1":"Secondo i suoi dati: 1 mese di spese messo da parte.","inv.q4":"Come valuta le sue conoscenze in materia di investimenti?","inv.q4a":"Principiante","inv.q4b":"Qualche nozione","inv.q4c":"A mio agio","inv.pResult":"Il suo profilo","inv.pDefault":"Profilo applicato","inv.profPrudent":"Prudente","inv.profPrudentDesc":"La sicurezza prima di tutto: il suo denaro resta su prodotti garantiti (libretti, fondi in euro). È la scelta giusta finché il fondo di emergenza non è costituito o se l'orizzonte è breve.","inv.profBalanced":"Equilibrato","inv.profBalancedDesc":"Una piccola quota in azioni diversificate e il resto al sicuro. Le azioni riguardano solo il denaro investito per 8 anni o più.","inv.profDynamic":"Dinamico","inv.profDynamicDesc":"Una quota maggiore in azioni diversificate, sempre limitata al denaro investito per 8 anni o più, con una metà che resta al sicuro.","inv.whyPrudent":"Profilo prudente applicato: {reason}.","inv.whyHorizon":"orizzonte inferiore a 2 anni","inv.whyReaction":"un calo la spingerebbe a vendere","inv.whyReserve":"ancora nessun fondo di emergenza","inv.allocAria":"Ripartizione consigliata: {safe}% al sicuro, {eq}% in azioni diversificate","inv.allocSafe":"Al sicuro: {pct}%","inv.allocEq":"Azioni diversificate: {pct}%","inv.allocAmount":"Per i {v} oltre il suo fondo di emergenza: {safe} al sicuro e {eq} in azioni diversificate, da investire gradualmente, mese dopo mese.","inv.allocAmountSafe":"I {v} oltre il suo fondo di emergenza possono restare su prodotti garantiti, come un fondo in euro.","inv.pNote":"Test semplificato: non sostituisce il questionario obbligatorio della sua banca o assicurazione.","inv.pReset":"Ricominciare il test","inv.simStart":"Somma iniziale","inv.simMonthly":"Versamento mensile","inv.simYears":"Durata","inv.years":"{n} anni","inv.years_1":"1 anno","inv.simWhere":"Prodotto","inv.optLivret":"Livret A · {r}","inv.optLep":"LEP · {r}","inv.optEuro":"Fondo in euro · ≈ {r}","inv.optEq":"Azioni mondiali","inv.optProfile":"Secondo il mio profilo","inv.simResult":"Capitale stimato tra {n} anni","inv.simResult_1":"Capitale stimato tra 1 anno","inv.simRange":"A seconda dei mercati: tra {low} e {high}","inv.simPaid":"Versato: {v}","inv.simGain":"Interessi e guadagni: {v}","inv.simLoss":"Perdita: {v}","inv.simReal":"Con un'inflazione del {inf} all'anno, equivarrebbe a circa {v} di oggi.","inv.capLivret":"Il Livret A ha un tetto di {a}: la simulazione interrompe i versamenti una volta raggiunto. Oltre, un LDDS (tetto di {b}) o un fondo in euro possono subentrare.","inv.capLep":"Il LEP ha un tetto di {v}: la simulazione interrompe i versamenti una volta raggiunto. Oltre, un Livret A o un LDDS possono subentrare.","inv.shortHorizon":"Meno di 8 anni è troppo poco per le azioni: dopo un calo, potrebbe dover vendere in perdita.","inv.hypLivret":"Tasso netto in vigore dal {from} al {to}, poi rivisto due volte l'anno: il risultato presuppone che resti invariato. Esente da imposte e contributi sociali.","inv.hypLep":"Tasso netto in vigore dal {from}, rivisto due volte l'anno: il risultato presuppone che resti invariato. Esente da imposte.","inv.hypEuro":"Rendimento medio dei fondi in euro nel {year} ({r}), non garantito per il futuro, prima dei contributi sociali e secondo i costi del contratto.","inv.hypEq":"Ipotesi illustrative del {low}, {mid} e {high} all'anno, al netto dei costi, che non anticipano i rendimenti futuri. Cali dal 30 al 50% in pochi mesi si sono già verificati.","inv.hypProfile":"Combinazione del suo profilo: {safe}% in fondi in euro ({r}) e {eq}% in azioni (ipotesi centrale del {mid} all'anno). Nulla è garantito sulla quota in azioni.","inv.hypProfileSafe":"Profilo prudente: tutto in fondi in euro ({r} in media l'anno scorso, non garantito per il futuro).","inv.chartAria":"Andamento stimato del capitale","inv.lgCapital":"Capitale stimato","inv.lgPaid":"Somme versate","inv.lgRange":"Forbice a seconda dei mercati","inv.row_yield":"Rendimento","inv.row_avail":"Disponibilità","inv.row_cap":"Tetto","inv.row_tax":"Fiscalità","inv.row_guar":"Garanzia","inv.row_cond":"Condizioni","inv.r1":"Nessun rischio di perdita","inv.r2":"Capitale garantito","inv.r3":"Cali moderati possibili","inv.r4":"Possibile perdita di capitale","inv.r5":"Possibile perdita totale","inv.p_livret":"Livret A e LDDS","inv.p_livretTag":"La scelta naturale per il fondo di emergenza: disponibile, senza rischio, senza imposte.","inv.pLivretYield":"{r} netto dal {from}, rivisto due volte l'anno","inv.pLivretCap":"{a} (Livret A) e {b} (LDDS)","inv.p_lep":"LEP (libretto di risparmio popolare)","inv.p_lepTag":"Il prodotto senza rischio meglio remunerato, riservato ai redditi modesti.","inv.pLepYield":"{r} netto, rivisto due volte l'anno","inv.pLepCond":"Reddito fiscale di riferimento non superiore a {v} per una quota ({year})","inv.p_euro":"Fondi in euro (assicurazione vita)","inv.p_euroTag":"Per i progetti a 2–8 anni: il capitale è garantito dall'assicuratore.","inv.pEuroYield":"≈ {r} in media nel {year}, variabile secondo il contratto e non garantito per il futuro","inv.pEuroTax":"Contributi sociali sui guadagni; fiscalità più leggera dopo 8 anni","inv.pEuroGuar":"Garantito dall'assicuratore e da un fondo di garanzia fino a {v} per assicuratore","inv.pEuroWarn":"Confronti i costi: molti contratti online non applicano commissioni sui versamenti. Alcuni impongono una quota in unità di conto, che non sono garantite.","inv.p_term":"Conto deposito vincolato","inv.p_termTag":"Un tasso fisso noto in anticipo, per una durata vincolata.","inv.pTermYield":"Fissato all'apertura, secondo la banca e la durata","inv.pTermAvail":"Vincolato fino alla scadenza, penali in caso di prelievo anticipato","inv.p_bond":"Fondi obbligazionari","inv.p_bondTag":"Prestare a Stati e imprese: meno rischioso delle azioni, ma non senza rischi.","inv.pBondTax":"Secondo il contenitore (assicurazione vita, conto titoli)","inv.pBondWarn":"Quando i tassi d'interesse salgono, il loro valore scende: nel 2022 molti fondi obbligazionari hanno perso più del 10%.","inv.p_etf":"Fondi indicizzati azionari mondiali (ETF)","inv.p_etfTag":"Migliaia di imprese di tutto il mondo in un solo fondo: il modo più semplice ed economico di investire a lungo termine.","inv.pEtfYield":"Non garantito; storicamente dal 6 all'8% annuo in media su lunghi periodi, con forti oscillazioni","inv.pEtfAvail":"Si vende in pochi giorni, ma vendere durante un calo rende definitiva la perdita","inv.pEtfCap":"PEA: {v} di versamenti","inv.pEtfTax":"PEA: dopo 5 anni, guadagni esenti dall'imposta sul reddito (contributi sociali dovuti)","inv.pEtfWarn":"Circa −40% nel 2008, −30% in poche settimane nel 2020: bisogna poter aspettare diversi anni che le quotazioni risalgano.","inv.availAny":"In ogni momento","inv.availDays":"In pochi giorni","inv.capNone":"Nessuno","inv.taxFree":"Nessuna imposta né contributo sociale","inv.taxIncome":"Interessi tassabili","inv.guarState":"Garantito dallo Stato","inv.guarFgdr":"Fondo di garanzia dei depositi, fino a {v} per banca","inv.guarNone":"Nessuna garanzia sul capitale","inv.yieldVar":"Variabile, non garantito","inv.avoidTitle":"Da evitare se è alle prime armi","inv.avoid_a1":"Criptoattività: molto volatili, è possibile perdere tutto.","inv.avoid_a2":"Azioni di una sola impresa: tutto si gioca su un'unica scommessa.","inv.avoid_a3":"Prodotti a leva (CFD, forex, opzioni): la maggior parte dei privati ci perde denaro.","inv.avoid_a4":"Investimenti «atipici» (vino, orologi, foreste, bestiame…): difficili da rivendere, spesso proposti da truffatori.","inv.avoid_a5":"Qualsiasi promessa di rendimento elevato «senza rischio»: è il segno di una truffa.","inv.rkCapital":"Perdita di capitale","inv.rkCapitalTxt":"Il valore di un investimento non garantito può scendere: potrebbe riavere meno di quanto ha versato.","inv.rkInflation":"Inflazione","inv.rkInflationTxt":"Se un investimento rende meno dell'aumento dei prezzi, il suo potere d'acquisto diminuisce. A {month} i prezzi sono aumentati del {inf} in un anno (Insee): al {r}, il Livret A non compensa questo aumento.","inv.rkInflationTxtOk":"Se un investimento rende meno dell'aumento dei prezzi, il suo potere d'acquisto diminuisce. A {month} i prezzi sono aumentati del {inf} in un anno (Insee): al {r}, il Livret A compensa questo aumento.","inv.rkLiquidity":"Disponibilità","inv.rkLiquidityTxt":"Alcuni prodotti vincolano il suo denaro o costringono a vendere nel momento sbagliato. Tenga sempre disponibile il suo fondo di emergenza.","inv.rkFees":"Costi","inv.rkFeesTxt":"Si ripetono ogni anno: l'1% di costi in più costa circa {v} in 20 anni su {base} investiti al 5% annuo.","inv.rkConc":"Concentrazione","inv.rkConcTxt":"Puntare tutto su un'impresa, un settore o un Paese espone a un crollo improvviso. Un fondo indicizzato mondiale ripartisce il rischio.","inv.rkScam":"Truffe","inv.rkScamTxt":"Rendimento elevato e «senza rischio» non vanno mai insieme. Verifichi che un intermediario sia autorizzato (registro ORIAS), consulti le liste nere dell'AMF e diffidi dei contatti arrivati dai social network.","inv.rkBank":"Fallimento di un istituto","inv.rkBankTxt":"I suoi depositi sono garantiti fino a {a} per banca, e i suoi contratti di assicurazione vita fino a {b} per assicuratore. I libretti regolamentati sono garantiti dallo Stato.","inv.g1":"Costituisca prima il suo fondo di emergenza.","inv.g2":"Investa in azioni solo il denaro di cui non avrà bisogno prima di 8 anni.","inv.g3":"Diversifichi: un fondo indicizzato mondiale invece di poche azioni.","inv.g4":"Investa un po' ogni mese: così attenua alti e bassi.","inv.g5":"Tenga d'occhio i costi: erodono il rendimento ogni anno.","inv.g6":"Non venda in preda al panico: i cali fanno parte del percorso.","inv.g7":"Se sembra troppo bello per essere vero, è una truffa.","inv.legal":"Informazioni di carattere generale, che non costituiscono né una consulenza d'investimento personalizzata né un invito ad acquistare un prodotto. I rendimenti passati non sono indicativi di quelli futuri. Tassi verificati il {date} presso service-public.gouv.fr, l'ACPR e l'Insee: cambiano, li verifichi prima di qualsiasi decisione. Per un consiglio adatto alla sua situazione, si rivolga a un consulente finanziario iscritto all'ORIAS.","inv.linkRates":"Tassi ufficiali dei libretti","inv.linkAmf":"Liste nere dell'AMF","inv.linkOrias":"Verificare un intermediario (ORIAS)"},
+"ar":{"nav.invest":"الاستثمار","page.invest.title":"الاستثمار","page.invest.sub":"تنمية مدخراتك بأمان","menu.invest.sub":"منهج حذر ومحاكٍ ومخاطر","inv.notice":"هذه معلومات عامة وتثقيفية، ولا تُعدّ نصيحة استثمارية شخصية. تضع سلامة أموالك في المقام الأول وتنبّه إلى كل خطر.","inv.hStart":"نقطة انطلاقك","inv.hSteps":"المنهج خطوة بخطوة","inv.hProfile":"ملفك كمدّخر","inv.hSim":"المحاكي","inv.simSub":"قدّر كيف يمكن أن تتطور مدخراتك بحسب المنتج والمدة.","inv.hProducts":"المنتجات، من الأكثر أمانًا إلى الأكثر خطورة","inv.productsSub":"أمثلة على منتجات متاحة في فرنسا، مع المعدلات السارية في تاريخ التحقق.","inv.hRisks":"مخاطر ينبغي معرفتها","inv.hRules":"القواعد الذهبية","inv.kSavings":"المدخرات الحالية","inv.kCover":"أي ما يعادل {n} من أشهر المصاريف","inv.kCover_1":"أي ما يعادل شهرًا واحدًا من المصاريف","inv.kSpend":"المصاريف المعتادة","inv.kSave":"ما تدّخره","inv.perMonth":"شهريًا","inv.perMonthAvg":"شهريًا في العادة","inv.nextLabel":"الخطوة التالية المقترحة","inv.nextNoData":"واصل استخدام التطبيق بضعة أسابيع أخرى: ستستند هذه النصائح حينها إلى مصاريفك الفعلية. أما المبادئ أدناه فهي صالحة من الآن.","inv.nextBalance":"قبل الادخار أو الاستثمار، أعد التوازن إلى ميزانيتك: مصاريفك المعتادة ({exp}) تتجاوز دخلك المعتاد ({inc}).","inv.nextStep1":"الأولوية: مدخرات الطوارئ. استهدف {t3} على الأقل، أي ما يعادل 3 أشهر من المصاريف؛ ينقصك {gap}.","inv.nextStep1Pace":"بوتيرتك الحالية ({save} شهريًا)، ستبلغ ذلك نحو {when}.","inv.nextStep1Year":"إذا ادخرت {v} كل شهر، فستبلغ ذلك خلال عام.","inv.whereSafe":"أين تضعها: في Livret A أو LDDS ({a} صافيًا ودون مخاطر)، أو في LEP ({lep}) إذا كان دخلك يتيح لك ذلك.","inv.nextStep1b":"أساس جيد: مدخراتك تغطي {n} من أشهر المصاريف. أكملها حتى 6 أشهر ({t6}) قبل الاستثمار على المدى الطويل.","inv.nextStep2":"اكتملت مدخرات الطوارئ لديك ({n} من أشهر المصاريف). يمكن توظيف مبلغ {v} الزائد على 6 أشهر بحسب موعد مشاريعك: راجع الخطوتين 2 و3.","inv.s1Title":"مدخرات الطوارئ","inv.s1Sub":"من 3 إلى 6 أشهر من المصاريف، متاحة في أي وقت لمواجهة الطوارئ: عطل، فقدان عمل، نفقات صحية.","inv.s1Where":"Livret A وLDDS وLEP.","inv.s2Title":"مشاريع خلال 2 إلى 8 سنوات","inv.s2Sub":"سيارة، أشغال، دفعة أولى لمسكن: أموال تعرف موعد الحاجة إليها.","inv.s2Where":"صناديق اليورو في عقود التأمين على الحياة، الودائع لأجل.","inv.s3Title":"المدى الطويل: 8 سنوات فأكثر","inv.s3Sub":"التقاعد، الثروة: فقط الأموال التي لن تحتاج إليها لمدة طويلة.","inv.s3Where":"صناديق المؤشرات (ETF) لأسهم من جميع أنحاء العالم، عبر حساب PEA أو عقد تأمين على الحياة.","inv.where":"أين:","inv.riskNone":"لا خطر خسارة","inv.riskVeryLow":"خطر ضعيف جدًا","inv.riskHigh":"خسارة رأس المال ممكنة","inv.stDone":"تحقّقت","inv.stNow":"الخطوة الحالية","inv.stLater":"لاحقًا","inv.progressAria":"مدخرات الطوارئ: {have} من أصل {target}","inv.mark3":"3 أشهر: {v}","inv.mark6":"6 أشهر: {v}","inv.pIntro":"أربعة أسئلة لمعرفة نسبة المخاطرة التي تناسبك. من دون إجابة، يُطبَّق الملف الحذر.","inv.q1":"متى قد تحتاج إلى هذا المال؟","inv.q1a":"خلال أقل من سنتين","inv.q1b":"خلال 2 إلى 8 سنوات","inv.q1c":"بعد أكثر من 8 سنوات","inv.q2":"خسر استثمارك 20% في بضعة أشهر. ماذا تفعل؟","inv.q2a":"أبيع لوقف الخسائر","inv.q2b":"أنتظر، لكن بقلق","inv.q2c":"أواصل كما خططت، فهذا متوقَّع","inv.q3":"هل لديك مدخرات طوارئ (ما يعادل 3 أشهر من المصاريف على الأقل)؟","inv.q3a":"لا","inv.q3b":"جزئيًا","inv.q3c":"نعم","inv.q3hint":"وفق بياناتك: لديك ما يعادل {n} من أشهر المصاريف.","inv.q3hint_1":"وفق بياناتك: لديك ما يعادل شهرًا واحدًا من المصاريف.","inv.q4":"كيف تقيّم معرفتك بالاستثمار؟","inv.q4a":"مبتدئ","inv.q4b":"بعض المعرفة","inv.q4c":"متمكّن","inv.pResult":"ملفك","inv.pDefault":"الملف المطبَّق","inv.profPrudent":"حذر","inv.profPrudentDesc":"الأمان أولًا: تبقى أموالك في منتجات مضمونة (دفاتر ادخار، صناديق اليورو). وهو الخيار الصحيح ما دامت مدخرات الطوارئ غير مكتملة أو كان الأفق قصيرًا.","inv.profBalanced":"متوازن","inv.profBalancedDesc":"جزء صغير في أسهم متنوعة، والباقي في أمان. لا تخص الأسهم إلا الأموال المستثمرة لمدة 8 سنوات أو أكثر.","inv.profDynamic":"ديناميكي","inv.profDynamicDesc":"جزء أكبر في أسهم متنوعة، يبقى محصورًا في الأموال المستثمرة لمدة 8 سنوات أو أكثر، مع إبقاء النصف في أمان.","inv.whyPrudent":"طُبّق الملف الحذر: {reason}.","inv.whyHorizon":"أفق أقل من سنتين","inv.whyReaction":"أي انخفاض سيدفعك إلى البيع","inv.whyReserve":"لا مدخرات طوارئ بعد","inv.allocAria":"التوزيع المقترح: {safe}% آمن، و{eq}% في أسهم متنوعة","inv.allocSafe":"آمن: {pct}%","inv.allocEq":"أسهم متنوعة: {pct}%","inv.allocAmount":"بالنسبة إلى مبلغ {v} الزائد على مدخرات الطوارئ: {safe} في أمان و{eq} في أسهم متنوعة، تُستثمر تدريجيًا شهرًا بعد شهر.","inv.allocAmountSafe":"يمكن أن يبقى مبلغ {v} الزائد على مدخرات الطوارئ في منتجات مضمونة، مثل صندوق اليورو.","inv.pNote":"اختبار مبسّط: لا يغني عن الاستبيان الإلزامي لدى مصرفك أو شركة التأمين.","inv.pReset":"إعادة الاختبار","inv.simStart":"المبلغ الأولي","inv.simMonthly":"الدفعة الشهرية","inv.simYears":"المدة","inv.years":"{n} سنة","inv.years_1":"سنة واحدة","inv.simWhere":"المنتج","inv.optLivret":"Livret A · {r}","inv.optLep":"LEP · {r}","inv.optEuro":"صندوق اليورو · ≈ {r}","inv.optEq":"أسهم عالمية","inv.optProfile":"بحسب ملفي","inv.simResult":"رأس المال المقدَّر بعد {n} سنة","inv.simResult_1":"رأس المال المقدَّر بعد سنة واحدة","inv.simRange":"بحسب الأسواق: بين {low} و{high}","inv.simPaid":"المدفوع: {v}","inv.simGain":"الفوائد والأرباح: {v}","inv.simLoss":"الخسارة: {v}","inv.simReal":"مع تضخم بنسبة {inf} سنويًا، يعادل ذلك نحو {v} بقيمة اليوم.","inv.capLivret":"سقف Livret A هو {a}: تتوقف المحاكاة عن الدفعات عند بلوغه. بعد ذلك يمكن أن يتولى LDDS (سقفه {b}) أو صندوق اليورو المهمة.","inv.capLep":"سقف LEP هو {v}: تتوقف المحاكاة عن الدفعات عند بلوغه. بعد ذلك يمكن أن يتولى Livret A أو LDDS المهمة.","inv.shortHorizon":"أقل من 8 سنوات مدة قصيرة جدًا للأسهم: بعد أي انخفاض قد تضطر إلى البيع بخسارة.","inv.hypLivret":"المعدل الصافي الساري من {from} إلى {to}، ثم يُراجَع مرتين في السنة: تفترض النتيجة بقاءه ثابتًا. معفى من الضريبة والاقتطاعات الاجتماعية.","inv.hypLep":"المعدل الصافي الساري منذ {from}، ويُراجَع مرتين في السنة: تفترض النتيجة بقاءه ثابتًا. معفى من الضريبة.","inv.hypEuro":"متوسط عائد صناديق اليورو في {year} ({r})، غير مضمون مستقبلًا، قبل الاقتطاعات الاجتماعية وبحسب رسوم العقد.","inv.hypEq":"افتراضات توضيحية بنسبة {low} و{mid} و{high} سنويًا بعد الرسوم، ولا تدل على الأداء المستقبلي. سبق أن حدثت انخفاضات من 30 إلى 50% خلال بضعة أشهر.","inv.hypProfile":"مزيج ملفك: {safe}% في صناديق اليورو ({r}) و{eq}% في الأسهم (افتراض وسطي {mid} سنويًا). لا شيء مضمون في جزء الأسهم.","inv.hypProfileSafe":"ملف حذر: الكل في صناديق اليورو ({r} في المتوسط العام الماضي، غير مضمون مستقبلًا).","inv.chartAria":"التطور المقدَّر لرأس المال","inv.lgCapital":"رأس المال المقدَّر","inv.lgPaid":"المبالغ المدفوعة","inv.lgRange":"النطاق بحسب الأسواق","inv.row_yield":"العائد","inv.row_avail":"التوفر","inv.row_cap":"السقف","inv.row_tax":"الضرائب","inv.row_guar":"الضمان","inv.row_cond":"الشروط","inv.r1":"لا خطر خسارة","inv.r2":"رأس المال مضمون","inv.r3":"انخفاضات معتدلة ممكنة","inv.r4":"خسارة رأس المال ممكنة","inv.r5":"خسارة كاملة ممكنة","inv.p_livret":"Livret A وLDDS","inv.p_livretTag":"الخيار البديهي لمدخرات الطوارئ: متاح، بلا مخاطر، وبلا ضرائب.","inv.pLivretYield":"{r} صافيًا منذ {from}، ويُراجَع مرتين في السنة","inv.pLivretCap":"{a} (Livret A) و{b} (LDDS)","inv.p_lep":"LEP (دفتر الادخار الشعبي)","inv.p_lepTag":"أفضل المنتجات الخالية من المخاطر عائدًا، ومخصص لذوي الدخل المتواضع.","inv.pLepYield":"{r} صافيًا، ويُراجَع مرتين في السنة","inv.pLepCond":"دخل ضريبي مرجعي لا يتجاوز {v} لحصة واحدة ({year})","inv.p_euro":"صناديق اليورو (تأمين على الحياة)","inv.p_euroTag":"للمشاريع خلال 2 إلى 8 سنوات: رأس المال مضمون من شركة التأمين.","inv.pEuroYield":"≈ {r} في المتوسط في {year}، يختلف بحسب العقود وغير مضمون مستقبلًا","inv.pEuroTax":"اقتطاعات اجتماعية على الأرباح؛ ضرائب مخففة بعد 8 سنوات","inv.pEuroGuar":"مضمون من شركة التأمين، ومن صندوق ضمان حتى {v} لكل شركة تأمين","inv.pEuroWarn":"قارن الرسوم: كثير من العقود عبر الإنترنت لا تقتطع شيئًا من الدفعات. وبعضها يفرض حصة من وحدات الحساب، وهي غير مضمونة.","inv.p_term":"وديعة لأجل","inv.p_termTag":"معدل ثابت معروف مسبقًا، لمدة مجمَّدة.","inv.pTermYield":"يُحدَّد عند الفتح، بحسب المصرف والمدة","inv.pTermAvail":"مجمَّدة حتى الاستحقاق، مع غرامات عند السحب المبكر","inv.p_bond":"صناديق السندات","inv.p_bondTag":"إقراض الدول والشركات: أقل خطورة من الأسهم، لكنه ليس خاليًا من المخاطر.","inv.pBondTax":"بحسب الإطار (تأمين على الحياة، حساب أوراق مالية)","inv.pBondWarn":"عندما ترتفع أسعار الفائدة تنخفض قيمتها: في 2022 خسرت صناديق سندات كثيرة أكثر من 10%.","inv.p_etf":"صناديق مؤشرات الأسهم العالمية (ETF)","inv.p_etfTag":"آلاف الشركات من جميع أنحاء العالم في صندوق واحد: أبسط طريقة وأقلها كلفة للاستثمار على المدى الطويل.","inv.pEtfYield":"غير مضمون؛ تاريخيًا من 6 إلى 8% سنويًا في المتوسط على فترات طويلة، مع تقلبات قوية","inv.pEtfAvail":"يُباع خلال أيام، لكن البيع أثناء الانخفاض يثبّت الخسارة","inv.pEtfCap":"PEA: {v} من الدفعات","inv.pEtfTax":"PEA: بعد 5 سنوات تُعفى الأرباح من ضريبة الدخل (مع استحقاق الاقتطاعات الاجتماعية)","inv.pEtfWarn":"نحو −40% في 2008، و−30% خلال أسابيع قليلة في 2020: يجب أن تكون قادرًا على الانتظار عدة سنوات حتى تتعافى الأسعار.","inv.availAny":"في أي وقت","inv.availDays":"خلال أيام قليلة","inv.capNone":"لا يوجد","inv.taxFree":"بلا ضريبة ولا اقتطاعات اجتماعية","inv.taxIncome":"الفوائد خاضعة للضريبة","inv.guarState":"مضمون من الدولة","inv.guarFgdr":"صندوق ضمان الودائع، حتى {v} لكل مصرف","inv.guarNone":"لا ضمان لرأس المال","inv.yieldVar":"متغير وغير مضمون","inv.avoidTitle":"يُستحسن تجنّبه إذا كنت مبتدئًا","inv.avoid_a1":"الأصول المشفرة: شديدة التقلب، وخسارة كل شيء ممكنة.","inv.avoid_a2":"أسهم شركة واحدة: كل شيء معلّق على رهان واحد.","inv.avoid_a3":"المنتجات ذات الرافعة المالية (CFD، فوركس، خيارات): يخسر فيها معظم الأفراد أموالهم.","inv.avoid_a4":"الاستثمارات «غير التقليدية» (نبيذ، ساعات، غابات، مواشٍ…): يصعب بيعها، وكثيرًا ما يعرضها محتالون.","inv.avoid_a5":"أي وعد بعائد مرتفع «بلا مخاطر»: إنه علامة احتيال.","inv.rkCapital":"خسارة رأس المال","inv.rkCapitalTxt":"قد تنخفض قيمة استثمار غير مضمون: قد تسترد أقل مما دفعت.","inv.rkInflation":"التضخم","inv.rkInflationTxt":"إذا كان عائد الاستثمار أقل من ارتفاع الأسعار، تتراجع قدرتك الشرائية. في {month} ارتفعت الأسعار بنسبة {inf} على مدى عام (Insee): بمعدل {r} لا يعوّض Livret A هذا الارتفاع.","inv.rkInflationTxtOk":"إذا كان عائد الاستثمار أقل من ارتفاع الأسعار، تتراجع قدرتك الشرائية. في {month} ارتفعت الأسعار بنسبة {inf} على مدى عام (Insee): بمعدل {r} يعوّض Livret A هذا الارتفاع.","inv.rkLiquidity":"التوفر","inv.rkLiquidityTxt":"بعض المنتجات تجمّد أموالك أو تجبرك على البيع في توقيت سيئ. أبقِ مدخرات الطوارئ متاحة دائمًا.","inv.rkFees":"الرسوم","inv.rkFeesTxt":"تتكرر كل عام: زيادة الرسوم بنسبة 1% تكلّف نحو {v} على 20 عامًا لمبلغ {base} مستثمر بعائد 5% سنويًا.","inv.rkConc":"التركّز","inv.rkConcTxt":"المراهنة بكل شيء على شركة أو قطاع أو بلد تعرّضك لانهيار مفاجئ. صندوق مؤشرات عالمي يوزّع المخاطر.","inv.rkScam":"الاحتيال","inv.rkScamTxt":"العائد المرتفع و«بلا مخاطر» لا يجتمعان أبدًا. تحقّق من أن الوسيط مرخّص (سجل ORIAS)، واطّلع على القوائم السوداء لهيئة AMF، واحذر من جهات الاتصال القادمة من شبكات التواصل الاجتماعي.","inv.rkBank":"إفلاس مؤسسة","inv.rkBankTxt":"ودائعك مضمونة حتى {a} لكل مصرف، وعقود التأمين على الحياة حتى {b} لكل شركة تأمين. ودفاتر الادخار المنظَّمة مضمونة من الدولة.","inv.g1":"كوّن مدخرات الطوارئ أولًا.","inv.g2":"لا تستثمر في الأسهم إلا أموالًا لن تحتاج إليها قبل 8 سنوات.","inv.g3":"نوّع: صندوق مؤشرات عالمي بدلًا من بضعة أسهم.","inv.g4":"استثمر مبلغًا صغيرًا كل شهر: هكذا تخفف أثر الصعود والهبوط.","inv.g5":"راقب الرسوم: إنها تقضم العائد كل عام.","inv.g6":"لا تبع في حالة ذعر: الانخفاضات جزء من الطريق.","inv.g7":"إذا بدا العرض أجمل من أن يكون حقيقيًا، فهو احتيال.","inv.legal":"معلومات ذات طابع عام، لا تُعدّ نصيحة استثمارية شخصية ولا دعوة إلى شراء أي منتج. الأداء السابق لا يدل على الأداء المستقبلي. جرى التحقق من المعدلات في {date} لدى service-public.gouv.fr وACPR وInsee: وهي تتغير، فتحقّق منها قبل أي قرار. للحصول على نصيحة تناسب وضعك، توجّه إلى مستشار في الاستثمارات المالية مسجّل لدى ORIAS.","inv.linkRates":"المعدلات الرسمية لدفاتر الادخار","inv.linkAmf":"القوائم السوداء لهيئة AMF","inv.linkOrias":"التحقق من وسيط (ORIAS)"}
+}; for(var L in SUPINV){ for(var k in SUPINV[L]){ I18N[L][k] = SUPINV[L][k]; } } })();
+
 var STORAGE_KEY = "suiviBudget.v2";
 var storageAvailable = true;
 
@@ -7369,7 +7587,9 @@ function defaultState(){
     /* Simulation d'épargne : montant mensuel saisi, mois de départ, objectifs. */
     planAmount: 0,
     planStart: "this",         // "this" | "next"
-    planGoalIds: []
+    planGoalIds: [],
+    /* Réponses au test de profil de l'onglet Investissement (0, 1 ou 2). */
+    investProfile: {}
   };
 }
 
@@ -7395,6 +7615,13 @@ function loadState(){
         state.planAmount = Number(parsed.planAmount) || 0;
         state.planStart = (parsed.planStart === "next") ? "next" : "this";
         state.planGoalIds = Array.isArray(parsed.planGoalIds) ? parsed.planGoalIds : [];
+        state.investProfile = {};
+        if(parsed.investProfile && typeof parsed.investProfile === "object"){
+          ["q1", "q2", "q3", "q4"].forEach(function(k){
+            var v = parsed.investProfile[k];
+            if(v === 0 || v === 1 || v === 2) state.investProfile[k] = v;
+          });
+        }
       }
     } else {
       // Migration depuis l'ancienne version (v1: creditInitial + transactions uniquement)
@@ -8789,7 +9016,7 @@ function computeInsights(){
     if(depHab >= 100 && reserve >= 1){
       var nbMois = reserve / depHab, arrondi = Math.round(nbMois * 10) / 10;
       if(nbMois >= 1) ajoute({ famille:"reserve", icon:"🛟", tone: nbMois >= 3 ? "good" : "info", score: 110,
-        text: tn("in.runway2", arrondi === 1 ? 1 : 2, { v: fmtMoney(reserve), n: fmtNombre1(arrondi), avg: fmtMoney(depHab) }) });
+        text: t(arrondi === 1 ? "in.runway2_1" : "in.runway2", { v: fmtMoney(reserve), n: fmtNombre1(arrondi), avg: fmtMoney(depHab) }) });
       else if(depHab >= 300) ajoute({ famille:"reserve", icon:"🛟", tone:"info", score: 145, text: t("in.runwayLow", { v: fmtMoney(reserve), avg: fmtMoney(depHab) }) });
     }
   }
@@ -10219,6 +10446,7 @@ var PAGE_META = {
   budgets:    { titleKey:"page.budgets.title", subKey:"page.budgets.sub" },
   analyse:    { titleKey:"page.analysis.title",subKey:"page.analysis.sub" },
   stats:      { titleKey:"page.stats.title",   subKey:"page.stats.sub" },
+  invest:     { titleKey:"page.invest.title",  subKey:"page.invest.sub" },
   settings:   { titleKey:"page.settings.title",subKey:"page.settings.sub" },
   categories: { titleKey:"page.categories.title", subKey:"page.categories.sub" }
 };
@@ -10228,7 +10456,7 @@ var currentPage = "home";
    ou "Réglages" (aucune action d'ajout d'opération n'y a de sens). */
 var FAB_VISIBLE_PAGES = { home:true, historique:true, epargne:true };
 /* Pages accessibles via le menu flottant plutôt que par la barre du bas. */
-var MENU_PAGES = ["analyse", "stats", "categories", "settings"];
+var MENU_PAGES = ["analyse", "stats", "invest", "categories", "settings"];
 
 function goToPage(page){
   currentPage = page;
@@ -10515,8 +10743,8 @@ function searchActions(){
       } }
   ];
 }
-var PAGE_ICONS = { home:"home", historique:"list", upcoming:"clock", epargne:"bank", budgets:"target", analyse:"analyse", stats:"stats", categories:"tag", settings:"gear" };
-var PAGE_ORDER = ["home", "historique", "upcoming", "epargne", "budgets", "analyse", "stats", "categories", "settings"];
+var PAGE_ICONS = { home:"home", historique:"list", upcoming:"clock", epargne:"bank", budgets:"target", analyse:"analyse", stats:"stats", invest:"invest", categories:"tag", settings:"gear" };
+var PAGE_ORDER = ["home", "historique", "upcoming", "epargne", "budgets", "analyse", "stats", "invest", "categories", "settings"];
 function searchPages(){
   return PAGE_ORDER.map(function(p, i){
     return { icon:cmdkIcon(PAGE_ICONS[p]), title:t(PAGE_META[p].titleKey === "app.title" ? "nav.home" : PAGE_META[p].titleKey),
@@ -10641,7 +10869,8 @@ document.addEventListener("keydown", function(e){
   var w = $("tourWelcome"); if(w && w.classList.contains("open")) return;
   if(e.key === "/"){ e.preventDefault(); openSearch(); }
   else if(e.key === "n" || e.key === "N"){ e.preventDefault(); openAddSheet(); }
-  else if(/^[1-9]$/.test(e.key)){ e.preventDefault(); goToPage(PAGE_ORDER[Number(e.key) - 1]); }
+  /* 1 à 9 pour les neuf premières pages, 0 pour la dixième. */
+  else if(/^[0-9]$/.test(e.key)){ e.preventDefault(); goToPage(PAGE_ORDER[e.key === "0" ? 9 : Number(e.key) - 1]); }
 });
 
 /* =========================================================================
@@ -10764,6 +10993,7 @@ function renderCurrentPage(){
   else if(currentPage === "budgets") renderBudgets();
   else if(currentPage === "analyse") renderAnalyse();
   else if(currentPage === "stats") renderStats();
+  else if(currentPage === "invest") renderInvest();
   else if(currentPage === "settings") renderSettings();
   else if(currentPage === "categories") renderCategoryManageList();
   /* L'état de synchronisation de la barre latérale reste visible sur toutes
@@ -12636,6 +12866,446 @@ function renderInsightsInto(host, limit, precomputed){
   return insights.length;
 }
 
+
+/* =========================================================================
+   INVESTISSEMENT
+   Informations générales et pédagogiques, jamais un conseil personnalisé :
+   la page s'appuie sur les chiffres de l'utilisateur pour situer son point
+   de départ, mais elle ne recommande aucun produit commercial. Principe :
+   la sécurité d'abord. Tant que l'épargne de précaution n'est pas
+   constituée, ou si l'horizon est court, seuls les placements garantis sont
+   proposés, et chaque risque est nommé.
+   ========================================================================= */
+
+/* Données de référence, vérifiées le 2 octobre 2026 :
+   - Livret A, LDDS, LEP : service-public.gouv.fr (arrêté du 28 juillet 2026) ;
+   - fonds en euros : rendement moyen 2025 publié par l'ACPR (2,63 %) ;
+   - inflation : Insee, estimation provisoire de septembre 2026.
+   Les taux des livrets réglementés sont révisés au 1er février et au
+   1er août : ces valeurs sont à mettre à jour à chaque révision. */
+var INV = {
+  verifie: "2026-10-02",
+  livretA: { taux: 1.70, depuis: "2026-08-01", jusqua: "2027-01-31", plafond: 22950 },
+  ldds: { plafond: 12000 },
+  lep: { taux: 2.50, depuis: "2026-02-01", plafond: 10000, rfr: 23028, annee: 2026 },
+  fondsEuros: { taux: 2.6, annee: 2025 },
+  fgdr: 100000, fgap: 70000, pea: 150000,
+  inflation: { taux: 3.0, mois: "2026-09" },
+  /* Hypothèses du simulateur : inflation de long terme (cible de la BCE) et
+     trois scénarios illustratifs pour des actions mondiales diversifiées. */
+  inflationHyp: 2,
+  actions: { bas: 0, median: 4, haut: 7 },
+  liens: {
+    taux: "https://www.service-public.gouv.fr/particuliers/vosdroits/F2365",
+    amf: "https://www.amf-france.org/fr/espace-epargnants/proteger-son-epargne/listes-noires-et-mises-en-garde",
+    orias: "https://www.orias.fr/"
+  }
+};
+/* Part d'actions diversifiées selon le profil, appliquée uniquement à
+   l'argent placé au-delà de l'épargne de précaution et pour 8 ans ou plus.
+   Volontairement modérée : même le profil dynamique garde une moitié
+   sécurisée. */
+var INV_PROFILS = { prudent: 0, equilibre: 25, dynamique: 50 };
+
+/* Forme singulière ou plurielle, en gardant le {n} fourni : tn() le
+   remplacerait par le nombre entier qui sert à choisir la forme, alors
+   qu'ici on affiche une valeur décimale (« 10,5 mois »). */
+function tNombre(cle, valeur, params){
+  var k = valeur === 1 ? cle + "_1" : cle;
+  if(k !== cle && !(I18N[currentLang] && I18N[currentLang][k])) k = cle;
+  return t(k, params);
+}
+function fmtTaux(v){
+  try{ return espacesVisibles(new Intl.NumberFormat(currentLang === "ar" ? "ar-u-nu-latn" : getLangDef(currentLang).locale, { minimumFractionDigits: v % 1 ? 1 : 0, maximumFractionDigits: 2 }).format(v)) + (currentLang === "en" || currentLang === "pt" || currentLang === "it" || currentLang === "ar" ? "%" : " %"); }
+  catch(e){ return v + " %"; }
+}
+function fmtDateLongue(ymd){
+  try{ return new Intl.DateTimeFormat(currentLang === "ar" ? "ar-u-nu-latn" : getLangDef(currentLang).locale, { day:"numeric", month:"long", year:"numeric" }).format(parseDateOnly(ymd)); }catch(e){ return ymd; }
+}
+/* Montant arrondi à l'euro, pour les estimations : afficher des centimes
+   sur une projection à dix ans serait une fausse précision. */
+var moneyRondFmt = null, moneyRondLang = null;
+function fmtMoneyRond(v){
+  if(moneyRondLang !== currentLang){
+    moneyRondLang = currentLang;
+    try{ moneyRondFmt = new Intl.NumberFormat(currentLang === "ar" ? "ar-u-nu-latn" : getLangDef(currentLang).locale, { style:"currency", currency:"EUR", minimumFractionDigits:0, maximumFractionDigits:0 }); }catch(e){ moneyRondFmt = null; }
+  }
+  return moneyRondFmt ? espacesVisibles(moneyRondFmt.format(Math.round(v) || 0)) : fmtMoney(Math.round(v));
+}
+/* Arrondi « lisible » d'un montant suggéré : à 10 € près. */
+function arrondi10(v){ return Math.max(0, Math.round(v / 10) * 10); }
+
+/* Point de départ de l'utilisateur, tiré de ses opérations. */
+function situationInvest(){
+  var refs = moisDeReference(3);
+  var med = function(fn){ return refs.length ? mediane(refs.map(fn)) : null; };
+  var dep = med(function(r){ return depensesCumulees(r, null, 99); });
+  var rev = med(function(r){ return bucketsForMonth(r).revenus; });
+  var exc = med(function(r){ var b = bucketsForMonth(r); return b.revenus - b.depenses; });
+  var epMois = med(function(r){ return bucketsForMonth(r).epargneNette; });
+  var reserve = Math.max(0, computeEpargneSolde());
+  var connu = refs.length >= 1 && dep > 0;
+  return {
+    refs: refs, connu: connu, dep: dep, rev: rev, exc: exc, epMois: epMois, reserve: reserve,
+    mois: connu ? reserve / dep : null,
+    /* Arrondi par défaut, partout le même : mieux vaut ne pas surestimer la
+       réserve. */
+    moisArrondi: connu ? Math.floor(reserve / dep * 10) / 10 : null,
+    cible3: connu ? dep * 3 : null, cible6: connu ? dep * 6 : null,
+    surplus: connu ? Math.max(0, reserve - dep * 6) : 0
+  };
+}
+
+/* Profil : quatre réponses (0, 1 ou 2), enregistrées avec les données. */
+function profilInvest(){
+  var p = state.investProfile || {};
+  var rep = [p.q1, p.q2, p.q3, p.q4];
+  var complet = rep.every(function(v){ return v === 0 || v === 1 || v === 2; });
+  var raisons = [];
+  if(p.q1 === 0) raisons.push(t("inv.whyHorizon"));
+  if(p.q2 === 0) raisons.push(t("inv.whyReaction"));
+  if(p.q3 === 0) raisons.push(t("inv.whyReserve"));
+  var cle = "prudent";
+  if(complet && !raisons.length){
+    var score = p.q1 + p.q2 + Math.min(1, p.q4) + (p.q3 === 2 ? 1 : 0);
+    cle = score >= 6 ? "dynamique" : score >= 4 ? "equilibre" : "prudent";
+  }
+  return { reponses: p, complet: complet, cle: cle, actions: INV_PROFILS[cle], raisons: raisons };
+}
+
+/* Capital au fil des ans, versements mensuels en début de mois, intérêts
+   composés chaque mois au taux annuel équivalent. Sur un livret plafonné,
+   les versements s'arrêtent une fois le plafond atteint ; les intérêts, eux,
+   continuent de s'ajouter (c'est la règle des livrets réglementés). */
+function projectionInvest(depart, mensuel, annees, tauxAnnuel, plafond){
+  var tm = Math.pow(1 + tauxAnnuel / 100, 1 / 12) - 1;
+  var c = plafond ? Math.min(depart, plafond) : depart, verse = c, points = [{ an: 0, c: c, verse: verse }];
+  points.plafonne = plafond ? depart > plafond : false;
+  for(var m = 1; m <= annees * 12; m++){
+    var v = plafond ? Math.max(0, Math.min(mensuel, plafond - c)) : mensuel;
+    if(v < mensuel) points.plafonne = true;
+    c = (c + v) * (1 + tm); verse += v;
+    if(m % 12 === 0) points.push({ an: m / 12, c: c, verse: verse });
+  }
+  return points;
+}
+
+var investSim = null;   // réglages du simulateur, le temps de la session
+
+function simDefaults(sit, prof){
+  return {
+    depart: sit.surplus > 0 ? arrondi10(sit.surplus) : 0,
+    mensuel: sit.epMois > 0 ? arrondi10(sit.epMois) : 100,
+    annees: 10,
+    produit: sit.connu && sit.mois >= 6 ? "profil" : "livret"
+  };
+}
+
+function scenarioSim(sim, prof){
+  var e = prof.actions / 100, s = 1 - e, fe = INV.fondsEuros.taux, a = INV.actions;
+  switch(sim.produit){
+    case "lep": return { bas: INV.lep.taux, mid: INV.lep.taux, haut: INV.lep.taux, risque: false };
+    case "euro": return { bas: fe, mid: fe, haut: fe, risque: false };
+    case "actions": return { bas: a.bas, mid: a.median, haut: a.haut, risque: true };
+    case "profil": return e > 0
+      ? { bas: s * fe + e * a.bas, mid: s * fe + e * a.median, haut: s * fe + e * a.haut, risque: true }
+      : { bas: fe, mid: fe, haut: fe, risque: false };
+    default: return { bas: INV.livretA.taux, mid: INV.livretA.taux, haut: INV.livretA.taux, risque: false };
+  }
+}
+
+function renderInvest(){
+  var sit = situationInvest(), prof = profilInvest();
+  if(!investSim) investSim = simDefaults(sit, prof);
+  $("invNotice").textContent = t("inv.notice");
+  renderInvestStart(sit);
+  renderInvestSteps(sit);
+  renderInvestProfile(sit, prof);
+  renderInvestSim(sit, prof, true);
+  renderInvestProducts();
+  renderInvestRisks();
+  renderInvestRules();
+  renderInvestLegal();
+}
+
+function renderInvestStart(sit){
+  var html = '<div class="inv-kpis">' +
+    '<div class="inv-kpi"><span class="inv-kpi-label">' + t("inv.kSavings") + '</span><span class="inv-kpi-value">' + escapeHtml(fmtMoney(sit.reserve)) + '</span>' +
+      (sit.mois !== null ? '<span class="inv-kpi-sub">' + escapeHtml(tNombre("inv.kCover", sit.moisArrondi, { n: fmtNombre1(sit.moisArrondi) })) + '</span>' : '') + '</div>' +
+    '<div class="inv-kpi"><span class="inv-kpi-label">' + t("inv.kSpend") + '</span><span class="inv-kpi-value">' + (sit.connu ? escapeHtml(fmtMoney(sit.dep)) : "—") + '</span><span class="inv-kpi-sub">' + t("inv.perMonth") + '</span></div>' +
+    '<div class="inv-kpi"><span class="inv-kpi-label">' + t("inv.kSave") + '</span><span class="inv-kpi-value">' + (sit.epMois !== null ? escapeHtml(fmtMoney(Math.max(0, sit.epMois))) : "—") + '</span><span class="inv-kpi-sub">' + t("inv.perMonthAvg") + '</span></div>' +
+  '</div>';
+
+  /* Prochaine étape conseillée. */
+  var txt, ton = "info";
+  var ou = t("inv.whereSafe", { a: fmtTaux(INV.livretA.taux), lep: fmtTaux(INV.lep.taux) });
+  if(!sit.connu){
+    txt = t("inv.nextNoData");
+  } else if(sit.exc !== null && sit.exc < 0){
+    txt = t("inv.nextBalance", { exp: fmtMoney(sit.dep), inc: fmtMoney(sit.rev || 0) }); ton = "warn";
+  } else if(sit.mois < 3){
+    var manque = sit.cible3 - sit.reserve;
+    txt = t("inv.nextStep1", { t3: fmtMoneyRond(Math.ceil(sit.cible3)), gap: fmtMoneyRond(Math.ceil(manque)) }) + " ";
+    if(sit.epMois > 0){
+      var quand = new Date(); quand.setDate(quand.getDate() + Math.ceil(manque / sit.epMois * 30.44));
+      txt += t("inv.nextStep1Pace", { save: fmtMoney(sit.epMois), when: monthLongYearFmt.format(quand) });
+    } else {
+      txt += t("inv.nextStep1Year", { v: fmtMoneyRond(Math.ceil(manque / 12)) });
+    }
+    txt += " " + ou; ton = "warn";
+  } else if(sit.mois < 6){
+    txt = t("inv.nextStep1b", { n: fmtNombre1(sit.moisArrondi), t6: fmtMoneyRond(Math.ceil(sit.cible6)) }) + " " + ou;
+  } else {
+    txt = t("inv.nextStep2", { n: fmtNombre1(sit.moisArrondi), v: fmtMoneyRond(sit.surplus) }); ton = "good";
+  }
+  html += '<div class="inv-next tone-' + ton + '"><span class="inv-next-label">' + t("inv.nextLabel") + '</span><p>' + escapeHtml(txt) + '</p></div>';
+  $("invStart").innerHTML = html;
+}
+
+function renderInvestSteps(sit){
+  var etape = !sit.connu || sit.mois < 6 ? 1 : 2;
+  var etapes = [
+    { n: 1, titre: "inv.s1Title", sub: "inv.s1Sub", ou: "inv.s1Where", risque: "inv.riskNone", niv: 1 },
+    { n: 2, titre: "inv.s2Title", sub: "inv.s2Sub", ou: "inv.s2Where", risque: "inv.riskVeryLow", niv: 2 },
+    { n: 3, titre: "inv.s3Title", sub: "inv.s3Sub", ou: "inv.s3Where", risque: "inv.riskHigh", niv: 4 }
+  ];
+  var html = '<ol class="inv-steps">';
+  etapes.forEach(function(e){
+    var etat = e.n < etape ? "done" : (e.n === etape || (etape === 2 && e.n === 3)) ? "now" : "later";
+    html += '<li class="inv-step is-' + etat + '">' +
+      '<span class="inv-step-num" aria-hidden="true">' + (etat === "done" ? "✓" : e.n) + '</span>' +
+      '<div class="inv-step-body">' +
+        '<div class="inv-step-head"><h3>' + t(e.titre) + '</h3><span class="inv-chip st-' + etat + '">' + t(etat === "done" ? "inv.stDone" : etat === "now" ? "inv.stNow" : "inv.stLater") + '</span></div>' +
+        '<p class="inv-step-sub">' + t(e.sub) + '</p>' +
+        '<p class="inv-step-where"><b>' + t("inv.where") + '</b> ' + t(e.ou) + '</p>' +
+        '<span class="inv-risk lv' + e.niv + '">' + riskDots(e.niv) + t(e.risque) + '</span>';
+    if(e.n === 1 && sit.connu){
+      var pct = Math.min(100, sit.reserve / sit.cible6 * 100);
+      html += '<div class="inv-progress" role="img" aria-label="' + escapeHtml(t("inv.progressAria", { have: fmtMoney(sit.reserve), target: fmtMoneyRond(sit.cible6) })) + '">' +
+          '<div class="inv-progress-fill' + (pct >= 100 ? " complete" : "") + '" style="width:' + pct.toFixed(1) + '%"></div>' +
+          '<span class="inv-progress-mark" style="inset-inline-start:50%"></span>' +
+        '</div>' +
+        '<p class="inv-progress-legend"><span>' + escapeHtml(fmtMoney(sit.reserve)) + '</span><span>' + escapeHtml(t("inv.mark3", { v: fmtMoneyRond(sit.cible3) })) + '</span><span>' + escapeHtml(t("inv.mark6", { v: fmtMoneyRond(sit.cible6) })) + '</span></p>';
+    }
+    html += '</div></li>';
+  });
+  html += '</ol>';
+  $("invSteps").innerHTML = html;
+}
+function riskDots(niv){
+  var h = '<span class="inv-dots" aria-hidden="true">';
+  for(var i = 1; i <= 5; i++) h += '<i class="' + (i <= niv ? "on" : "") + '"></i>';
+  return h + '</span>';
+}
+
+function renderInvestProfile(sit, prof){
+  var qs = [["q1", 3], ["q2", 3], ["q3", 3], ["q4", 3]];
+  var html = '<p class="inv-intro">' + t("inv.pIntro") + '</p>';
+  qs.forEach(function(q, i){
+    var cle = q[0], val = prof.reponses[cle];
+    html += '<fieldset class="inv-q"><legend>' + (i + 1) + '. ' + t("inv." + cle) + '</legend><div class="inv-q-opts">';
+    ["a", "b", "c"].forEach(function(l, k){
+      html += '<button type="button" class="filter-chip filter-chip-sub' + (val === k ? " active" : "") + '" data-inv-q="' + cle + '" data-inv-v="' + k + '" aria-pressed="' + (val === k) + '">' + t("inv." + cle + l) + '</button>';
+    });
+    html += '</div>';
+    if(cle === "q3" && sit.connu) html += '<p class="inv-q-hint">' + escapeHtml(tNombre("inv.q3hint", sit.moisArrondi, { n: fmtNombre1(sit.moisArrondi) })) + '</p>';
+    html += '</fieldset>';
+  });
+  var nom = { prudent: "inv.profPrudent", equilibre: "inv.profBalanced", dynamique: "inv.profDynamic" }[prof.cle];
+  var e = prof.actions, s = 100 - e;
+  html += '<div class="inv-result">' +
+    '<div class="inv-result-head"><span class="inv-result-label">' + t(prof.complet ? "inv.pResult" : "inv.pDefault") + '</span><span class="inv-result-name">' + t(nom) + '</span></div>' +
+    '<p class="inv-result-desc">' + t(nom + "Desc") + '</p>' +
+    (prof.raisons.length ? '<p class="inv-result-why">' + escapeHtml(t("inv.whyPrudent", { reason: prof.raisons.join(t("col.sep")) })) + '</p>' : '') +
+    '<div class="inv-alloc" role="img" aria-label="' + escapeHtml(t("inv.allocAria", { safe: s, eq: e })) + '">' +
+      '<span class="inv-alloc-safe" style="flex:' + s + '"></span>' + (e ? '<span class="inv-alloc-eq" style="flex:' + e + '"></span>' : '') +
+    '</div>' +
+    '<p class="inv-alloc-legend"><span><i class="sw-safe"></i>' + escapeHtml(t("inv.allocSafe", { pct: s })) + '</span>' + (e ? '<span><i class="sw-eq"></i>' + escapeHtml(t("inv.allocEq", { pct: e })) + '</span>' : '') + '</p>';
+  if(sit.surplus > 0){
+    html += '<p class="inv-result-amount">' + escapeHtml(t(e ? "inv.allocAmount" : "inv.allocAmountSafe", { v: fmtMoneyRond(sit.surplus), safe: fmtMoneyRond(sit.surplus * s / 100), eq: fmtMoneyRond(sit.surplus * e / 100) })) + '</p>';
+  }
+  html += '<p class="inv-note">' + t("inv.pNote") + '</p>' +
+    (prof.complet || Object.keys(prof.reponses).length ? '<button type="button" class="link-btn inv-reset" id="invReset">' + t("inv.pReset") + '</button>' : '') +
+  '</div>';
+  $("invProfile").innerHTML = html;
+}
+
+function renderInvestSim(sit, prof, avecChamps){
+  var sim = investSim, host = $("invSim");
+  if(avecChamps){
+    var produits = [["livret", t("inv.optLivret", { r: fmtTaux(INV.livretA.taux) })], ["lep", t("inv.optLep", { r: fmtTaux(INV.lep.taux) })],
+                    ["euro", t("inv.optEuro", { r: fmtTaux(INV.fondsEuros.taux) })], ["actions", t("inv.optEq")], ["profil", t("inv.optProfile")]];
+    host.innerHTML =
+      '<div class="inv-sim-fields">' +
+        '<label class="inv-field"><span class="field-label">' + t("inv.simStart") + '</span><span class="field amount-field"><span class="amount-prefix">€</span><input type="text" inputmode="decimal" id="invSimStart" value="' + (sim.depart ? String(sim.depart).replace(".", ",") : "") + '" placeholder="0"></span></label>' +
+        '<label class="inv-field"><span class="field-label">' + t("inv.simMonthly") + '</span><span class="field amount-field"><span class="amount-prefix">€</span><input type="text" inputmode="decimal" id="invSimMonthly" value="' + (sim.mensuel ? String(sim.mensuel).replace(".", ",") : "") + '" placeholder="0"></span></label>' +
+      '</div>' +
+      '<label class="field-label" for="invSimYears">' + t("inv.simYears") + ' · <b id="invSimYearsVal"></b></label>' +
+      '<input type="range" class="inv-range" id="invSimYears" min="1" max="30" step="1" value="' + sim.annees + '">' +
+      '<p class="field-label">' + t("inv.simWhere") + '</p>' +
+      '<div class="filter-row inv-sim-prods">' + produits.map(function(p){
+        return '<button type="button" class="filter-chip' + (sim.produit === p[0] ? " active" : "") + '" data-inv-prod="' + p[0] + '">' + escapeHtml(p[1]) + '</button>';
+      }).join("") + '</div>' +
+      '<div id="invSimOut" aria-live="polite"></div>';
+  }
+  $("invSimYearsVal").textContent = tn("inv.years", sim.annees, {});
+  var sc = scenarioSim(sim, prof);
+  var plafond = sim.produit === "livret" ? INV.livretA.plafond : sim.produit === "lep" ? INV.lep.plafond : 0;
+  var mid = projectionInvest(sim.depart, sim.mensuel, sim.annees, sc.mid, plafond);
+  var bas = sc.risque ? projectionInvest(sim.depart, sim.mensuel, sim.annees, sc.bas) : mid;
+  var haut = sc.risque ? projectionInvest(sim.depart, sim.mensuel, sim.annees, sc.haut) : mid;
+  var fin = mid[mid.length - 1], verse = fin.verse, gain = fin.c - verse;
+  var reel = fin.c / Math.pow(1 + INV.inflationHyp / 100, sim.annees);
+  var out = '<div class="inv-sim-result">' +
+    '<span class="inv-sim-label">' + escapeHtml(tn("inv.simResult", sim.annees, {})) + '</span>' +
+    '<span class="inv-sim-value">' + escapeHtml(fmtMoneyRond(fin.c)) + '</span>' +
+    (sc.risque ? '<span class="inv-sim-range">' + escapeHtml(t("inv.simRange", { low: fmtMoneyRond(bas[bas.length - 1].c), high: fmtMoneyRond(haut[haut.length - 1].c) })) + '</span>' : '') +
+    '<div class="inv-sim-split"><span>' + escapeHtml(t("inv.simPaid", { v: fmtMoneyRond(verse) })) + '</span><span>' + escapeHtml(t(gain >= 0 ? "inv.simGain" : "inv.simLoss", { v: fmtMoneyRond(Math.abs(gain)) })) + '</span></div>' +
+  '</div>' +
+  graphiqueSim(mid, bas, haut, sc.risque) +
+  '<p class="inv-sim-note">' + escapeHtml(t("inv.simReal", { inf: fmtTaux(INV.inflationHyp), v: fmtMoneyRond(reel) })) + '</p>';
+  /* Plafonds : un livret ne peut pas recevoir plus que son plafond. */
+  if(sim.produit === "livret" && mid.plafonne) out += '<p class="inv-sim-note warn">' + escapeHtml(t("inv.capLivret", { a: fmtMoneyRond(INV.livretA.plafond), b: fmtMoneyRond(INV.ldds.plafond) })) + '</p>';
+  if(sim.produit === "lep" && mid.plafonne) out += '<p class="inv-sim-note warn">' + escapeHtml(t("inv.capLep", { v: fmtMoneyRond(INV.lep.plafond) })) + '</p>';
+  if((sim.produit === "actions" || (sim.produit === "profil" && prof.actions > 0)) && sim.annees < 8) out += '<p class="inv-sim-note warn">' + escapeHtml(t("inv.shortHorizon")) + '</p>';
+  var hyp = sim.produit === "lep" ? t("inv.hypLep", { from: fmtDateLongue(INV.lep.depuis) })
+          : sim.produit === "euro" ? t("inv.hypEuro", { year: INV.fondsEuros.annee, r: fmtTaux(INV.fondsEuros.taux) })
+          : sim.produit === "actions" ? t("inv.hypEq", { low: fmtTaux(INV.actions.bas), mid: fmtTaux(INV.actions.median), high: fmtTaux(INV.actions.haut) })
+          : sim.produit === "profil" ? (prof.actions > 0 ? t("inv.hypProfile", { safe: 100 - prof.actions, eq: prof.actions, r: fmtTaux(INV.fondsEuros.taux), mid: fmtTaux(INV.actions.median) }) : t("inv.hypProfileSafe", { r: fmtTaux(INV.fondsEuros.taux) }))
+          : t("inv.hypLivret", { from: fmtDateLongue(INV.livretA.depuis), to: fmtDateLongue(INV.livretA.jusqua) });
+  out += '<p class="inv-sim-hyp">' + escapeHtml(hyp) + '</p>';
+  $("invSimOut").innerHTML = out;
+}
+
+/* Courbe du capital, avec la fourchette des scénarios pour un placement
+   risqué et, en pointillé, la somme versée. */
+function graphiqueSim(mid, bas, haut, risque){
+  var W = 320, H = 150, P = { l: 4, r: 4, t: 10, b: 18 };
+  var n = mid.length - 1, max = 0;
+  haut.forEach(function(p){ max = Math.max(max, p.c); });
+  mid.forEach(function(p){ max = Math.max(max, p.c, p.verse); });
+  if(max <= 0) max = 1;
+  var x = function(i){ return P.l + (W - P.l - P.r) * (n ? i / n : 0); };
+  var y = function(v){ return P.t + (H - P.t - P.b) * (1 - v / max); };
+  var ligne = function(arr, k){ return arr.map(function(p, i){ return (i ? "L" : "M") + x(i).toFixed(1) + " " + y(p[k]).toFixed(1); }).join(" "); };
+  var svg = '<svg class="inv-chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" role="img" aria-label="' + escapeHtml(t("inv.chartAria")) + '">';
+  [0.5, 1].forEach(function(f){ svg += '<line class="inv-grid" x1="' + P.l + '" x2="' + (W - P.r) + '" y1="' + y(max * f).toFixed(1) + '" y2="' + y(max * f).toFixed(1) + '"/>'; });
+  if(risque){
+    var band = haut.map(function(p, i){ return (i ? "L" : "M") + x(i).toFixed(1) + " " + y(p.c).toFixed(1); }).join(" ") +
+      bas.slice().reverse().map(function(p, j){ var i = bas.length - 1 - j; return "L" + x(i).toFixed(1) + " " + y(p.c).toFixed(1); }).join(" ") + "Z";
+    svg += '<path class="inv-band" d="' + band + '"/>';
+  }
+  svg += '<path class="inv-area" d="' + ligne(mid, "c") + " L" + x(n).toFixed(1) + " " + y(0) + " L" + x(0).toFixed(1) + " " + y(0) + 'Z"/>';
+  svg += '<path class="inv-paid" d="' + ligne(mid, "verse") + '"/>';
+  svg += '<path class="inv-line" d="' + ligne(mid, "c") + '"/>';
+  svg += '</svg>';
+  return '<div class="inv-chart-wrap">' + svg +
+    '<div class="inv-chart-legend"><span><i class="lg-line"></i>' + t("inv.lgCapital") + '</span><span><i class="lg-paid"></i>' + t("inv.lgPaid") + '</span>' +
+    (risque ? '<span><i class="lg-band"></i>' + t("inv.lgRange") + '</span>' : '') + '</div></div>';
+}
+
+function renderInvestProducts(){
+  var P = [
+    { cle: "livret", niv: 1, rows: [["yield", t("inv.pLivretYield", { r: fmtTaux(INV.livretA.taux), from: fmtDateLongue(INV.livretA.depuis) })], ["avail", t("inv.availAny")],
+      ["cap", t("inv.pLivretCap", { a: fmtMoneyRond(INV.livretA.plafond), b: fmtMoneyRond(INV.ldds.plafond) })], ["tax", t("inv.taxFree")], ["guar", t("inv.guarState")]] },
+    { cle: "lep", niv: 1, rows: [["yield", t("inv.pLepYield", { r: fmtTaux(INV.lep.taux) })], ["cond", t("inv.pLepCond", { v: fmtMoneyRond(INV.lep.rfr), year: INV.lep.annee })],
+      ["avail", t("inv.availAny")], ["cap", fmtMoneyRond(INV.lep.plafond)], ["tax", t("inv.taxFree")], ["guar", t("inv.guarState")]] },
+    { cle: "euro", niv: 2, rows: [["yield", t("inv.pEuroYield", { r: fmtTaux(INV.fondsEuros.taux), year: INV.fondsEuros.annee })], ["avail", t("inv.availDays")],
+      ["cap", t("inv.capNone")], ["tax", t("inv.pEuroTax")], ["guar", t("inv.pEuroGuar", { v: fmtMoneyRond(INV.fgap) })]], warn: "inv.pEuroWarn" },
+    { cle: "term", niv: 1, rows: [["yield", t("inv.pTermYield")], ["avail", t("inv.pTermAvail")], ["tax", t("inv.taxIncome")], ["guar", t("inv.guarFgdr", { v: fmtMoneyRond(INV.fgdr) })]] },
+    { cle: "bond", niv: 3, rows: [["yield", t("inv.yieldVar")], ["avail", t("inv.availDays")], ["tax", t("inv.pBondTax")], ["guar", t("inv.guarNone")]], warn: "inv.pBondWarn" },
+    { cle: "etf", niv: 4, rows: [["yield", t("inv.pEtfYield")], ["avail", t("inv.pEtfAvail")], ["cap", t("inv.pEtfCap", { v: fmtMoneyRond(INV.pea) })], ["tax", t("inv.pEtfTax")], ["guar", t("inv.guarNone")]], warn: "inv.pEtfWarn" }
+  ];
+  var niveaux = { 1: "inv.r1", 2: "inv.r2", 3: "inv.r3", 4: "inv.r4", 5: "inv.r5" };
+  var html = '';
+  P.forEach(function(p){
+    html += '<article class="inv-prod">' +
+      '<div class="inv-prod-head"><h3>' + t("inv.p_" + p.cle) + '</h3><span class="inv-risk lv' + p.niv + '">' + riskDots(p.niv) + t(niveaux[p.niv]) + '</span></div>' +
+      '<p class="inv-prod-tag">' + t("inv.p_" + p.cle + "Tag") + '</p><dl class="inv-prod-rows">' +
+      p.rows.map(function(r){ return '<div><dt>' + t("inv.row_" + r[0]) + '</dt><dd>' + escapeHtml(r[1]) + '</dd></div>'; }).join("") + '</dl>' +
+      (p.warn ? '<p class="inv-prod-warn">' + t(p.warn) + '</p>' : '') +
+    '</article>';
+  });
+  html += '<article class="inv-prod inv-avoid"><div class="inv-prod-head"><h3>' + t("inv.avoidTitle") + '</h3><span class="inv-risk lv5">' + riskDots(5) + t("inv.r5") + '</span></div><ul>' +
+    ["a1", "a2", "a3", "a4", "a5"].map(function(k){ return '<li>' + t("inv.avoid_" + k) + '</li>'; }).join("") + '</ul></article>';
+  $("invProducts").innerHTML = html;
+}
+
+function renderInvestRisks(){
+  var inflSous = INV.livretA.taux < INV.inflation.taux;
+  var moisInfl = monthLongYearFmt.format(parseDateOnly(INV.inflation.mois + "-01"));
+  /* Coût de 1 % de frais en plus, sur 20 ans, pour 10 000 € placés à 5 %. */
+  var coutFrais = 10000 * (Math.pow(1.05, 20) - Math.pow(1.04, 20));
+  var R = [
+    ["📉", "inv.rkCapital", t("inv.rkCapitalTxt")],
+    ["🔥", "inv.rkInflation", t(inflSous ? "inv.rkInflationTxt" : "inv.rkInflationTxtOk", { month: moisInfl, inf: fmtTaux(INV.inflation.taux), r: fmtTaux(INV.livretA.taux) })],
+    ["🔒", "inv.rkLiquidity", t("inv.rkLiquidityTxt")],
+    ["🧾", "inv.rkFees", t("inv.rkFeesTxt", { v: fmtMoneyRond(Math.round(coutFrais / 10) * 10), base: fmtMoneyRond(10000) })],
+    ["🧺", "inv.rkConc", t("inv.rkConcTxt")],
+    ["🚩", "inv.rkScam", t("inv.rkScamTxt")],
+    ["🏦", "inv.rkBank", t("inv.rkBankTxt", { a: fmtMoneyRond(INV.fgdr), b: fmtMoneyRond(INV.fgap) })]
+  ];
+  $("invRisks").innerHTML = R.map(function(r){
+    return '<div class="inv-riskrow"><span class="inv-riskrow-ic" aria-hidden="true">' + r[0] + '</span><div><h3>' + t(r[1]) + '</h3><p>' + escapeHtml(r[2]) + '</p></div></div>';
+  }).join("");
+}
+
+function renderInvestRules(){
+  $("invRules").innerHTML = '<ol class="inv-rules">' + ["g1", "g2", "g3", "g4", "g5", "g6", "g7"].map(function(k){ return '<li>' + t("inv." + k) + '</li>'; }).join("") + '</ol>';
+}
+
+function renderInvestLegal(){
+  $("invLegal").innerHTML = '<p>' + escapeHtml(t("inv.legal", { date: fmtDateLongue(INV.verifie) })) + '</p>' +
+    '<p class="inv-links">' +
+      '<a href="' + INV.liens.taux + '" target="_blank" rel="noopener">' + t("inv.linkRates") + '</a>' +
+      '<a href="' + INV.liens.amf + '" target="_blank" rel="noopener">' + t("inv.linkAmf") + '</a>' +
+      '<a href="' + INV.liens.orias + '" target="_blank" rel="noopener">' + t("inv.linkOrias") + '</a>' +
+    '</p>';
+}
+
+/* Interactions : un seul écouteur pour toute la page. Les champs du
+   simulateur ne sont jamais reconstruits pendant la saisie, pour ne pas
+   faire perdre le curseur. */
+(function(){
+  var page = $("page-invest");
+  if(!page) return;
+  page.addEventListener("click", function(ev){
+    var q = ev.target.closest("[data-inv-q]");
+    if(q){
+      state.investProfile = state.investProfile || {};
+      var cle = q.getAttribute("data-inv-q"), v = Number(q.getAttribute("data-inv-v"));
+      state.investProfile[cle] = state.investProfile[cle] === v ? null : v;
+      if(state.investProfile[cle] === null) delete state.investProfile[cle];
+      saveState(true);
+      var sit = situationInvest(), prof = profilInvest();
+      renderInvestProfile(sit, prof); renderInvestSim(sit, prof, false);
+      return;
+    }
+    if(ev.target.closest("#invReset")){
+      state.investProfile = {}; saveState(true);
+      var s2 = situationInvest(), p2 = profilInvest();
+      renderInvestProfile(s2, p2); renderInvestSim(s2, p2, false);
+      return;
+    }
+    var pr = ev.target.closest("[data-inv-prod]");
+    if(pr){
+      investSim.produit = pr.getAttribute("data-inv-prod");
+      Array.prototype.forEach.call(page.querySelectorAll("[data-inv-prod]"), function(b){ b.classList.toggle("active", b === pr); });
+      renderInvestSim(situationInvest(), profilInvest(), false);
+    }
+  });
+  page.addEventListener("input", function(ev){
+    var id = ev.target.id;
+    if(id !== "invSimStart" && id !== "invSimMonthly" && id !== "invSimYears") return;
+    if(id === "invSimYears") investSim.annees = Math.max(1, Math.min(30, Number(ev.target.value) || 10));
+    else {
+      var v = ev.target.value.trim() === "" ? 0 : parseAmount(ev.target.value);
+      if(isNaN(v) || v < 0) return;
+      if(id === "invSimStart") investSim.depart = Math.min(v, 1e9); else investSim.mensuel = Math.min(v, 1e7);
+    }
+    renderInvestSim(situationInvest(), profilInvest(), false);
+  });
+})();
 
 /* =========================================================================
    RENDU: PAGE ANALYSE
