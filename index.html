@@ -1437,25 +1437,34 @@ h1,h2,h3{ margin:0; }
    proportionnelle par catégorie.
    ========================================================================= */
 .donut-layout{ display:flex; flex-direction:column; gap:18px; }
-.donut-visual{ position:relative; width:min(250px, 72vw); aspect-ratio:1; margin:6px auto 0; }
-.donut-svg{ width:100%; height:100%; display:block; overflow:visible; transform:rotate(-90deg); }
-[dir="rtl"] .donut-svg{ transform:rotate(-90deg) scaleY(-1); }
-.donut-track{ fill:none; stroke:var(--surface-2); }
+.donut-visual{ position:relative; width:min(250px, 72vw); aspect-ratio:1; margin:6px auto 0; container-type:inline-size; }
+.donut-svg{ width:100%; height:100%; display:block; overflow:visible; }
+/* De droite à gauche, l'anneau tourne dans l'autre sens. */
+[dir="rtl"] .donut-svg{ transform:scaleX(-1); }
+.donut-track{ fill:var(--surface-2); }
+.donut-plate{ opacity:.9; }
+/* Chaque part : un secteur plein, qui sort légèrement de l'anneau au survol
+   ou quand elle est choisie (décalage le long de son axe, voir --px/--py). */
 .donut-seg{
-  fill:none; stroke-linecap:round; cursor:pointer;
-  transition:stroke-width .3s var(--ease-spring), opacity .25s ease, stroke-dasharray .9s var(--ease-out);
+  cursor:pointer;
+  transition:transform .38s var(--ease-spring), opacity .25s ease;
 }
-.donut-seg.dim{ opacity:.22; }
-.donut-seg.sel{ filter:drop-shadow(0 6px 10px rgba(0,0,0,.18)); }
-.donut-sub{ fill:none; stroke-linecap:round; transition:opacity .3s ease; animation:fadeIn .4s var(--ease-out) both; }
+.donut-seg .ds-gloss{ stroke:rgba(255,255,255,.42); stroke-width:.8; }
+:root[data-theme="dark"] .donut-seg .ds-gloss{ stroke:rgba(255,255,255,.2); }
+.donut-seg.hot, .donut-seg.sel{ transform:translate(var(--px), var(--py)); }
+.donut-seg.dim{ opacity:.55; }
+.donut-sub{ animation:fadeIn .4s var(--ease-out) both; }
+@media (prefers-reduced-motion: reduce){ .donut-seg{ transition:opacity .2s ease; } }
 @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
 .donut-center{
   position:absolute; inset:22%; border-radius:50%;
   display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
   pointer-events:none;
 }
-.donut-center-ic{ font-size:22px; line-height:1; margin-bottom:6px; }
-.donut-center-amount{ font-size:clamp(18px, 6vw, 26px); font-weight:800; letter-spacing:-.045em; color:var(--text); font-variant-numeric:tabular-nums; line-height:1.05; white-space:nowrap; }
+.donut-center-ic{ font-size:22px; font-size:8.8cqw; line-height:1; margin-bottom:2.4cqw; }
+/* Taille proportionnelle à l'anneau, réduite pour les montants longs (voir
+   centreHtml) : le total ne déborde jamais du disque central. */
+.donut-center-amount{ font-size:22px; font-size:var(--fs, 10cqw); font-weight:800; letter-spacing:-.045em; color:var(--text); font-variant-numeric:tabular-nums; line-height:1.05; white-space:nowrap; }
 .donut-center-label{ margin-top:5px; font-size:12px; font-weight:700; color:var(--text-3); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .donut-center-pct{ margin-top:6px; padding:2px 9px; border-radius:999px; font-size:11.5px; font-weight:800; background:var(--surface-2); color:var(--text-2); }
 .donut-center-delta{ margin-top:7px; }
@@ -1525,8 +1534,6 @@ h1,h2,h3{ margin:0; }
 }
 .donut-compare-body .donut-layout{ flex-direction:column; align-items:stretch; gap:14px; }
 .donut-compare-body .donut-visual{ width:min(170px, 100%); margin:0 auto; }
-.donut-compare-body .donut-center-amount{ font-size:clamp(13px, 3.6vw, 19px); }
-.donut-compare-body .donut-center-ic{ font-size:16px; margin-bottom:3px; }
 .donut-compare-body .donut-center-label{ font-size:10.5px; }
 .donut-compare-body .donut-center-pct{ display:none; }
 .donut-compare-body .legend-row{ gap:8px; padding:8px 6px; margin:0 -6px; width:calc(100% + 12px); }
@@ -13055,61 +13062,114 @@ function buildDonutInto(host, filterFn, focusId, onFocus, opts){
      l'anneau devient alors illisible. On décale donc la clarté des doublons
      pour que chaque part reste distinguable, sans toucher aux couleurs
      choisies par l'utilisateur ailleurs dans l'application. */
-  var seenColors = {};
+  /* Deux teintes presque identiques (#B34A2A et #B4532A, par exemple) se
+     confondent tout autant : elles comptent comme des doublons. */
+  var seenColors = {}, teintesVues = [];
   data.list.forEach(function(c){
     var base = (c.couleur || "#6B7280").toLowerCase();
+    var proche = teintesVues.find(function(v){ return couleursProches(v, base); });
+    if(proche) base = proche; else teintesVues.push(base);
     var rank = seenColors[base] || 0;
     seenColors[base] = rank + 1;
     var shifts = [0, 0.34, -0.28, 0.58, -0.46, 0.72];
-    c.displayColor = rank === 0 ? (c.couleur || "#6B7280") : shadeHex(c.couleur, shifts[rank % shifts.length]);
+    c.displayColor = vividHex(rank === 0 ? (c.couleur || "#6B7280") : shadeHex(c.couleur, shifts[rank % shifts.length]));
   });
 
-  var VB = 240, cx = 120, cy = 120, R = 92, SW = 24, SWSEL = 32, GAP = 5;
-  var C = 2 * Math.PI * R;
+  /* Chaque part est un secteur plein aux coins arrondis, séparé du suivant
+     par un écart constant. Les anciens traits à bouts ronds débordaient sur
+     leurs voisines dès qu'une part était petite (une catégorie à 0 % se
+     posait en pastille sur la suivante), et davantage encore quand la part
+     sélectionnée s'épaississait. Une part minuscule garde ici une largeur
+     minimale lisible, prise sur les autres, sans jamais en chevaucher une. */
+  var VB = 240, cx = 120, cy = 120, RO = 100, RI = 73, POP = 6, GAP = 2.4, MINI = 3.2, RC = 5;
   var total = data.total;
   var anim = host.__donutSig !== opts.sig;
   host.__donutSig = opts.sig;
+  var sansAnim = false;
+  try{ sansAnim = window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(eMq){}
+  var uid = "dn" + (++donutUid);
+  var angles = repartirArc(data.list.map(function(c){ return c.montant; }), 0, 360, GAP, MINI, true);
+  var geo = {};
 
-  var segs = "", subs = "", debut = 0, geo = {};
-  var seul = data.list.length === 1;
-  data.list.forEach(function(c){
-    var len = (c.montant / total) * C;
-    var visible = seul ? C : Math.max(0.01, len - GAP - SW);
-    var offset = seul ? 0 : -(debut + GAP / 2 + SW / 2);
-    geo[c.id] = { debut: debut, len: len };
+  /* Rendu « métal poli » : un dégradé diagonal par couleur (lumière venue
+     d'en haut à gauche), un biseau commun qui assombrit les bords et pose un
+     reflet au milieu de la couronne, un éclat en haut, un liseré clair, et
+     une ombre portée sous l'ensemble. */
+  var defs =
+    '<radialGradient id="' + uid + '-bevel" gradientUnits="userSpaceOnUse" cx="' + cx + '" cy="' + cy + '" r="' + RO + '">' +
+      '<stop offset="' + (RI / RO).toFixed(3) + '" stop-color="#000" stop-opacity=".34"/>' +
+      '<stop offset="' + ((RI + 5) / RO).toFixed(3) + '" stop-color="#000" stop-opacity="0"/>' +
+      '<stop offset="' + ((RI + RO) / 2 / RO + 0.035).toFixed(3) + '" stop-color="#fff" stop-opacity=".5"/>' +
+      '<stop offset="' + ((RO - 6) / RO).toFixed(3) + '" stop-color="#fff" stop-opacity=".04"/>' +
+      '<stop offset=".985" stop-color="#000" stop-opacity=".1"/>' +
+      '<stop offset="1" stop-color="#000" stop-opacity=".3"/>' +
+    '</radialGradient>' +
+    '<linearGradient id="' + uid + '-gloss" gradientUnits="userSpaceOnUse" x1="0" y1="' + (cy - RO) + '" x2="0" y2="' + (cy + 10) + '">' +
+      '<stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset=".55" stop-color="#fff" stop-opacity=".05"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>' +
+    '</linearGradient>' +
+    '<filter id="' + uid + '-sh" x="-25%" y="-25%" width="150%" height="160%">' +
+      '<feGaussianBlur in="SourceAlpha" stdDeviation="4.5"/><feOffset dy="5" result="o"/>' +
+      '<feComponentTransfer in="o" result="s"><feFuncA type="linear" slope=".3"/></feComponentTransfer>' +
+      '<feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge>' +
+    '</filter>' +
+    /* Halo coloré de la part survolée ou choisie : son propre flou, teinté. */
+    '<filter id="' + uid + '-glow" x="-40%" y="-40%" width="180%" height="190%">' +
+      '<feGaussianBlur in="SourceGraphic" stdDeviation="5.5" result="b"/><feOffset in="b" dy="5" result="o"/>' +
+      '<feComponentTransfer in="o" result="t"><feFuncA type="linear" slope=".6"/></feComponentTransfer>' +
+      '<feMerge><feMergeNode in="t"/><feMergeNode in="SourceGraphic"/></feMerge>' +
+    '</filter>' +
+    '<radialGradient id="' + uid + '-plate" cx=".5" cy=".38" r=".7">' +
+      '<stop offset="0" style="stop-color:var(--surface)"/><stop offset="1" style="stop-color:var(--surface-2)"/>' +
+    '</radialGradient>';
+
+  var segs = "", segSel = "";
+  data.list.forEach(function(c, i){
+    var a = angles[i];
+    geo[c.id] = a;
+    defs += '<linearGradient id="' + uid + '-g' + i + '" gradientUnits="userSpaceOnUse" x1="34" y1="14" x2="206" y2="226">' +
+      '<stop offset="0" stop-color="' + shadeHex(c.displayColor, 0.24) + '"/>' +
+      '<stop offset=".4" stop-color="' + c.displayColor + '"/>' +
+      '<stop offset="1" stop-color="' + shadeHex(c.displayColor, -0.36) + '"/></linearGradient>';
+    var milieu = (a[0] + a[1]) / 2 * Math.PI / 180;
     var sel = focusId === c.id;
-    var cls = "donut-seg" + (focusId && !sel ? " dim" : "") + (sel ? " sel" : "");
-    segs += '<circle class="' + cls + '" data-cat="' + escapeHtml(c.id) + '" cx="' + cx + '" cy="' + cy + '" r="' + R + '"' +
-      ' stroke="' + c.displayColor + '" stroke-width="' + (sel ? SWSEL : SW) + '"' +
-      (seul ? '' : ' stroke-dasharray="' + (anim ? '0 ' + C.toFixed(2) : visible.toFixed(2) + ' ' + (C - visible).toFixed(2)) + '"' +
-        ' data-dash="' + visible.toFixed(2) + ' ' + (C - visible).toFixed(2) + '" stroke-dashoffset="' + offset.toFixed(2) + '"') +
-      (seul ? ' style="stroke-linecap:butt"' : '') + '><title>' + escapeHtml(c.nom + " · " + fmtMoney(c.montant)) + '</title></circle>';
-    debut += len;
+    var d = (anim && !sansAnim) ? "" : donutSectorPath(cx, cy, RI, RO, a[0], a[1], RC);
+
+    /* Seconde couronne : la répartition de la part choisie entre ses
+       sous-catégories, sur le même arc, et qui sort avec elle. */
+    var sousCouronne = "";
+    if(sel && c.children && c.children.length){
+      var sa = repartirArc(c.children.map(function(x){ return x.montant; }), a[0], a[1] - a[0], 1.4, 1.6, false);
+      c.children.forEach(function(sub, idx){
+        var col = shadeHex(c.displayColor, [0.22, -0.18, 0.45, -0.34, 0.62][idx % 5]);
+        sousCouronne += '<path class="donut-sub" fill="' + col + '" d="' + donutSectorPath(cx, cy, RO + 5, RO + 11, sa[idx][0], sa[idx][1], 2.5) + '"><title>' +
+          escapeHtml(sub.nom + " · " + fmtMoney(sub.montant)) + '</title></path>';
+      });
+    }
+
+    var g = '<g class="donut-seg' + (focusId && !sel ? ' dim' : '') + (sel ? ' sel' : '') + '" data-cat="' + escapeHtml(c.id) + '" data-i="' + i + '"' +
+        ' style="--px:' + (Math.sin(milieu) * POP).toFixed(2) + 'px;--py:' + (-Math.cos(milieu) * POP).toFixed(2) + 'px"' +
+        (sel ? ' filter="url(#' + uid + '-glow)"' : '') + '>' +
+        '<title>' + escapeHtml(c.nom + " · " + fmtMoney(c.montant)) + '</title>' +
+        '<path class="ds ds-base" fill="url(#' + uid + '-g' + i + ')" d="' + d + '"/>' +
+        '<path class="ds ds-bevel" fill="url(#' + uid + '-bevel)" d="' + d + '"/>' +
+        '<path class="ds ds-gloss" fill="url(#' + uid + '-gloss)" d="' + d + '"/>' +
+        sousCouronne + '</g>';
+    /* La part choisie est dessinée en dernier : rien ne passe sur elle. */
+    if(sel) segSel = g; else segs += g;
   });
 
-  /* Seconde couronne : la répartition de la part choisie entre ses
-     sous-catégories, sur le même arc. */
-  var focused = focusId ? data.list.find(function(x){ return x.id === focusId; }) : null;
-  if(focused && focused.children && focused.children.length && geo[focused.id]){
-    var R2 = R + SWSEL / 2 + 9, C2 = 2 * Math.PI * R2, SW2 = 7, G2 = 3;
-    var g = geo[focused.id], k0 = g.debut / C * C2, arc = g.len / C * C2;
-    focused.children.forEach(function(sub, idx){
-      var l = (sub.montant / focused.montant) * arc;
-      var vis = Math.max(0.01, l - G2 - SW2);
-      var col = shadeHex(focused.displayColor, [0.15, -0.2, 0.4, -0.38, 0.6][idx % 5]);
-      subs += '<circle class="donut-sub" cx="' + cx + '" cy="' + cy + '" r="' + R2.toFixed(2) + '" stroke="' + col + '" stroke-width="' + SW2 + '"' +
-        ' stroke-dasharray="' + vis.toFixed(2) + ' ' + (C2 - vis).toFixed(2) + '" stroke-dashoffset="' + (-(k0 + G2 / 2 + SW2 / 2)).toFixed(2) + '"><title>' +
-        escapeHtml(sub.nom + " · " + fmtMoney(sub.montant)) + '</title></circle>';
-      k0 += l;
-    });
+  /* Le montant se réduit avec sa longueur pour tenir dans le disque. */
+  function montantCentre(v){
+    var txt = fmtMoney(v), n = txt.length;
+    var fs = n <= 8 ? 10.6 : (n <= 10 ? 9.4 : (n <= 12 ? 8 : 6.8));
+    return '<b class="donut-center-amount" style="--fs:' + fs + 'cqw">' + escapeHtml(txt) + '</b>';
   }
-
   function centreHtml(item){
     if(item){
       return '<span class="donut-center-ic">' + iconHtml(item.emoji) + '</span>' +
-        '<b class="donut-center-amount">' + escapeHtml(fmtMoney(item.montant)) + '</b>' +
+        montantCentre(item.montant) +
         '<span class="donut-center-label">' + escapeHtml(item.nom) + '</span>' +
-        '<span class="donut-center-pct">' + Math.round(item.part) + ' %</span>';
+        '<span class="donut-center-pct">' + (item.part > 0 && item.part < 1 ? "< 1" : Math.round(item.part)) + ' %</span>';
     }
     var delta = "";
     if(opts.delta && opts.delta.pct !== null && isFinite(opts.delta.pct)){
@@ -13117,13 +13177,17 @@ function buildDonutInto(host, filterFn, focusId, onFocus, opts){
       delta = '<span class="donut-center-delta delta ' + (p > 0 ? "bad" : (p < 0 ? "good" : "flat")) + '">' +
         (p > 0 ? "▲ +" : (p < 0 ? "▼ " : "")) + p + ' % ' + escapeHtml(opts.delta.label) + '</span>';
     }
-    return '<b class="donut-center-amount">' + escapeHtml(fmtMoney(total)) + '</b>' +
+    return montantCentre(total) +
       '<span class="donut-center-label">' + escapeHtml(t("an.outflow")) + '</span>' + delta;
   }
 
+  var focused = focusId ? data.list.find(function(x){ return x.id === focusId; }) : null;
   var visuel = '<div class="donut-visual">' +
       '<svg class="donut-svg" viewBox="0 0 ' + VB + ' ' + VB + '" role="img" aria-label="' + escapeHtml(t("st.byCategory")) + '">' +
-        '<circle class="donut-track" cx="' + cx + '" cy="' + cy + '" r="' + R + '" stroke-width="' + SW + '"/>' + segs + subs +
+        '<defs>' + defs + '</defs>' +
+        '<path class="donut-track" d="' + donutSectorPath(cx, cy, RI + 2, RO - 2, 0, 360, 0) + '"/>' +
+        '<circle class="donut-plate" cx="' + cx + '" cy="' + cy + '" r="' + (RI - 9) + '" fill="url(#' + uid + '-plate)" filter="url(#' + uid + '-sh)"/>' +
+        '<g class="donut-segs" filter="url(#' + uid + '-sh)">' + segs + segSel + '</g>' +
       '</svg>' +
       '<div class="donut-center">' + centreHtml(focused) + '</div>' +
     '</div>';
@@ -13135,15 +13199,15 @@ function buildDonutInto(host, filterFn, focusId, onFocus, opts){
     var subsHtml = (focused.children && focused.children.length)
       ? focused.children.map(function(sub, idx){
           var sp = focused.montant > 0 ? Math.round((sub.montant / focused.montant) * 100) : 0;
-          var col = shadeHex(focused.displayColor, [0.15, -0.2, 0.4, -0.38, 0.6][idx % 5]);
+          var col = shadeHex(focused.displayColor, [0.22, -0.18, 0.45, -0.34, 0.62][idx % 5]);
           return '<li><div class="dsub-top"><span>' + iconHtml(sub.emoji) + " " + escapeHtml(sub.nom) + '</span><b>' + fmtMoney(sub.montant) + ' <small>· ' + sp + ' %</small></b></div>' +
-            '<div class="dsub-bar"><i style="width:' + sp + '%;background:' + col + '"></i></div></li>';
+            '<div class="dsub-bar"><i style="width:' + sp + '%;background:' + metalBar(col) + '"></i></div></li>';
         }).join("")
       : '<li class="muted">' + t("an.detailNoSub") + '</li>';
     detail =
       '<div class="donut-detail">' +
         '<div class="donut-detail-head">' +
-          '<span class="donut-detail-dot" style="background:' + focused.displayColor + '"></span>' +
+          '<span class="donut-detail-dot" style="background:' + metalBar(focused.displayColor) + '"></span>' +
           '<span class="donut-detail-name">' + iconHtml(focused.emoji) + " " + escapeHtml(focused.nom) + '</span>' +
           '<span class="donut-detail-amount">' + fmtMoney(focused.montant) + '</span>' +
         '</div>' +
@@ -13158,15 +13222,23 @@ function buildDonutInto(host, filterFn, focusId, onFocus, opts){
   host.innerHTML = '<div class="donut-layout">' + visuel +
     '<div class="donut-side">' + (focused ? detail : '<p class="donut-hint">' + t("an.tapHint") + '</p>') + '<div class="donut-legend"></div></div></div>';
 
-  /* Animation d'ouverture : les segments se déploient depuis zéro. */
-  if(anim && !seul){
-    var cercles = host.querySelectorAll(".donut-seg");
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){
-      Array.prototype.forEach.call(cercles, function(el, i){
-        el.style.transitionDelay = (i * 0.045) + "s";
-        el.setAttribute("stroke-dasharray", el.getAttribute("data-dash"));
+  /* Ouverture : les parts se déploient dans le sens horaire, d'un seul
+     balayage, chacune s'arrêtant à sa place. */
+  if(anim && !sansAnim){
+    var groupes = host.querySelectorAll(".donut-seg"), t0 = null, DUREE = 950;
+    var etape = function(ts){
+      if(t0 === null) t0 = ts;
+      var k = Math.min(1, (ts - t0) / DUREE), balai = (1 - Math.pow(1 - k, 3)) * 360;
+      Array.prototype.forEach.call(groupes, function(gEl){
+        if(!gEl.isConnected) return;
+        var a = angles[Number(gEl.getAttribute("data-i"))];
+        var fin = Math.min(a[1], balai);
+        var d = fin > a[0] ? donutSectorPath(cx, cy, RI, RO, a[0], fin, RC) : "";
+        Array.prototype.forEach.call(gEl.querySelectorAll("path.ds"), function(pEl){ pEl.setAttribute("d", d); });
       });
-    }); });
+      if(k < 1) requestAnimationFrame(etape);
+    };
+    requestAnimationFrame(etape);
   }
 
   var centre = host.querySelector(".donut-center");
@@ -13174,18 +13246,21 @@ function buildDonutInto(host, filterFn, focusId, onFocus, opts){
     var id = sl.getAttribute("data-cat");
     var item = data.list.find(function(x){ return x.id === id; });
     sl.addEventListener("click", function(){ onFocus(focusId === id ? null : id); });
-    /* Survol à la souris : aperçu immédiat, sans changer la sélection. */
-    sl.addEventListener("mouseenter", function(){
-      if(focusId) return;
+    /* Survol à la souris : la part sort de l'anneau, sans changer la sélection.
+       Au doigt, le toucher sélectionne directement (pas d'état intermédiaire). */
+    sl.addEventListener("pointerenter", function(e){
+      if(focusId || e.pointerType !== "mouse") return;
       centre.innerHTML = centreHtml(item);
       Array.prototype.forEach.call(host.querySelectorAll(".donut-seg"), function(o){ o.classList.toggle("dim", o !== sl); });
-      sl.setAttribute("stroke-width", SWSEL);
+      sl.classList.add("hot");
+      sl.setAttribute("filter", "url(#" + uid + "-glow)");
     });
-    sl.addEventListener("mouseleave", function(){
-      if(focusId) return;
+    sl.addEventListener("pointerleave", function(e){
+      if(focusId || e.pointerType !== "mouse") return;
       centre.innerHTML = centreHtml(null);
       Array.prototype.forEach.call(host.querySelectorAll(".donut-seg"), function(o){ o.classList.remove("dim"); });
-      sl.setAttribute("stroke-width", SW);
+      sl.classList.remove("hot");
+      sl.removeAttribute("filter");
     });
   });
   var opsBtn = host.querySelector(".donut-ops");
@@ -13204,8 +13279,8 @@ function buildDonutInto(host, filterFn, focusId, onFocus, opts){
       '<span class="legend-icon" style="background:' + c.displayColor + '22">' + iconHtml(c.emoji) + '</span>' +
       '<span class="legend-main">' +
         '<span class="legend-top"><span class="legend-name">' + escapeHtml(c.nom) + '</span><span class="legend-amount">' + fmtMoney(c.montant) + '</span></span>' +
-        '<span class="legend-bottom"><span class="legend-bar"><i style="width:' + Math.max(1.5, c.part).toFixed(1) + '%;background:' + c.displayColor + '"></i></span>' +
-        '<span class="legend-meta">' + Math.round(c.part) + ' % · ' + escapeHtml(tn("an.txCount", counts[c.id] || 0)) + '</span></span>' +
+        '<span class="legend-bottom"><span class="legend-bar"><i style="width:' + Math.max(1.5, c.part).toFixed(1) + '%;background:' + metalBar(c.displayColor) + '"></i></span>' +
+        '<span class="legend-meta">' + (c.part > 0 && c.part < 1 ? "< 1" : Math.round(c.part)) + ' % · ' + escapeHtml(tn("an.txCount", counts[c.id] || 0)) + '</span></span>' +
       '</span>';
     row.addEventListener("click", function(){ onFocus(focusId === c.id ? null : c.id); });
     legende.appendChild(row);
@@ -13377,18 +13452,103 @@ function shadeHex(hex, pct){
   return "#" + ((1 << 24) + (adj(r) << 16) + (adj(g) << 8) + adj(b)).toString(16).slice(1);
 }
 
-/* Secteur d'anneau : arc extérieur puis arc intérieur en sens inverse. */
-function donutArc(cx, cy, R, r, a0, a1){
-  function pt(radius, deg){
-    var rad = deg * Math.PI / 180;
-    return [(cx + radius*Math.cos(rad)).toFixed(2), (cy + radius*Math.sin(rad)).toFixed(2)];
+/* --- Anneau : géométrie et couleurs --- */
+var donutUid = 0;
+
+/* Secteur d'anneau aux coins arrondis entre les angles a0 et a1, en degrés
+   (0° = midi, sens horaire), du rayon ri au rayon ro. Le rayon des coins se
+   réduit sur les parts étroites, qui gardent ainsi une forme nette. */
+function donutSectorPath(cx, cy, ri, ro, a0, a1, rc){
+  var span = a1 - a0;
+  if(!(span > 0)) return "";
+  if(span >= 359.99){
+    return "M" + cx + "," + (cy - ro) + "A" + ro + "," + ro + " 0 1 1 " + cx + "," + (cy + ro) + "A" + ro + "," + ro + " 0 1 1 " + cx + "," + (cy - ro) + "Z" +
+           "M" + cx + "," + (cy - ri) + "A" + ri + "," + ri + " 0 1 0 " + cx + "," + (cy + ri) + "A" + ri + "," + ri + " 0 1 0 " + cx + "," + (cy - ri) + "Z";
   }
-  var large = (a1 - a0) > 180 ? 1 : 0;
-  var p1 = pt(R, a0), p2 = pt(R, a1), p3 = pt(r, a1), p4 = pt(r, a0);
-  return "M" + p1[0] + "," + p1[1] +
-         " A" + R + "," + R + " 0 " + large + " 1 " + p2[0] + "," + p2[1] +
-         " L" + p3[0] + "," + p3[1] +
-         " A" + r + "," + r + " 0 " + large + " 0 " + p4[0] + "," + p4[1] + " Z";
+  var RAD = Math.PI / 180;
+  function pt(r, deg){
+    var x = (deg - 90) * RAD;
+    return (cx + r * Math.cos(x)).toFixed(2) + "," + (cy + r * Math.sin(x)).toFixed(2);
+  }
+  rc = Math.max(0, Math.min(rc, (ro - ri) / 2, span * RAD * ri / 2 * 0.92));
+  var dO = rc / ro / RAD, dI = rc / ri / RAD;
+  var grandO = (span - 2 * dO) > 180 ? 1 : 0, grandI = (span - 2 * dI) > 180 ? 1 : 0;
+  return "M" + pt(ro, a0 + dO) +
+    "A" + ro + "," + ro + " 0 " + grandO + " 1 " + pt(ro, a1 - dO) +
+    "Q" + pt(ro, a1) + " " + pt(ro - rc, a1) +
+    "L" + pt(ri + rc, a1) +
+    "Q" + pt(ri, a1) + " " + pt(ri, a1 - dI) +
+    "A" + ri + "," + ri + " 0 " + grandI + " 0 " + pt(ri, a0 + dI) +
+    "Q" + pt(ri, a0) + " " + pt(ri + rc, a0) +
+    "L" + pt(ro - rc, a0) +
+    "Q" + pt(ro, a0) + " " + pt(ro, a0 + dO) + "Z";
+}
+
+/* Répartit un arc (ou le cercle entier si `ferme`) entre des valeurs, avec
+   un écart fixe entre deux parts et une largeur minimale : une part trop
+   petite pour être vue reçoit le minimum, pris sur les autres au prorata. */
+function repartirArc(valeurs, debut, etendue, ecart, mini, ferme){
+  var n = valeurs.length;
+  if(!n) return [];
+  if(n === 1) return [[debut, debut + etendue]];
+  var dispo = Math.max(0, etendue - (ferme ? n : n - 1) * ecart);
+  mini = Math.min(mini, dispo / n);
+  var fixe = valeurs.map(function(){ return false; });
+  function bilan(){
+    var libre = dispo, reste = 0;
+    valeurs.forEach(function(v, i){ if(fixe[i]) libre -= mini; else reste += Math.max(0, v); });
+    return { libre: libre, reste: reste };
+  }
+  for(var tour = 0; tour < n; tour++){
+    var b = bilan(), change = false;
+    valeurs.forEach(function(v, i){
+      if(!fixe[i] && (b.reste <= 0 || Math.max(0, v) / b.reste * b.libre < mini)){ fixe[i] = true; change = true; }
+    });
+    if(!change) break;
+  }
+  var fin = bilan(), a = debut + (ferme ? ecart / 2 : 0), out = [];
+  valeurs.forEach(function(v, i){
+    var l = fixe[i] ? mini : Math.max(0, v) / fin.reste * fin.libre;
+    out.push([a, a + l]);
+    a += l + ecart;
+  });
+  return out;
+}
+
+/* Version plus éclatante d'une couleur de catégorie : saturation relevée,
+   clarté ramenée dans une plage où le dégradé métallique reste lisible. Les
+   gris restent neutres et prennent un aspect acier. */
+function vividHex(hex){
+  var m = /^#?([0-9a-fA-F]{6})$/.exec(hex || "");
+  if(!m) return hex;
+  var n = parseInt(m[1], 16);
+  var r = (n >> 16 & 255) / 255, g = (n >> 8 & 255) / 255, b = (n & 255) / 255;
+  var max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
+  var l = (max + min) / 2, s = 0, h = 0;
+  if(d > 0){
+    s = d / (1 - Math.abs(2 * l - 1));
+    h = max === r ? ((g - b) / d) % 6 : (max === g ? (b - r) / d + 2 : (r - g) / d + 4);
+    h *= 60; if(h < 0) h += 360;
+  }
+  if(s > 0.1) s = Math.min(0.95, Math.max(0.58, s * 1.25 + 0.14));
+  l = Math.max(0.43, Math.min(0.55, l));
+  var c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), o = l - c / 2;
+  var rgb = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+  return "#" + rgb.map(function(v){ var k = Math.round((v + o) * 255); return (k < 16 ? "0" : "") + Math.max(0, Math.min(255, k)).toString(16); }).join("");
+}
+
+/* Deux couleurs que l'œil confond sur l'anneau (écart RVB faible). */
+function couleursProches(a, b){
+  var ma = /^#?([0-9a-fA-F]{6})$/.exec(a || ""), mb = /^#?([0-9a-fA-F]{6})$/.exec(b || "");
+  if(!ma || !mb) return false;
+  var x = parseInt(ma[1], 16), y = parseInt(mb[1], 16);
+  var dr = (x >> 16 & 255) - (y >> 16 & 255), dg = (x >> 8 & 255) - (y >> 8 & 255), db = (x & 255) - (y & 255);
+  return Math.sqrt(dr * dr * 0.3 + dg * dg * 0.59 + db * db * 0.11) < 26;
+}
+
+/* Barre de légende assortie à l'anneau : même couleur, même reflet. */
+function metalBar(col){
+  return "linear-gradient(90deg, " + shadeHex(col, -0.18) + ", " + col + " 55%, " + shadeHex(col, 0.34) + ")";
 }
 
 Array.prototype.forEach.call(document.querySelectorAll("#donutPeriodRow [data-donutperiod]"), function(b){
