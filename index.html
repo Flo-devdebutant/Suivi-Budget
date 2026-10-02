@@ -564,9 +564,12 @@ h1,h2,h3{ margin:0; }
 
 /* Grille de page : une colonne sur téléphone, douze dès que la place le
    permet. Chaque bloc déclare sa largeur (span-4 … span-12). */
-.grid{ display:grid; grid-template-columns:minmax(0,1fr); gap:0 20px; align-items:start; }
+/* Sur téléphone aussi, l'écart vertical entre deux blocs est porté par la
+   grille : deux cartes qui se suivent sans titre (solde prévu puis courbe,
+   par exemple) ne se touchent plus. */
+.grid{ display:grid; grid-template-columns:minmax(0,1fr); gap:14px 20px; align-items:start; }
 .blk{ min-width:0; }
-.blk > .section-head:first-child{ margin-top:26px; }
+.blk > .section-head:first-child{ margin-top:16px; }
 .stack{ display:flex; flex-direction:column; gap:14px; }
 @container content (min-width:880px){
   .grid{ grid-template-columns:repeat(12, minmax(0,1fr)); gap:24px; }
@@ -824,6 +827,17 @@ h1,h2,h3{ margin:0; }
    ========================================================================= */
 .chart-card{ position:relative; }
 .chart-toolbar{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+/* Carte étroite : les trois périodes se partagent la largeur à parts égales,
+   au lieu de déborder à droite quand la dernière est choisie. */
+@container content (max-width:560px){
+  .chart-toolbar .chart-presets{ display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); width:100%; }
+  .chart-toolbar .chart-presets button{ min-width:0; padding:7px 4px; font-size:12px; overflow:hidden; text-overflow:ellipsis; }
+}
+.chart-presets .lbl-short{ display:none; }
+@container content (max-width:400px){
+  .chart-presets .lbl-long{ display:none; }
+  .chart-presets .lbl-short{ display:inline; }
+}
 .chart-presets{
   display:inline-flex; gap:2px; overflow-x:auto; padding:3px; max-width:100%;
   background:var(--surface-2); border-radius:13px; box-shadow:0 0 0 1px var(--line) inset;
@@ -1360,8 +1374,6 @@ h1,h2,h3{ margin:0; }
    ÉCRITURE DE DROITE À GAUCHE
    ========================================================================= */
 [dir="rtl"] .menu-row, [dir="rtl"] .lang-row, [dir="rtl"] .action-row, [dir="rtl"] .cat-manage-add-sub{ text-align:right; }
-[dir="rtl"] .cat-manage-subgroup{ padding-left:0; padding-right:30px; }
-[dir="rtl"] .cat-manage-add-sub{ margin-left:0; margin-right:30px; }
 [dir="rtl"] .fab{ right:auto; left:calc(18px + env(safe-area-inset-left, 0px)); }
 [dir="rtl"] .toast{ direction:rtl; }
 [dir="rtl"] .chart-range-field .icon{ right:auto; left:6px; }
@@ -1586,7 +1598,12 @@ h1,h2,h3{ margin:0; }
 .cap-note-icon{ flex-shrink:0; font-size:17px; line-height:1.3; }
 .cap-note-text{ flex:1; min-width:0; font-size:12.5px; line-height:1.5; color:var(--text); }
 .cap-note-title{ display:block; font-size:13.5px; font-weight:800; margin-bottom:3px; }
-.cat-allow-cap{ color:var(--neg); font-weight:750; }
+.cat-allow-cap{ color:var(--warn); font-weight:750; }
+/* Limite venue de la catégorie mère : une information, pas une alerte. */
+.cat-allow-parent{ color:var(--text-2); font-weight:650; }
+.track-note{ margin-top:14px; padding-top:12px; border-top:1px solid var(--line); font-size:12.5px; line-height:1.55; color:var(--text-3); }
+.track-note b{ color:var(--text-2); font-weight:750; }
+.track-note .pv{ color:var(--text); font-weight:750; font-variant-numeric:tabular-nums; }
 
 .cat-allow-row{ padding:14px 0; border-top:1px solid var(--line); }
 .cat-allow-row:first-child, .cap-note + .cat-allow-row{ border-top:none; padding-top:4px; }
@@ -1822,39 +1839,101 @@ button.cal-day:hover{ transform:scale(1.06); }
 /* =========================================================================
    GESTION DES CATÉGORIES
    ========================================================================= */
-#categoryPageCard{ padding:6px 16px; }
 @container content (min-width:880px){ #page-categories .grid > .blk{ grid-column:2 / span 10; } }
-.cat-manage-group{ border-top:1px solid var(--line); padding:4px 0; }
-.cat-manage-group:first-child{ border-top:none; }
-.cat-manage-row{ display:flex; align-items:center; gap:12px; padding:10px 0; background:var(--surface); }
-.cat-manage-row.dragging{ position:relative; z-index:50; border-radius:14px; box-shadow:var(--shadow-lg); }
-.cat-manage-group.dragging{ position:relative; z-index:50; background:var(--surface); border-radius:16px; box-shadow:var(--shadow-lg); }
-.cat-manage-subgroup{ padding-left:30px; }
-.cat-manage-row-sub{ padding:6px 0; gap:10px; }
-.cat-manage-subgroup .cat-manage-emoji{ width:30px; height:30px; font-size:14px; border-radius:10px; }
-.cat-manage-subgroup .cat-manage-name{ font-size:13.5px; font-weight:650; }
-.cat-manage-add-sub{
-  display:inline-flex; align-items:center; margin:6px 0 8px 30px; padding:6px 13px; min-height:32px;
-  color:var(--text-3); font-weight:750; font-size:12.5px;
-  background:transparent; box-shadow:0 0 0 1.5px var(--line-2) inset; border-radius:999px;
+
+/* Résumé en tête de page. */
+.cat-summary{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; margin-bottom:14px; }
+.cat-sum-cell{ padding:13px 14px; border-radius:18px; background:var(--surface); box-shadow:var(--shadow-sm), 0 0 0 1px var(--line); min-width:0; }
+.cat-sum-cell b{ display:block; font-size:22px; font-weight:800; letter-spacing:-.04em; color:var(--text); font-variant-numeric:tabular-nums; line-height:1.1; }
+.cat-sum-cell span{ display:block; margin-top:3px; font-size:12px; font-weight:650; color:var(--text-3); line-height:1.3; overflow-wrap:anywhere; }
+
+/* Une carte par catégorie, teintée de sa couleur. */
+.cat-board-list{ display:flex; flex-direction:column; gap:12px; }
+.cat-card{
+  position:relative; overflow:hidden;
+  background:var(--surface); border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-md), 0 0 0 1px var(--line);
 }
-.cat-manage-add-sub:hover{ color:var(--text); }
+.cat-card::before{
+  content:""; position:absolute; inset:0 auto 0 0; width:4px;
+  background:var(--cat);
+  background:linear-gradient(180deg, var(--cat), color-mix(in srgb, var(--cat) 55%, #000));
+}
+[dir="rtl"] .cat-card::before{ inset:0 0 0 auto; }
+.cat-card.dragging{ z-index:50; box-shadow:var(--shadow-lg), 0 0 0 2px var(--cat); }
+.cat-card.dragging, .cat-manage-group.dragging{ position:relative; }
+.cat-manage-row{ display:flex; align-items:center; gap:12px; background:transparent; }
+.cat-card-head{
+  padding:14px 14px 14px 12px;
+  background:linear-gradient(100deg, var(--cat-soft), transparent 62%);
+}
+[dir="rtl"] .cat-card-head{ padding:14px 12px 14px 14px; background:linear-gradient(260deg, var(--cat-soft), transparent 62%); }
+.cat-manage-emoji{
+  width:46px; height:46px; border-radius:15px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:22px;
+  background:linear-gradient(150deg, var(--surface), var(--cat-soft));
+  box-shadow:0 0 0 1px var(--line) inset;
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--cat) 26%, transparent) inset, 0 6px 14px -8px color-mix(in srgb, var(--cat) 70%, transparent);
+}
+/* « start » suit le sens de lecture : à gauche en français, à droite en arabe. */
+.cat-manage-main{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:3px; text-align:start; cursor:pointer; padding:2px 0; }
+.cat-manage-name{ font-size:16px; font-weight:800; letter-spacing:-.02em; color:var(--text); overflow-wrap:anywhere; line-height:1.25; }
+/* Informations en pastilles : elles passent à la ligne proprement, sans
+   séparateur orphelin. */
+.cat-manage-meta{ display:flex; flex-wrap:wrap; align-items:center; gap:4px; margin-top:2px; font-size:12px; font-weight:650; color:var(--text-3); line-height:1.35; }
+.cat-meta-item{ white-space:nowrap; padding:2px 8px; border-radius:999px; background:var(--surface-2); box-shadow:0 0 0 1px var(--line) inset; }
+.cat-card-head .cat-meta-item{ background:color-mix(in srgb, var(--surface) 70%, transparent); }
+.cat-manage-meta .pv{ color:var(--text-2); font-weight:750; font-variant-numeric:tabular-nums; }
+.cat-manage-meta .pv.in{ color:var(--pos); }
+.cat-manage-edit, .cat-fold{
+  width:38px; height:38px; border-radius:12px; flex-shrink:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  color:var(--text-2); background:var(--surface-2); box-shadow:0 0 0 1px var(--line) inset;
+  transition:background-color .15s ease, color .15s ease, transform .15s var(--ease-spring);
+}
+.cat-manage-edit .icon, .cat-fold .icon{ width:17px; height:17px; }
+.cat-manage-edit:hover, .cat-fold:hover{ background:var(--surface-3); color:var(--text); }
+.cat-manage-edit:active, .cat-fold:active{ transform:scale(.92); }
+.cat-fold{ background:transparent; box-shadow:none; }
+.cat-fold .icon{ transform:rotate(90deg); transition:transform .25s var(--ease-out); }
+.cat-card.collapsed .cat-fold .icon{ transform:rotate(0deg); }
+[dir="rtl"] .cat-card.collapsed .cat-fold .icon{ transform:rotate(180deg); }
+.cat-card.collapsed .cat-manage-subgroup{ display:none; }
+
+/* Sous-catégories : lignes plus légères, reliées par un filet. */
+.cat-manage-subgroup{ padding:4px 14px 12px 14px; border-top:1px solid var(--line); }
+.cat-manage-row-sub{ gap:10px; padding:7px 0; }
+.cat-manage-row-sub + .cat-manage-row-sub{ border-top:1px dashed var(--line); }
+.cat-manage-row-sub .cat-manage-emoji{ width:34px; height:34px; font-size:16px; border-radius:11px; box-shadow:0 0 0 1px var(--line) inset; background:var(--surface-2); }
+.cat-manage-row-sub .cat-manage-name{ font-size:14px; font-weight:700; }
+.cat-manage-row-sub .cat-manage-meta{ font-size:12px; }
+.cat-manage-row-sub .cat-manage-edit{ width:34px; height:34px; border-radius:11px; background:transparent; box-shadow:none; color:var(--text-3); }
+.cat-manage-row-sub .cat-manage-edit:hover{ background:var(--surface-2); color:var(--text); }
+.cat-manage-row-sub.dragging{ position:relative; z-index:50; background:var(--surface); border-radius:12px; box-shadow:var(--shadow-lg); }
+.cat-manage-add-sub{
+  display:inline-flex; align-items:center; gap:6px; margin:8px 0 0 44px; padding:7px 13px; min-height:34px;
+  color:var(--text-2); font-weight:750; font-size:12.5px;
+  background:transparent; border:1.5px dashed var(--line-2); border-radius:999px;
+  transition:background-color .15s ease, color .15s ease;
+}
+[dir="rtl"] .cat-manage-add-sub{ margin:8px 44px 0 0; }
+.cat-manage-add-sub .icon{ width:14px; height:14px; }
+.cat-manage-add-sub:hover{ color:var(--text); background:var(--surface-2); }
 .cat-manage-add-sub:active{ background:var(--gold-soft); }
 .cat-drag-handle{
-  flex-shrink:0; color:var(--text-3); font-size:17px; line-height:1; padding:8px 2px;
-  cursor:grab; touch-action:none; user-select:none; opacity:.7;
+  flex-shrink:0; width:22px; height:34px; display:inline-flex; align-items:center; justify-content:center;
+  color:var(--text-3); cursor:grab; touch-action:none; user-select:none; opacity:.65; border-radius:8px;
 }
+.cat-drag-handle .icon{ width:16px; height:16px; }
+.cat-drag-handle:hover{ opacity:1; background:var(--surface-2); }
 .cat-drag-handle:active{ cursor:grabbing; color:var(--text); }
-.cat-manage-emoji{ width:42px; height:42px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0; }
-.cat-manage-name{ flex:1; min-width:0; font-size:15px; font-weight:750; letter-spacing:-.01em; overflow-wrap:anywhere; }
-.cat-manage-edit{
-  font-size:12.5px; font-weight:750; color:var(--text-2); flex-shrink:0;
-  background:var(--surface-2); box-shadow:0 0 0 1px var(--line) inset;
-  padding:6px 12px; border-radius:999px;
-  min-height:32px; display:inline-flex; align-items:center; justify-content:center;
+@container content (max-width:420px){
+  .cat-summary{ gap:8px; }
+  .cat-sum-cell{ padding:11px 12px; }
+  .cat-sum-cell b{ font-size:19px; }
+  .cat-card-head{ gap:10px; }
+  .cat-manage-emoji{ width:42px; height:42px; font-size:20px; }
 }
-.cat-manage-edit:hover{ background:var(--surface-3); color:var(--text); }
-.cat-manage-edit:active{ background:var(--gold-soft); }
 .cat-emo{ display:inline-block; line-height:1; }
 
 /* =========================================================================
@@ -1873,6 +1952,35 @@ button.cal-day:hover{ transform:scale(1.06); }
 }
 .icon-preview-label{ flex:1; font-size:14px; font-weight:700; color:var(--text-2); }
 .icon-sections{ margin-top:4px; }
+/* Saisie libre d'un emoji du clavier. */
+.icon-custom{
+  display:flex; align-items:center; gap:10px; padding:6px 6px 6px 8px; border-radius:16px;
+  background:var(--surface-2); box-shadow:0 0 0 1px var(--line) inset; cursor:text;
+}
+.icon-custom:focus-within{ box-shadow:0 0 0 2px var(--gold) inset; }
+.icon-custom-preview{
+  width:40px; height:40px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  font-size:22px; background:var(--surface); box-shadow:0 0 0 1px var(--line) inset; filter:grayscale(1); opacity:.45;
+  transition:filter .2s ease, opacity .2s ease;
+}
+.icon-custom-preview.on{ filter:none; opacity:1; box-shadow:0 0 0 2px var(--gold) inset; }
+.icon-custom-input{ flex:1; min-width:0; border:none; background:transparent; font-size:15px; font-weight:600; color:var(--text); padding:8px 4px; }
+.icon-custom-input:focus{ outline:none; }
+.icon-custom-hint{ margin:6px 4px 12px; font-size:12px; color:var(--text-3); }
+.icon-custom-hint.err{ color:var(--neg); font-weight:650; }
+/* Raccourcis vers les familles d'icônes, collés en haut pendant le défilement. */
+.icon-jump{
+  position:sticky; top:-1px; z-index:3; display:flex; gap:6px; overflow-x:auto; scrollbar-width:none;
+  margin:0 -4px 6px; padding:8px 4px; background:var(--sheet, var(--surface));
+}
+.icon-jump::-webkit-scrollbar{ display:none; }
+.icon-jump-chip{
+  flex-shrink:0; display:inline-flex; align-items:center; gap:6px; padding:6px 11px; border-radius:999px;
+  font-size:12.5px; font-weight:700; color:var(--text-2); white-space:nowrap;
+  background:var(--surface-2); box-shadow:0 0 0 1px var(--line) inset;
+}
+.icon-jump-chip:hover{ color:var(--text); background:var(--surface-3); }
+.icon-section-title{ scroll-margin-top:56px; }
 .icon-section-title{
   margin:16px 0 8px; font-size:12px; font-weight:750; color:var(--text-3);
   position:sticky; top:-2px; z-index:2; background:var(--sheet); padding:6px 0;
@@ -1890,7 +1998,10 @@ button.cal-day:hover{ transform:scale(1.06); }
 .icon-opt.selected{ background:var(--gold-soft); box-shadow:0 0 0 2px var(--gold); }
 .icon-opt:active{ transform:scale(.9); }
 
-.color-grid{ display:flex; flex-wrap:wrap; gap:12px; margin-bottom:4px; }
+/* En grille : le script de la fiche affiche ce bloc avec display:grid
+   (et le masque pour une sous-catégorie) ; sans colonnes définies, les
+   pastilles s'empilaient sur une seule colonne. */
+.color-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(38px, 1fr)); justify-items:center; gap:12px; margin-bottom:4px; }
 .color-opt{
   width:36px; height:36px; border-radius:50%;
   box-shadow:0 0 0 3px var(--sheet), 0 0 0 3px transparent;
@@ -2112,6 +2223,13 @@ textarea.mono-input, .field textarea.mono-input{ padding:14px 16px; font-size:12
 @container content (min-width:880px){
   .gs-card .chapter-list{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); }
 }
+
+/* Le titre et le sous-titre de la page figurent déjà dans la barre du haut :
+   on ne garde ici que le bouton d'ajout (le titre reste lu par les lecteurs
+   d'écran). */
+#page-categories .section-head{ justify-content:flex-end; margin-bottom:12px; }
+#page-categories .section-head h2{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+#page-categories .section-sub{ display:none; }
 
 /* =========================================================================
    BOUTON FLOTTANT & BARRE D'ONGLETS (téléphone)
@@ -2438,14 +2556,17 @@ body.fab-open .fab .icon{ transform:rotate(45deg); }
    Les montants sont floutés, pour consulter l'application en public sans
    exposer ses chiffres. Réglage propre à l'appareil.
    ========================================================================= */
-:root.privacy :is(.balance-figure, .stat-value, .forecast-total, .fc-value, .tx-montant, .tx-solde, .up-amount,
-  .legend-amount, .donut-center-amount, .donut-detail-amount, .donut-detail-subs b, .stat-card-value, .stat-line-value,
-  .stat-cat-amount, .goal-amounts, .goal-current-solde b, .budget-figures, .budget-block-meta, .budget-sub-amounts,
-  .pace-amount, .pace-basis, .pace-scheduled, .extra-amount, .cat-allow-day, .cat-allow-meta, .mini-val, .rank-amount,
-  .cal-day small, .cal-tx b, .cal-detail-title b, .hist-total b, .bud-kpi b, .epargne-breakdown-line, .sav-legend b,
-  .plan-line-month, .settings-row-label small, .chart-tooltip, .ch-axis.money, .ch-badge-text, .hero-trend b,
-  .forecast-sub, .rhythm-cell b, .cmdk-amt, .sub-budget-total, .month-meter-top b){
-  filter:blur(7px); -webkit-user-select:none; user-select:none;
+:root.privacy .pv{
+  display:inline-block;
+  /* Flou proportionnel à la taille du texte : un grand montant reste aussi
+     illisible qu'un petit (un flou fixe laissait deviner les gros chiffres). */
+  filter:blur(6px); filter:blur(max(5px, .42em));
+  -webkit-user-select:none; user-select:none;
+}
+/* Étiquettes de graphique (SVG) et cases du calendrier : le montant est tout
+   le texte de l'élément (sans symbole € dans le calendrier). */
+:root.privacy :is(text.pv-svg, .ch-axis.money, .ch-badge-text, .cal-day small){
+  filter:blur(4px); -webkit-user-select:none; user-select:none;
 }
 :root.privacy .ch-badge{ opacity:.35; }
 .eye-off{ display:none !important; }
@@ -2694,14 +2815,14 @@ body.tour-on .fab{ transition:none; }
   }
 }
 
+/* Mode discret : un montant prérempli dans une fiche reste masqué tant
+   qu'on ne touche pas le champ pour le modifier. */
+:root.privacy .amount-field input:not(:focus){ filter:blur(6px); }
+
 /* =========================================================================
    COMPLÉMENTS DE MISE EN PAGE
    ========================================================================= */
-.grid > .card{ margin-bottom:14px; }
-.grid > .card.gs-card{ margin-top:14px; }
-@container content (min-width:880px){
-  .grid > .card, .grid > .card.gs-card{ margin:0; }
-}
+.grid > .card, .grid > .card.gs-card{ margin:0; }
 #btnPrivacy{ display:none; }
 @media (min-width:768px){ #btnPrivacy{ display:flex; } }
 
@@ -2735,7 +2856,6 @@ body.tour-on .fab{ transition:none; }
 .up-sum-cell.in b{ color:var(--pos); } .up-sum-cell.out b{ color:var(--neg); } .up-sum-cell.sav b{ color:var(--gold-ink); }
 .up-sum-foot{ margin-top:12px; font-size:12.5px; line-height:1.5; color:var(--text-3); }
 .up-sum-foot b{ color:var(--text); font-variant-numeric:tabular-nums; }
-:root.privacy :is(.up-sum-cell b, .up-sum-foot b){ filter:blur(7px); }
 @container content (min-width:880px){ .up-summary{ margin-top:0; } }
 
 /* Analyse : pastilles de période et bouton de comparaison sur une ligne. */
@@ -2755,7 +2875,6 @@ body.tour-on .fab{ transition:none; }
 [dir="rtl"] .up-sum-next-r{ text-align:left; }
 .up-sum-next-r b{ font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-.02em; }
 .up-sum-next-r b.in{ color:var(--pos); } .up-sum-next-r b.out{ color:var(--text); } .up-sum-next-r b.sav{ color:var(--gold-ink); }
-:root.privacy .up-sum-next-r b{ filter:blur(7px); }
 
 </style>
 <!--/@app--></head>
@@ -2796,6 +2915,8 @@ body.tour-on .fab{ transition:none; }
   <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="icon-sync" viewBox="0 0 24 24"><path d="M19.5 9A8 8 0 0 0 5.2 7.2L4 8.5M4.5 15a8 8 0 0 0 14.3 1.8L20 15.5M4 4v4.5h4.5M20 20v-4.5h-4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="12" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 5.5A2.5 2.5 0 0 0 13 3.5H6A2.5 2.5 0 0 0 3.5 6v7A2.5 2.5 0 0 0 5.5 15.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="icon-pencil" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4ZM13.5 6.5l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="icon-grip" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></g></symbol>
   <symbol id="icon-external" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 </svg>
 
@@ -2911,8 +3032,8 @@ body.tour-on .fab{ transition:none; }
             <p class="card-title" data-i18n="home.chartTitle">Évolution du solde</p>
             <div class="chart-presets" id="chartPresets">
               <button data-preset="month" class="active" data-i18n="chart.thisMonth">Ce mois</button>
-              <button data-preset="3m" data-i18n="chart.3m">3 derniers mois</button>
-              <button data-preset="6m" data-i18n="chart.6m">6 derniers mois</button>
+              <button data-preset="3m"><span class="lbl-long" data-i18n="chart.3m">3 derniers mois</span><span class="lbl-short" data-i18n="chart.3mShort">3 mois</span></button>
+              <button data-preset="6m"><span class="lbl-long" data-i18n="chart.6m">6 derniers mois</span><span class="lbl-short" data-i18n="chart.6mShort">6 mois</span></button>
             </div>
           </div>
           <div class="chart-range-row">
@@ -3106,19 +3227,25 @@ body.tour-on .fab{ transition:none; }
   <!-- ============ PAGE: ANALYSE ============ -->
   <section class="page" id="page-analyse">
     <div class="grid">
-      <div class="blk span-5">
-        <div class="section-head"><h2 data-i18n="an.leftToSpend">Reste à dépenser</h2></div>
-        <div class="pace-card" id="pacePanel"></div>
-        <div class="extra-card" id="extraPanel" style="display:none;"></div>
-      </div>
       <div class="blk span-7">
         <div class="section-head"><h2 data-i18n="an.monthTracking">Suivi du mois en cours</h2></div>
         <div class="card" id="monthTrackCard">
           <div class="stat-legend" id="monthTrackLegend"></div>
           <div id="monthTrackChart" class="chart-host"></div>
+          <p class="chart-note track-note" id="monthTrackNote" hidden></p>
         </div>
       </div>
+      <div class="blk span-5">
+        <div class="section-head"><h2 data-i18n="an.leftToSpend">Reste à dépenser</h2></div>
+        <div class="pace-card" id="pacePanel"></div>
+        <div class="extra-card" id="extraPanel" style="display:none;"></div>
+      </div>
 
+      <div class="blk span-5">
+        <div class="section-head"><h2 data-i18n="an.byCategory">Marge par catégorie</h2></div>
+        <p class="section-sub" data-i18n="an.byCategorySub">Ce qu'il reste sur chaque budget, réparti sur les jours restants.</p>
+        <div class="card" id="catAllowanceCard"></div>
+      </div>
       <div class="blk span-7">
         <div class="section-head"><h2 data-i18n="st.byCategory">Répartition par catégorie</h2></div>
         <div class="donut-toolbar">
@@ -3135,11 +3262,6 @@ body.tour-on .fab{ transition:none; }
         <p class="period-summary" id="donutPeriodSummary"></p>
         <div class="card" id="donutCard"></div>
         <div class="card" id="donutCompareCard" style="display:none;"></div>
-      </div>
-      <div class="blk span-5">
-        <div class="section-head"><h2 data-i18n="an.byCategory">Marge par catégorie</h2></div>
-        <p class="section-sub" data-i18n="an.byCategorySub">Ce qu'il reste sur chaque budget, réparti sur les jours restants.</p>
-        <div class="card" id="catAllowanceCard"></div>
       </div>
 
       <div class="blk span-7">
@@ -3202,7 +3324,10 @@ body.tour-on .fab{ transition:none; }
           <button class="pill-btn" id="btnAddCategoryPage" data-i18n="cat.new">+ Nouvelle catégorie</button>
         </div>
         <p class="section-sub" data-i18n="page.categories.sub">Organisez vos catégories et sous-catégories</p>
-        <div class="card" id="categoryPageCard"><div id="categoryManageListPage"></div></div>
+        <div class="cat-board" id="categoryPageCard">
+          <div class="cat-summary" id="catSummary"></div>
+          <div class="cat-board-list" id="categoryManageListPage"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -3602,6 +3727,13 @@ body.tour-on .fab{ transition:none; }
   <div class="sheet">
     <div class="sheet-handle"></div>
     <h2 class="sheet-title" data-i18n="ic.pick">Choisir une icône</h2>
+    <!-- N'importe quel emoji du clavier, en plus de la sélection ci-dessous. -->
+    <label class="icon-custom">
+      <span class="icon-custom-preview" id="iconCustomPreview" aria-hidden="true">😀</span>
+      <input type="text" id="iconCustomInput" class="icon-custom-input" placeholder="Ou tapez un emoji de votre clavier" data-i18n-ph="ic.customPh" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
+    </label>
+    <p class="icon-custom-hint" id="iconCustomHint" data-i18n="ic.customHint">Toutes les icônes de votre clavier sont acceptées.</p>
+    <div class="icon-jump" id="iconJump" role="tablist"></div>
     <div class="icon-sections" id="iconSections"></div>
     <div class="sheet-actions">
       <button class="btn btn-primary" id="btnConfirmIcon" data-i18n="ic.use">✓ Utiliser cette icône</button>
@@ -6695,7 +6827,7 @@ var I18N = {
 "ar":{"an.hideSubs":"إخفاء الفئات الفرعية","an.showSubs":"عرض الفئات الفرعية","an.subCount":"{n} فئات فرعية","an.subCount_1":"{n} فئة فرعية"}
 }; for(var L in SUPE){ for(var k in SUPE[L]){ I18N[L][k] = SUPE[L][k]; } } })();
 
-var ICON_SECTIONS = [{"key": "common", "icons": ["⭐", "❤️", "🎯", "🚩", "🔖", "📌", "⏰", "📅", "⚠️", "❓", "✅", "❌", "➕", "➖", "💬", "♾️", "⏳", "✨", "🔔", "🕐"]}, {"key": "food", "icons": ["🛒", "🧺", "🍔", "🍕", "🎂", "🍦", "☕", "🍵", "🍺", "🍷", "🍸", "🥤", "🍽️", "🍴", "🐟", "🥩", "🍞", "🍎", "🥕", "🍬", "🍭", "🍜", "🧀", "🥚", "🥗", "🍫", "🥐", "🍇", "🥑", "🍟", "🌮", "🍣"]}, {"key": "home", "icons": ["🏠", "🏡", "🏢", "🛏️", "🛋️", "🪑", "🚪", "🔑", "🚿", "🛁", "🧹", "🧽", "🪴", "🔨", "🗑️", "💡", "🪟", "🧴", "📦", "🔩", "🧊", "🪛"]}, {"key": "transport", "icons": ["🚗", "🚕", "🚌", "🚚", "🏍️", "🛵", "🚲", "🛴", "🚆", "🚢", "✈️", "🚀", "⛽", "🛣️", "🅿️", "🎫", "🗺️", "🌍", "🚦", "🛞", "🚁", "🛺"]}, {"key": "health", "icons": ["🏥", "💊", "💉", "🩺", "🩹", "🌡️", "🦷", "👁️", "👓", "🧠", "🦽", "🚑", "🏋️", "🧘", "🩸", "😷", "💆", "🫀"]}, {"key": "leisure", "icons": ["⚽", "🏀", "🎾", "🏊", "🎮", "🎵", "🎧", "🎬", "🎭", "🎨", "🖌️", "🎲", "🃏", "🏆", "🥇", "🎸", "⛺", "🏖️", "🐾", "🦴", "🎄", "🎡", "🎳", "🎤", "🎿", "🏄", "🎣", "🧩"]}, {"key": "education", "icons": ["📚", "📖", "📓", "✏️", "🖊️", "📐", "🧮", "🎓", "🏫", "🔬", "🌐", "🗣️", "📝", "🔭"]}, {"key": "money", "icons": ["💵", "💴", "💶", "💷", "💰", "💳", "🏦", "🪙", "🐷", "🏧", "🧾", "📊", "📈", "📉", "⚖️", "🎁", "🔁", "💸", "🤑", "💎", "🧧", "🪪"]}, {"key": "work", "icons": ["💼", "📁", "📄", "📋", "✉️", "📮", "🤝", "📇", "🗂️", "⌨️", "🖇️", "📠", "🗒️", "📥"]}, {"key": "tech", "icons": ["💻", "🖥️", "📱", "📲", "⌚", "📺", "📶", "🔋", "🔌", "☁️", "👾", "⚙️", "🤖", "📷", "🎙️", "📡", "🔦", "💿", "🖱️", "🖨️"]}, {"key": "shop", "icons": ["🛍️", "👜", "🏷️", "👕", "👖", "👗", "👟", "👠", "🧢", "🧳", "🎒", "💄", "✂️", "🕶️", "👔", "🧦", "🪞", "💍", "🧤", "🥾"]}, {"key": "nature", "icons": ["🌳", "🌲", "🍃", "🌸", "🌻", "☀️", "🌙", "🌧️", "❄️", "⚡", "🔥", "💧", "🏔️", "🌊", "♻️", "🌱", "🌵", "🐝", "🌴", "🍂"]}, {"key": "people", "icons": ["👤", "👥", "👨‍👩‍👧", "👶", "🍼", "🙂", "🐕", "🐈", "🐦", "🐹", "⛪", "🎗️", "🫶", "👴", "🧑‍🎓", "🤱"]}, {"key": "security", "icons": ["🛡️", "🔒", "🔓", "🚨", "☂️", "🧯", "📜", "ℹ️", "🆘", "👮", "🔐", "⛑️"]}, {"key": "bills", "icons": ["🚰", "🗞️", "🛠️", "📻", "🏛️", "🪫", "🧻", "🔧"]}, {"key": "goals", "icons": ["👑", "⚓", "🥧", "🏝️", "🎖️", "🗝️", "🏅", "🌠", "🪺", "🧭", "🕯️", "🎠"]}];
+var ICON_SECTIONS = [{"key": "common", "icons": ["⭐", "❤️", "🎯", "🚩", "🔖", "📌", "⏰", "📅", "⚠️", "❓", "✅", "❌", "➕", "➖", "💬", "♾️", "⏳", "✨", "🔔", "🕐", "🔴", "🟠", "🟡", "🟢", "🔵", "🟣", "🟤", "⚫", "⚪", "🔶", "🔷", "💠", "🆕", "🆓", "💯", "🔄", "🔗", "🏁", "🔝", "🔜"]}, {"key": "food", "icons": ["🛒", "🧺", "🍔", "🍕", "🎂", "🍦", "☕", "🍵", "🍺", "🍷", "🍸", "🥤", "🍽️", "🍴", "🐟", "🥩", "🍞", "🍎", "🥕", "🍬", "🍭", "🍜", "🧀", "🥚", "🥗", "🍫", "🥐", "🍇", "🥑", "🍟", "🌮", "🍣", "🥖", "🥨", "🥯", "🧇", "🥞", "🧈", "🍳", "🥓", "🍗", "🍖", "🌭", "🥪", "🌯", "🥙", "🧆", "🍝", "🍛", "🍲", "🥘", "🍱", "🍙", "🍚", "🍤", "🦐", "🦞", "🦀", "🦪", "🍩", "🍪", "🧁", "🍰", "🍯", "🥛", "🧃", "🧋", "🍹", "🥂", "🍾", "🧉", "🍶", "🥃", "🍋", "🍊", "🍌", "🍉", "🍓", "🍒", "🍑", "🍍", "🥥", "🥝", "🍅", "🥦", "🥬", "🌽", "🌶️", "🥔", "🧄", "🧅", "🍄", "🥜", "🧂", "🥫", "🍿", "🍮", "🥟", "🥠", "🍧", "🍨", "🍡", "🫖", "🥡", "🍏", "🍐", "🫐", "🥒", "🫑", "🍆", "🥭", "🫘"]}, {"key": "home", "icons": ["🏠", "🏡", "🏢", "🛏️", "🛋️", "🪑", "🚪", "🔑", "🚿", "🛁", "🧹", "🧽", "🪴", "🔨", "🗑️", "💡", "🪟", "🧴", "📦", "🔩", "🧊", "🪛", "🏘️", "🏚️", "🏗️", "🧱", "🪜", "🧰", "🪚", "🪣", "🧼", "🪥", "🖼️", "🕰️", "🛎️", "🧸", "♨️", "🚽", "🪠", "🛌", "🪔", "🏮", "📬", "🗄️", "🧷", "🧵", "🧶", "🪡", "🪤", "🧲", "🌬️", "🪵"]}, {"key": "transport", "icons": ["🚗", "🚕", "🚌", "🚚", "🏍️", "🛵", "🚲", "🛴", "🚆", "🚢", "✈️", "🚀", "⛽", "🛣️", "🅿️", "🎫", "🗺️", "🌍", "🚦", "🛞", "🚁", "🛺", "🚙", "🛻", "🚐", "🚎", "🚒", "🚓", "🚜", "🏎️", "🛥️", "⛵", "🚤", "⛴️", "🛳️", "🚂", "🚄", "🚅", "🚇", "🚊", "🚉", "🚡", "🚠", "🛫", "🛬", "🚧", "🛤️", "🚏", "🛩️", "🚖", "🚘", "🛑"]}, {"key": "travel", "icons": ["🏨", "🏩", "⛱️", "🗽", "🗼", "🏰", "🏯", "🌅", "🌄", "🌌", "🗻", "⛩️", "🛂", "🛃", "🛄", "🎌", "🏟️", "🕌", "🛕", "⛲", "🎑", "🌉", "🌃", "🗾", "🏕️", "🏞️", "🛖"]}, {"key": "health", "icons": ["🏥", "💊", "💉", "🩺", "🩹", "🌡️", "🦷", "👁️", "👓", "🧠", "🦽", "🚑", "🧘", "🩸", "😷", "💆", "🫀", "🧬", "🦵", "🦶", "👂", "👃", "🫁", "🦠", "🧪", "⚕️", "🩼", "🩻", "🥼", "🤧", "🤒", "🤕", "💤", "🚭"]}, {"key": "beauty", "icons": ["💅", "💇", "🧖", "💈", "🪒", "💋", "👄", "💐", "🪷", "🛀", "🫧"]}, {"key": "sport", "icons": ["⚽", "🏀", "🎾", "🏊", "🎿", "🏄", "🎣", "🏋️", "⚾", "🏈", "🏉", "🏐", "🏓", "🏸", "🏒", "🏑", "🥍", "🏏", "⛳", "🥊", "🥋", "🛹", "🛼", "⛸️", "🥌", "🏂", "⛷️", "🧗", "🚣", "🤽", "🚵", "🏇", "🤺", "🏹", "🏃", "🚴", "🤸", "🏌️", "🤿", "🎽", "🛷", "🥅"]}, {"key": "leisure", "icons": ["🎮", "🎵", "🎧", "🎬", "🎭", "🎨", "🖌️", "🎲", "🃏", "🏆", "🥇", "🎸", "⛺", "🏖️", "🐾", "🦴", "🎄", "🎡", "🎳", "🎤", "🧩", "🎻", "🎹", "🥁", "🎷", "🎺", "🪕", "🎼", "📸", "🎥", "🎟️", "🎪", "🎢", "🎰", "🎱", "🪀", "🪁", "♟️", "🎴", "🀄", "📽️", "🎞️", "🕹️", "💃", "🕺", "🗿", "🪩"]}, {"key": "events", "icons": ["🎉", "🎊", "🎈", "🎃", "🎆", "🎇", "🧨", "🪅", "🎍", "🎋", "🎏", "🎐", "💝", "💌", "💒", "🎎", "🕎", "🧑‍🎄", "🤶", "👻", "🐣", "🥳"]}, {"key": "education", "icons": ["📚", "📖", "📓", "✏️", "🖊️", "📐", "🧮", "🎓", "🏫", "🔬", "🌐", "🗣️", "📝", "🔭", "📕", "📗", "📘", "📙", "📒", "📔", "🖍️", "🖋️", "📏", "🗃️", "🧑‍🏫", "🔤", "🔢", "📑", "📰", "🧑‍💻", "🔍", "🧑‍🔬"]}, {"key": "money", "icons": ["💵", "💴", "💶", "💷", "💰", "💳", "🏦", "🪙", "🐷", "🏧", "🧾", "📊", "📈", "📉", "⚖️", "🎁", "🔁", "💸", "🤑", "💎", "🧧", "🪪", "💲", "💱", "🏪", "🏬", "📃", "🧑‍💼", "💹", "📆", "🗓️", "⏱️", "🤲", "🏤"]}, {"key": "work", "icons": ["💼", "📁", "📄", "📋", "✉️", "📮", "🤝", "📇", "🗂️", "⌨️", "🖇️", "📠", "🗒️", "📥", "📎", "👷", "🏭", "📤", "📧", "📨", "📩", "🧑‍🔧", "🧑‍🏭", "🪧", "🖊", "🗳️"]}, {"key": "tech", "icons": ["💻", "🖥️", "📱", "📲", "⌚", "📺", "📶", "🔋", "🔌", "☁️", "👾", "⚙️", "🤖", "📷", "🎙️", "📡", "🔦", "💿", "🖱️", "🖨️", "💾", "📀", "🔊", "🔇", "🎛️", "📟", "☎️", "📞", "🖲️", "🛰️", "📼", "🎚️", "💽", "🔈", "🧑‍🚀"]}, {"key": "shop", "icons": ["🛍️", "👜", "🏷️", "👕", "👖", "👗", "👟", "👠", "🧢", "🧳", "🎒", "💄", "✂️", "🕶️", "👔", "🧦", "🪞", "💍", "🧤", "🥾", "🧥", "🦺", "👘", "🥻", "🩱", "🩳", "👙", "👚", "👛", "👝", "🎩", "👒", "🧣", "👞", "👡", "🩴", "👢", "🎀", "🩲", "🥿"]}, {"key": "nature", "icons": ["🌳", "🌲", "🍃", "🌸", "🌻", "☀️", "🌙", "🌧️", "❄️", "⚡", "🔥", "💧", "🏔️", "🌊", "♻️", "🌱", "🌵", "🐝", "🌴", "🍂", "🌿", "☘️", "🍀", "🌾", "🌺", "🌹", "🥀", "🌷", "🌼", "🍁", "🌈", "⛅", "🌤️", "🌪️", "🌫️", "⛈️", "🌨️", "🌋", "🏜️", "🌎", "🌏", "🪐", "🌟", "💫", "🪨", "🌰"]}, {"key": "animals", "icons": ["🐕", "🐈", "🐦", "🐹", "🐶", "🐱", "🐰", "🦜", "🐠", "🐢", "🐴", "🐄", "🐖", "🐑", "🐐", "🐓", "🦆", "🐇", "🦮", "🐩", "🐞", "🦋", "🐌", "🐛", "🦔", "🦊", "🐻", "🐼", "🐨", "🦁", "🐯", "🐘", "🦒", "🦓", "🐬", "🐳", "🦈", "🐙", "🐍", "🦎", "🐊", "🐿️", "🦉", "🦅", "🐧", "🕊️", "🦄", "🐲", "🐸", "🐭"]}, {"key": "people", "icons": ["👤", "👥", "👨‍👩‍👧", "👶", "🍼", "🙂", "⛪", "🎗️", "🫶", "👴", "🧑‍🎓", "🤱", "👨", "👩", "👧", "👦", "👪", "👫", "👬", "👭", "💑", "👰", "🤵", "🤰", "🧓", "👵", "🧒", "🧑", "👨‍👩‍👦", "👨‍👧", "👩‍👦", "🧑‍🍼", "🧑‍🤝‍🧑", "🙋", "🤗", "😊", "😴", "👨‍🍳", "🧑‍⚕️", "🧑‍🌾", "🧑‍🎨", "🧑‍✈️", "🧑‍🚒", "🙏", "🕍", "☮️", "✝️", "☪️", "🕉️", "✡️", "🎅"]}, {"key": "security", "icons": ["🛡️", "🔒", "🔓", "🚨", "☂️", "🧯", "📜", "ℹ️", "🆘", "👮", "🔐", "⛑️", "🔏", "🚔", "📛", "🔰", "⛔", "🚫", "🧑‍⚖️", "💂", "🕵️", "🪖"]}, {"key": "bills", "icons": ["🚰", "🗞️", "🛠️", "📻", "🏛️", "🪫", "🧻", "🔧", "🛢️", "🚛"]}, {"key": "goals", "icons": ["👑", "⚓", "🥧", "🏝️", "🎖️", "🗝️", "🏅", "🌠", "🪺", "🧭", "🕯️", "🎠", "🥈", "🥉", "🪄", "🔮", "🏵️", "🪂", "🛸"]}];
 
 /* =========================================================================
    BIBLIOTHÈQUE D'ICÔNES
@@ -7212,6 +7344,16 @@ function withIconText(v, nom){
 "it":{"sy.intro":"Ritrovi le sue operazioni su tutti i dispositivi, aggiornate in tempo reale. La sincronizzazione passa dal suo progetto Firebase: gratuito, riservato a lei e pronto in circa 5 minuti, una sola volta.","sy.syncBtn":"Configura la sincronizzazione","sy.setup":"Configura la sincronizzazione","sy.setupSub":"I suoi dati passano solo dal suo progetto Firebase (gratuito, senza carta di credito). Segua questi passaggi una sola volta, su un primo dispositivo.","sy.haveKeyT":"Ha già configurato un altro dispositivo?","sy.haveKeyB":"Non serve ripetere questi passaggi: su quel dispositivo apra Impostazioni → Sincronizzazione → «Aggiungi un dispositivo», copi la chiave e la incolli nel campo in fondo a questa scheda.","sy.st1t":"Creare un progetto Firebase","sy.st1d":"Apra la console Firebase, acceda con un account Google e scelga «Crea un progetto». Google Analytics può restare disattivato.","sy.openConsole":"Apri la console Firebase","sy.st2t":"Attivare l'accesso anonimo","sy.st2d":"Menu «Authentication» → «Inizia» → scheda «Sign-in method» → «Anonimo»: attivi e salvi.","sy.st3t":"Creare il database Firestore","sy.st3d":"Menu «Firestore Database» → «Crea database» → modalità produzione. Scelga la località più vicina.","sy.st4t":"Incollare le regole di sicurezza","sy.st4d":"Sempre in Firestore, scheda «Regole»: sostituisca tutto il contenuto con il testo qui sotto, poi tocchi «Pubblica». Queste regole non cambieranno mai con gli aggiornamenti dell'app.","sy.st5t":"Copiare la configurazione","sy.st5d":"Ingranaggio → «Impostazioni progetto» → «Le tue app» → icona Web </> → dia un nome, registri, poi copi il blocco firebaseConfig mostrato.","sy.st6t":"Incollare qui la configurazione","sy.configLabel":"Configurazione Firebase o chiave del dispositivo","sy.configPh":"const firebaseConfig = { apiKey: \"…\", … }  oppure  SB1.…","sy.copy":"Copia","sy.copied":"Copiato ✓","sy.copyFail":"Copia impossibile: selezioni il testo e lo copi manualmente.","sy.errParse":"Nulla di riconosciuto nel testo incollato. Incolli il blocco firebaseConfig completo, o la chiave del dispositivo che inizia con «SB1.».","sy.errNoConfig":"Nessun progetto Firebase è configurato su questo dispositivo.","sy.needsTitle":"Sincronizzazione da riconfigurare","sy.needsBody":"Il progetto di sincronizzazione comune delle versioni precedenti non esiste più. I suoi dati sono intatti su questo dispositivo. Per continuare a sincronizzare, lo colleghi al suo progetto Firebase gratuito: il suo codice {code} viene mantenuto.","sy.needsBtn":"Configura il mio progetto","sy.needsShort":"Da riconfigurare","sy.projectReady":"Progetto «{project}» pronto. Crei un codice su questo primo dispositivo, o inserisca quello degli altri dispositivi.","sy.chooseCode":"Crea o inserisci un codice","sy.changeProject":"Cambia progetto Firebase","sy.advancedOwn":"Cambia progetto Firebase","sy.codeSub":"Il codice identifica i suoi dati nel suo progetto. Lo crei su questo primo dispositivo; per i successivi, la cosa più semplice è la chiave del dispositivo, che contiene progetto e codice.","sy.codeCreated":"Codice creato: {code}\n\nPer collegare un altro dispositivo: qui, Impostazioni → Sincronizzazione → «Aggiungi un dispositivo», poi incolli la chiave sull'altro dispositivo.","sy.addDeviceT":"Aggiungi un dispositivo","sy.addDeviceB":"Sull'altro dispositivo: Impostazioni → Sincronizzazione → «Configura la sincronizzazione», poi incolli questa chiave in fondo alla scheda. Contiene il suo progetto e il suo codice: la condivida solo con i suoi dispositivi.","sy.keyCopied":"Chiave copiata. La incolli sull'altro dispositivo.","sy.keyJoined":"Dispositivo collegato: i suoi dati stanno arrivando.","sy.errProject":"Il progetto Firebase «{project}» non è stato trovato o è disattivato: probabilmente è stato eliminato. Tocchi «Cambia progetto Firebase» e segua la guida per collegarne un altro.","sy.errRules":"Firestore nega l'accesso. Verifichi che l'accesso anonimo sia attivo (Authentication) e che le regole di Firestore siano esattamente quelle della guida, poi le pubblichi.","tu.settings.sync.b":"Colleghi i suoi dispositivi tramite il suo progetto Firebase gratuito: una guida passo passo la accompagna una sola volta, poi basta una semplice chiave per ogni nuovo dispositivo."},
 "ar":{"sy.intro":"اعثر على عملياتك في جميع أجهزتك، محدَّثة لحظياً. تمر المزامنة عبر مشروع Firebase الخاص بك: مجاني، لك وحدك، ويجهز في نحو 5 دقائق لمرة واحدة.","sy.syncBtn":"إعداد المزامنة","sy.setup":"إعداد المزامنة","sy.setupSub":"لا تمر بياناتك إلا عبر مشروع Firebase الخاص بك (مجاني، بلا بطاقة بنكية). اتبع هذه الخطوات مرة واحدة على جهاز أول.","sy.haveKeyT":"هل لديك جهاز آخر مُعَدّ مسبقاً؟","sy.haveKeyB":"لا داعي لتكرار هذه الخطوات: على ذلك الجهاز افتح الإعدادات ← المزامنة ← «إضافة جهاز»، وانسخ المفتاح ثم الصقه في الحقل أسفل هذه البطاقة.","sy.st1t":"إنشاء مشروع Firebase","sy.st1d":"افتح وحدة تحكم Firebase وسجّل الدخول بحساب Google ثم اختر «إنشاء مشروع». يمكن ترك Google Analytics معطلاً.","sy.openConsole":"فتح وحدة تحكم Firebase","sy.st2t":"تفعيل تسجيل الدخول المجهول","sy.st2d":"قائمة «Authentication» ← «البدء» ← تبويب «Sign-in method» ← «مجهول»: فعّله ثم احفظ.","sy.st3t":"إنشاء قاعدة Firestore","sy.st3d":"قائمة «Firestore Database» ← «إنشاء قاعدة بيانات» ← وضع الإنتاج. اختر أقرب موقع إليك.","sy.st4t":"لصق قواعد الأمان","sy.st4d":"في Firestore، تبويب «القواعد»: استبدل كل المحتوى بالنص أدناه ثم اضغط «نشر». لن تتغير هذه القواعد أبداً مع تحديثات التطبيق.","sy.st5t":"نسخ الإعدادات","sy.st5d":"رمز الترس ← «إعدادات المشروع» ← «تطبيقاتك» ← رمز الويب </> ← أعطه اسماً وسجّله، ثم انسخ كتلة firebaseConfig المعروضة.","sy.st6t":"الصق الإعدادات هنا","sy.configLabel":"إعدادات Firebase أو مفتاح الجهاز","sy.configPh":"const firebaseConfig = { apiKey: \"…\", … }  أو  SB1.…","sy.copy":"نسخ","sy.copied":"تم النسخ ✓","sy.copyFail":"تعذّر النسخ: حدّد النص وانسخه يدوياً.","sy.errParse":"لم يُتعرَّف على شيء في النص الملصق. الصق كتلة firebaseConfig كاملة، أو مفتاح الجهاز الذي يبدأ بـ «SB1.».","sy.errNoConfig":"لا يوجد مشروع Firebase مُعَدّ على هذا الجهاز.","sy.needsTitle":"المزامنة بحاجة لإعادة الإعداد","sy.needsBody":"لم يعد مشروع المزامنة المشترك للإصدارات السابقة موجوداً. بياناتك سليمة على هذا الجهاز. لمواصلة المزامنة، اربطه بمشروع Firebase مجاني خاص بك: سيُحتفظ برمزك {code}.","sy.needsBtn":"إعداد مشروعي","sy.needsShort":"بحاجة لإعداد","sy.projectReady":"المشروع «{project}» جاهز. أنشئ رمزاً على هذا الجهاز الأول، أو أدخل رمز أجهزتك الأخرى.","sy.chooseCode":"إنشاء رمز أو إدخاله","sy.changeProject":"تغيير مشروع Firebase","sy.advancedOwn":"تغيير مشروع Firebase","sy.codeSub":"يحدد الرمز بياناتك داخل مشروعك. أنشئه على هذا الجهاز الأول؛ وللأجهزة التالية، الأسهل هو مفتاح الجهاز الذي يضم المشروع والرمز معاً.","sy.codeCreated":"تم إنشاء الرمز: {code}\n\nلربط جهاز آخر: هنا، الإعدادات ← المزامنة ← «إضافة جهاز»، ثم الصق المفتاح على الجهاز الآخر.","sy.addDeviceT":"إضافة جهاز","sy.addDeviceB":"على الجهاز الآخر: الإعدادات ← المزامنة ← «إعداد المزامنة»، ثم الصق هذا المفتاح أسفل البطاقة. يحتوي على مشروعك ورمزك: لا تشاركه إلا مع أجهزتك.","sy.keyCopied":"تم نسخ المفتاح. الصقه على جهازك الآخر.","sy.keyJoined":"تم ربط الجهاز: بياناتك في الطريق.","sy.errProject":"تعذّر العثور على مشروع Firebase «{project}» أو أنه معطَّل: ربما حُذف. اضغط «تغيير مشروع Firebase» واتبع الدليل لربط مشروع آخر.","sy.errRules":"رفض Firestore الوصول. تحقق من تفعيل تسجيل الدخول المجهول (Authentication) ومن أن قواعد Firestore مطابقة تماماً لقواعد الدليل، ثم انشرها.","tu.settings.sync.b":"اربط أجهزتك عبر مشروع Firebase مجاني خاص بك: يرافقك دليل خطوة بخطوة مرة واحدة، ثم يكفي مفتاح بسيط لكل جهاز جديد."}
 }; for(var L in SUPSYNC2){ for(var k in SUPSYNC2[L]){ I18N[L][k] = SUPSYNC2[L][k]; } } })();
+/* Retours d'usage : projection expliquée, marges, page Catégories, icônes. Placé en dernier. */
+(function(){ var SUPV3 = {
+"fr":{"chart.3mShort":"3 mois","chart.6mShort":"6 mois","an.projHowTitle":"Comment c'est calculé :","an.projBreak":"{spent} déjà dépensés + {sched} de paiements programmés d'ici la fin du mois + {budgets} encore disponibles sur vos budgets.","an.projBreakNoBudget":"{spent} déjà dépensés + {sched} de paiements programmés d'ici la fin du mois.","an.projHow":"On suppose que vos budgets seront entièrement utilisés ; les dépenses sans budget ne sont comptées que si elles sont programmées.","an.projHowNoBudget":"Définissez des budgets pour que la projection tienne compte de vos dépenses courantes.","an.catCapParent":"limité à {v} : c'est ce qu'il reste dans « {cat} »","an.catCapAmount":"ajusté à {v} selon votre solde","cat.metaSubs":"{n} sous-catégories","cat.metaSubs_1":"1 sous-catégorie","cat.noSub":"Aucune sous-catégorie","cat.metaBudget":"Budget {v}/mois","cat.metaOps":"{v} ce mois · {n} opérations","cat.metaOps_1":"{v} ce mois · 1 opération","cat.metaNone":"Aucune dépense ce mois","cat.addSubShort":"Sous-catégorie","cat.sumCats":"catégories","cat.sumCats_1":"catégorie","cat.sumSubs":"sous-catégories","cat.sumSubs_1":"sous-catégorie","cat.sumBudgets":"avec un budget","cat.sumBudgets_1":"avec un budget","ic.travel":"Voyages & sorties","ic.beauty":"Beauté & bien-être","ic.sport":"Sport","ic.events":"Fêtes & cadeaux","ic.animals":"Animaux","ic.leisure":"Loisirs & culture","ic.people":"Personnes & famille","ic.customPh":"Ou tapez un emoji de votre clavier","ic.customHint":"Toutes les icônes de votre clavier sont acceptées.","ic.customErr":"Saisissez un emoji, pas du texte.","ic.customOk":"Cette icône sera utilisée."},
+"en":{"chart.3mShort":"3 months","chart.6mShort":"6 months","an.projHowTitle":"How it is calculated:","an.projBreak":"{spent} already spent + {sched} of scheduled payments until the end of the month + {budgets} still available on your budgets.","an.projBreakNoBudget":"{spent} already spent + {sched} of scheduled payments until the end of the month.","an.projHow":"It assumes your budgets will be fully used; spending without a budget only counts when it is scheduled.","an.projHowNoBudget":"Set budgets so the projection takes your everyday spending into account.","an.catCapParent":"limited to {v}: that is what is left in “{cat}”","an.catCapAmount":"adjusted to {v} based on your balance","cat.metaSubs":"{n} subcategories","cat.metaSubs_1":"1 subcategory","cat.noSub":"No subcategory","cat.metaBudget":"Budget {v}/month","cat.metaOps":"{v} this month · {n} transactions","cat.metaOps_1":"{v} this month · 1 transaction","cat.metaNone":"No spending this month","cat.addSubShort":"Subcategory","cat.sumCats":"categories","cat.sumCats_1":"category","cat.sumSubs":"subcategories","cat.sumSubs_1":"subcategory","cat.sumBudgets":"with a budget","cat.sumBudgets_1":"with a budget","ic.travel":"Travel & outings","ic.beauty":"Beauty & wellbeing","ic.sport":"Sport","ic.events":"Celebrations & gifts","ic.animals":"Animals","ic.leisure":"Leisure & culture","ic.people":"People & family","ic.customPh":"Or type an emoji from your keyboard","ic.customHint":"Any icon from your keyboard is accepted.","ic.customErr":"Enter an emoji, not text.","ic.customOk":"This icon will be used."},
+"de":{"chart.3mShort":"3 Monate","chart.6mShort":"6 Monate","an.projHowTitle":"So wird gerechnet:","an.projBreak":"{spent} bereits ausgegeben + {sched} geplante Zahlungen bis Monatsende + {budgets} noch verfügbar in Ihren Budgets.","an.projBreakNoBudget":"{spent} bereits ausgegeben + {sched} geplante Zahlungen bis Monatsende.","an.projHow":"Angenommen wird, dass Ihre Budgets vollständig genutzt werden; Ausgaben ohne Budget zählen nur, wenn sie geplant sind.","an.projHowNoBudget":"Legen Sie Budgets fest, damit die Prognose Ihre laufenden Ausgaben berücksichtigt.","an.catCapParent":"auf {v} begrenzt: so viel bleibt in „{cat}“","an.catCapAmount":"an Ihren Saldo angepasst: {v}","cat.metaSubs":"{n} Unterkategorien","cat.metaSubs_1":"1 Unterkategorie","cat.noSub":"Keine Unterkategorie","cat.metaBudget":"Budget {v}/Monat","cat.metaOps":"{v} diesen Monat · {n} Buchungen","cat.metaOps_1":"{v} diesen Monat · 1 Buchung","cat.metaNone":"Keine Ausgaben diesen Monat","cat.addSubShort":"Unterkategorie","cat.sumCats":"Kategorien","cat.sumCats_1":"Kategorie","cat.sumSubs":"Unterkategorien","cat.sumSubs_1":"Unterkategorie","cat.sumBudgets":"mit Budget","cat.sumBudgets_1":"mit Budget","ic.travel":"Reisen & Ausflüge","ic.beauty":"Schönheit & Wohlbefinden","ic.sport":"Sport","ic.events":"Feste & Geschenke","ic.animals":"Tiere","ic.leisure":"Freizeit & Kultur","ic.people":"Personen & Familie","ic.customPh":"Oder ein Emoji über die Tastatur eingeben","ic.customHint":"Alle Symbole Ihrer Tastatur sind möglich.","ic.customErr":"Bitte ein Emoji eingeben, keinen Text.","ic.customOk":"Dieses Symbol wird verwendet."},
+"es":{"chart.3mShort":"3 meses","chart.6mShort":"6 meses","an.projHowTitle":"Cómo se calcula:","an.projBreak":"{spent} ya gastados + {sched} de pagos programados hasta final de mes + {budgets} aún disponibles en sus presupuestos.","an.projBreakNoBudget":"{spent} ya gastados + {sched} de pagos programados hasta final de mes.","an.projHow":"Se supone que sus presupuestos se usarán por completo; los gastos sin presupuesto solo cuentan si están programados.","an.projHowNoBudget":"Defina presupuestos para que la proyección tenga en cuenta sus gastos habituales.","an.catCapParent":"limitado a {v}: es lo que queda en «{cat}»","an.catCapAmount":"ajustado a {v} según su saldo","cat.metaSubs":"{n} subcategorías","cat.metaSubs_1":"1 subcategoría","cat.noSub":"Sin subcategoría","cat.metaBudget":"Presupuesto {v}/mes","cat.metaOps":"{v} este mes · {n} operaciones","cat.metaOps_1":"{v} este mes · 1 operación","cat.metaNone":"Sin gastos este mes","cat.addSubShort":"Subcategoría","cat.sumCats":"categorías","cat.sumCats_1":"categoría","cat.sumSubs":"subcategorías","cat.sumSubs_1":"subcategoría","cat.sumBudgets":"con presupuesto","cat.sumBudgets_1":"con presupuesto","ic.travel":"Viajes y salidas","ic.beauty":"Belleza y bienestar","ic.sport":"Deporte","ic.events":"Fiestas y regalos","ic.animals":"Animales","ic.leisure":"Ocio y cultura","ic.people":"Personas y familia","ic.customPh":"O escriba un emoji con su teclado","ic.customHint":"Se acepta cualquier icono de su teclado.","ic.customErr":"Introduzca un emoji, no texto.","ic.customOk":"Se usará este icono."},
+"pt":{"chart.3mShort":"3 meses","chart.6mShort":"6 meses","an.projHowTitle":"Como é calculado:","an.projBreak":"{spent} já gastos + {sched} de pagamentos programados até ao fim do mês + {budgets} ainda disponíveis nos seus orçamentos.","an.projBreakNoBudget":"{spent} já gastos + {sched} de pagamentos programados até ao fim do mês.","an.projHow":"Pressupõe-se que os seus orçamentos serão totalmente usados; as despesas sem orçamento só contam se estiverem programadas.","an.projHowNoBudget":"Defina orçamentos para que a projeção tenha em conta as suas despesas correntes.","an.catCapParent":"limitado a {v}: é o que resta em «{cat}»","an.catCapAmount":"ajustado a {v} segundo o seu saldo","cat.metaSubs":"{n} subcategorias","cat.metaSubs_1":"1 subcategoria","cat.noSub":"Sem subcategoria","cat.metaBudget":"Orçamento {v}/mês","cat.metaOps":"{v} este mês · {n} operações","cat.metaOps_1":"{v} este mês · 1 operação","cat.metaNone":"Sem despesas este mês","cat.addSubShort":"Subcategoria","cat.sumCats":"categorias","cat.sumCats_1":"categoria","cat.sumSubs":"subcategorias","cat.sumSubs_1":"subcategoria","cat.sumBudgets":"com orçamento","cat.sumBudgets_1":"com orçamento","ic.travel":"Viagens e saídas","ic.beauty":"Beleza e bem-estar","ic.sport":"Desporto","ic.events":"Festas e presentes","ic.animals":"Animais","ic.leisure":"Lazer e cultura","ic.people":"Pessoas e família","ic.customPh":"Ou escreva um emoji do seu teclado","ic.customHint":"Qualquer ícone do seu teclado é aceite.","ic.customErr":"Introduza um emoji, não texto.","ic.customOk":"Este ícone será usado."},
+"it":{"chart.3mShort":"3 mesi","chart.6mShort":"6 mesi","an.projHowTitle":"Come viene calcolata:","an.projBreak":"{spent} già spesi + {sched} di pagamenti programmati fino a fine mese + {budgets} ancora disponibili sui suoi budget.","an.projBreakNoBudget":"{spent} già spesi + {sched} di pagamenti programmati fino a fine mese.","an.projHow":"Si presume che i budget vengano usati per intero; le spese senza budget contano solo se programmate.","an.projHowNoBudget":"Imposti dei budget perché la proiezione tenga conto delle spese correnti.","an.catCapParent":"limitato a {v}: è quanto resta in «{cat}»","an.catCapAmount":"adeguato a {v} in base al saldo","cat.metaSubs":"{n} sottocategorie","cat.metaSubs_1":"1 sottocategoria","cat.noSub":"Nessuna sottocategoria","cat.metaBudget":"Budget {v}/mese","cat.metaOps":"{v} questo mese · {n} operazioni","cat.metaOps_1":"{v} questo mese · 1 operazione","cat.metaNone":"Nessuna spesa questo mese","cat.addSubShort":"Sottocategoria","cat.sumCats":"categorie","cat.sumCats_1":"categoria","cat.sumSubs":"sottocategorie","cat.sumSubs_1":"sottocategoria","cat.sumBudgets":"con budget","cat.sumBudgets_1":"con budget","ic.travel":"Viaggi e uscite","ic.beauty":"Bellezza e benessere","ic.sport":"Sport","ic.events":"Feste e regali","ic.animals":"Animali","ic.leisure":"Tempo libero e cultura","ic.people":"Persone e famiglia","ic.customPh":"Oppure digiti un emoji dalla tastiera","ic.customHint":"È accettata qualsiasi icona della tastiera.","ic.customErr":"Inserisca un emoji, non del testo.","ic.customOk":"Verrà usata questa icona."},
+"ar":{"chart.3mShort":"3 أشهر","chart.6mShort":"6 أشهر","an.projHowTitle":"طريقة الحساب:","an.projBreak":"{spent} مصروفة بالفعل + {sched} مدفوعات مبرمجة حتى نهاية الشهر + {budgets} متبقية في ميزانياتك.","an.projBreakNoBudget":"{spent} مصروفة بالفعل + {sched} مدفوعات مبرمجة حتى نهاية الشهر.","an.projHow":"يُفترض أن تُستخدم ميزانياتك بالكامل؛ ولا تُحتسب المصاريف دون ميزانية إلا إذا كانت مبرمجة.","an.projHowNoBudget":"حدّد ميزانيات لكي يأخذ التوقع مصاريفك اليومية في الحسبان.","an.catCapParent":"محدود بـ {v}: هذا ما تبقى في «{cat}»","an.catCapAmount":"معدَّل إلى {v} حسب رصيدك","cat.metaSubs":"{n} فئات فرعية","cat.metaSubs_1":"فئة فرعية واحدة","cat.noSub":"لا توجد فئة فرعية","cat.metaBudget":"الميزانية {v}/شهر","cat.metaOps":"{v} هذا الشهر · {n} عمليات","cat.metaOps_1":"{v} هذا الشهر · عملية واحدة","cat.metaNone":"لا مصاريف هذا الشهر","cat.addSubShort":"فئة فرعية","cat.sumCats":"فئات","cat.sumCats_1":"فئة","cat.sumSubs":"فئات فرعية","cat.sumSubs_1":"فئة فرعية","cat.sumBudgets":"بميزانية","cat.sumBudgets_1":"بميزانية","ic.travel":"السفر والنزهات","ic.beauty":"الجمال والعناية","ic.sport":"الرياضة","ic.events":"الأعياد والهدايا","ic.animals":"الحيوانات","ic.leisure":"الترفيه والثقافة","ic.people":"الأشخاص والعائلة","ic.customPh":"أو اكتب رمزاً تعبيرياً من لوحة المفاتيح","ic.customHint":"تُقبل كل الرموز الموجودة في لوحة مفاتيحك.","ic.customErr":"أدخل رمزاً تعبيرياً وليس نصاً.","ic.customOk":"سيُستخدم هذا الرمز."}
+}; for(var L in SUPV3){ for(var k in SUPV3[L]){ I18N[L][k] = SUPV3[L][k]; } } })();
 
 var STORAGE_KEY = "suiviBudget.v2";
 var storageAvailable = true;
@@ -9920,6 +10062,80 @@ function setPrivacy(on){
   document.documentElement.classList.toggle("privacy", !!on);
   try{ if(on) window.localStorage.setItem(PRIVACY_KEY, "1"); else window.localStorage.removeItem(PRIVACY_KEY); }catch(e){}
   renderPrivacyControls();
+  if(on) pvStart(); else pvStop();
+}
+
+/* Seuls les montants sont floutés, jamais les phrases qui les entourent.
+   Flouter des blocs entiers (« Repère : … », le détail du solde prévu, les
+   observations) cachait du texte inutilement tout en laissant passer les
+   montants des blocs oubliés. Ici, tant que le mode est actif, chaque montant
+   en euros affiché à l'écran — quel que soit l'endroit qui l'a produit — est
+   enveloppé dans <span class="pv">, que la feuille de style floute en
+   proportion de la taille du texte. Un observateur traite au fil de l'eau ce
+   qui est affiché ensuite (changement de page, infobulles, messages). */
+var PV_IGNORE = { SCRIPT:1, STYLE:1, TEXTAREA:1, INPUT:1, SELECT:1, OPTION:1, NOSCRIPT:1, TITLE:1 };
+var PV_SVG = "http://www.w3.org/2000/svg";
+var pvMotif = (function(){
+  var sep = "[\\u0020\\u00a0\\u202f\\u200e\\u200f\\u061c]?";
+  var nombre = "\\d{1,3}(?:[\\u0020\\u00a0\\u202f.,'\\u2019]\\d{3})*(?:[.,]\\d{1,2})?";
+  var signe = "[+\\-\\u2212]?";
+  return new RegExp(signe + sep + "(?:€" + sep + signe + nombre + "|" + nombre + sep + "k?€)", "g");
+})();
+function pvTexte(n){
+  var p = n.parentNode;
+  if(!p || p.nodeType !== 1 || PV_IGNORE[p.nodeName.toUpperCase()]) return;
+  if(!n.nodeValue || n.nodeValue.indexOf("€") === -1) return;
+  if(p.closest && p.closest(".pv, .no-pv")) return;
+  /* Texte de graphique (SVG) : on marque l'étiquette entière, qui n'est
+     qu'un montant. */
+  if(p.namespaceURI === PV_SVG){ p.classList.add("pv-svg"); return; }
+  var txt = n.nodeValue, m, fin = 0, frag = null;
+  pvMotif.lastIndex = 0;
+  while((m = pvMotif.exec(txt))){
+    if(!m[0]){ pvMotif.lastIndex++; continue; }
+    if(!frag) frag = document.createDocumentFragment();
+    if(m.index > fin) frag.appendChild(document.createTextNode(txt.slice(fin, m.index)));
+    var sp = document.createElement("span");
+    sp.className = "pv";
+    sp.textContent = m[0];
+    frag.appendChild(sp);
+    fin = m.index + m[0].length;
+  }
+  if(!frag) return;
+  if(fin < txt.length) frag.appendChild(document.createTextNode(txt.slice(fin)));
+  p.replaceChild(frag, n);
+}
+function pvParcourir(racine){
+  if(!racine) return;
+  if(racine.nodeType === 3){ pvTexte(racine); return; }
+  if(racine.nodeType !== 1 && racine.nodeType !== 11) return;
+  var w = document.createTreeWalker(racine, NodeFilter.SHOW_TEXT, null), liste = [];
+  while(w.nextNode()) if(w.currentNode.nodeValue.indexOf("€") !== -1) liste.push(w.currentNode);
+  liste.forEach(pvTexte);
+}
+var pvObs = null, pvAFaire = [], pvPrevu = false;
+function pvStart(){
+  pvParcourir(document.body);
+  if(pvObs || !window.MutationObserver) return;
+  pvObs = new MutationObserver(function(recs){
+    recs.forEach(function(r){
+      if(r.type === "characterData") pvAFaire.push(r.target);
+      else Array.prototype.forEach.call(r.addedNodes, function(n){ pvAFaire.push(n); });
+    });
+    if(pvPrevu) return;
+    pvPrevu = true;
+    requestAnimationFrame(function(){
+      pvPrevu = false;
+      var lot = pvAFaire; pvAFaire = [];
+      if(!privacyOn()) return;
+      lot.forEach(function(n){ if(n.isConnected) pvParcourir(n); });
+    });
+  });
+  pvObs.observe(document.body, { childList:true, subtree:true, characterData:true });
+}
+function pvStop(){
+  if(pvObs){ pvObs.disconnect(); pvObs = null; }
+  pvAFaire = [];
 }
 function renderPrivacyControls(){
   var on = privacyOn();
@@ -9940,6 +10156,7 @@ function renderPrivacyControls(){
   });
 });
 renderPrivacyControls();
+if(privacyOn()) pvStart();
 
 /* =========================================================================
    PALETTE DE RECHERCHE
@@ -12362,6 +12579,15 @@ function cumulativeSpendingForMonth(mk){
   return { days: daysInMonth, cumul: cum, total: running };
 }
 
+/* Composantes de la projection de fin de mois (dépenses du mois). */
+function projectionFinDeMois(depense){
+  var programme = upcomingThisMonth().expense;
+  var cats = computeCategoryAllowances();
+  var budgets = 0;
+  cats.forEach(function(c){ budgets += Math.max(0, c.resteBudget); });
+  return { depense: depense, programme: programme, budgets: budgets, aDesBudgets: cats.length > 0, total: depense + programme + budgets };
+}
+
 function renderMonthTracking(){
   var host = $("monthTrackChart");
   var mk = currentMonthKey();
@@ -12370,17 +12596,37 @@ function renderMonthTracking(){
   var prev = cumulativeSpendingForMonth(prevMk);
   var today = new Date().getDate();
 
-  /* Projection : au rythme moyen observé depuis le début du mois, où en
-     seront les dépenses le dernier jour ? Seulement après quelques jours,
-     sans quoi une seule grosse dépense fausserait tout. */
+  /* Projection de fin de mois : ce qui est déjà dépensé, plus ce qui est
+     programmé d'ici la fin du mois, plus ce qui reste sur les budgets.
+     L'ancienne extrapolation (dépensé ÷ jours écoulés × jours du mois)
+     multipliait le loyer ou une grosse dépense ponctuelle comme si elle
+     revenait chaque jour, et ignorait budgets et paiements programmés. Les
+     dépenses sans budget ne sont ajoutées que lorsqu'elles sont programmées :
+     rien ne permet de les deviner sans inventer un chiffre. */
   var jourCourant = Math.min(today, cur.days);
   var cumulAuj = cur.cumul[jourCourant - 1] || 0;
-  var projection = (jourCourant >= 3 && jourCourant < cur.days && cumulAuj > 0) ? cumulAuj / jourCourant * cur.days : null;
+  var proj = projectionFinDeMois(cumulAuj);
+  var projection = (jourCourant < cur.days) ? proj.total : null;
 
   $("monthTrackLegend").innerHTML =
     '<span><i class="stat-dot" style="background:var(--chart-line)"></i>' + escapeHtml(t("an.thisMonth")) + '</span>' +
     '<span><i class="stat-dot" style="background:var(--chart-prev)"></i>' + escapeHtml(t("an.prevMonth")) + '</span>' +
     (projection !== null ? '<span><i class="stat-dot" style="background:var(--chart-proj)"></i>' + escapeHtml(t("an.projection", { v: fmtMoney(projection) })) + '</span>' : '');
+
+  /* Le détail du calcul, en clair sous le graphique. */
+  var note = $("monthTrackNote");
+  if(note){
+    if(projection === null){ note.hidden = true; note.innerHTML = ""; }
+    else {
+      note.hidden = false;
+      note.innerHTML = '<b>' + escapeHtml(t("an.projHowTitle")) + '</b> ' +
+        t(proj.budgets > 0.005 || proj.aDesBudgets ? "an.projBreak" : "an.projBreakNoBudget", {
+          spent: '<span class="pv">' + escapeHtml(fmtMoney(proj.depense)) + '</span>',
+          sched: '<span class="pv">' + escapeHtml(fmtMoney(proj.programme)) + '</span>',
+          budgets: '<span class="pv">' + escapeHtml(fmtMoney(proj.budgets)) + '</span>'
+        }) + ' ' + escapeHtml(t(proj.aDesBudgets ? "an.projHow" : "an.projHowNoBudget"));
+    }
+  }
 
   if(cur.total === 0 && prev.total === 0){
     host.innerHTML = '<div class="list-empty" style="padding:18px 0;"><p>' + t("an.noData") + '</p></div>';
@@ -12965,9 +13211,13 @@ function renderCategoryAllowances(){
              reste le repère que l'utilisateur s'est fixé, le second dit ce qui
              est réellement possible. La raison est nommée, sinon l'écart passe
              pour une erreur de calcul. */
-          (item.plafonnePar
-            ? ' · <b class="cat-allow-cap">' + escapeHtml(t("an.catCapParent", { v: fmtMoney(item.reste), cat: item.plafonnePar })) + '</b>'
-            : (item.plafonne ? ' · <b class="cat-allow-cap">' + escapeHtml(t("an.catCapAmount", { v: fmtMoney(item.reste) })) + '</b>' : "")) +
+          /* Deux raisons bien distinctes : le solde du compte ne couvre pas les
+             budgets (avertissement, disparaît dès que le solde suffit), ou la
+             catégorie mère n'a plus assez de reste (simple information : une
+             sous-catégorie ne peut pas dépenser plus que sa catégorie). */
+          (item.plafonne
+            ? ' · <b class="cat-allow-cap">' + escapeHtml(t("an.catCapAmount", { v: fmtMoney(item.reste) })) + '</b>'
+            : (item.plafonnePar ? ' · <span class="cat-allow-parent">' + escapeHtml(t("an.catCapParent", { v: fmtMoney(item.reste), cat: item.plafonnePar })) + '</span>' : "")) +
           (item.scheduled > 0 ? " · " + escapeHtml(t("an.catScheduled", { v: fmtMoney(item.scheduled) })) : "") +
           (over ? "" : " · " + escapeHtml(a.detail)) + '</p>' +
         '<span class="unit-picker">' + boutons + '</span>' +
@@ -13996,6 +14246,15 @@ function buildMonthOptionsRange(){
 
 function populateMonthSelects(){
   var months = buildMonthOptionsRange();
+  /* Carte étroite : mois abrégé (« Sept. 2026 »), sinon le libellé passait
+     sous la flèche du menu. */
+  var hote = $("chartHost");
+  if((hote && hote.clientWidth ? hote.clientWidth : window.innerWidth) < 520){
+    months.forEach(function(m){
+      var d = new Date(Number(m.key.slice(0, 4)), Number(m.key.slice(5, 7)) - 1, 1);
+      m.label = capitalizeFirst(monthShortFmt.format(d)) + " " + d.getFullYear();
+    });
+  }
   var todayKey = monthKey(new Date());
   if(!chartFromKey) chartFromKey = todayKey;
   if(!chartToKey) chartToKey = todayKey;
@@ -14141,7 +14400,9 @@ function computeChartTicks(points, multiMonth){
       if(day === 1) ticks.push(i);
     });
     if(ticks.length===0 || ticks[0]!==0) ticks.unshift(0);
-    if(ticks[ticks.length-1] !== n-1) ticks.push(n-1);
+    /* La fin de période n'a sa graduation que si elle tombe dans un autre
+       mois que la précédente : sinon « Sept. » s'affichait deux fois. */
+    if(ticks[ticks.length-1] !== n-1 && points[n-1].dateStr.slice(0,7) !== points[ticks[ticks.length-1]].dateStr.slice(0,7)) ticks.push(n-1);
   }
   return ticks;
 }
@@ -14489,8 +14750,8 @@ var TOUR_CHAPTERS = [
     { key:"budNone",  page:"budgets", cible:"#budgetsWithoutLimit", optionnel:true }
   ]},
   { id:"analysis", icon:"📊", steps:[
-    { key:"pace",      page:"analyse", cible:"#pacePanel" },
     { key:"track",     page:"analyse", cible:"#monthTrackCard", libre:true },
+    { key:"pace",      page:"analyse", cible:"#pacePanel" },
     { key:"allowance", page:"analyse", cible:"#catAllowanceCard", libre:true },
     { key:"donut",     page:"analyse", cible:"#donutCard", libre:true },
     { key:"insights",  page:"analyse", cible:"#insightsList", optionnel:true },
@@ -15730,12 +15991,58 @@ var overlayIconPicker = $("overlayIconPicker");
 var iconPickerOnPick = null;
 var iconPickerCurrent = null;
 
+/* Premier emoji d'une saisie (un emoji composé — famille, drapeau, teinte de
+   peau — compte pour un seul), ou null si la saisie n'en contient pas. */
+function premierEmoji(texte){
+  var v = String(texte || "").trim();
+  if(!v) return null;
+  var morceau = v;
+  try{
+    if(window.Intl && Intl.Segmenter){
+      var it = new Intl.Segmenter(undefined, { granularity:"grapheme" }).segment(v)[Symbol.iterator]().next();
+      if(!it.done) morceau = it.value.segment;
+    } else {
+      morceau = Array.from(v).slice(0, 8).join("");
+    }
+  }catch(e){}
+  var estEmoji = false;
+  try{ estEmoji = new RegExp("\\p{Extended_Pictographic}|\\p{Regional_Indicator}", "u").test(morceau); }
+  catch(e2){ estEmoji = /[\uD83C-\uDBFF\u2600-\u27BF]/.test(morceau); }
+  return estEmoji ? morceau : null;
+}
+
 function renderIconSections(){
   var host = $("iconSections");
   host.innerHTML = "";
+  /* Raccourcis vers chaque famille d'icônes : la liste est longue. */
+  var saut = $("iconJump");
+  if(saut){
+    saut.innerHTML = "";
+    ICON_SECTIONS.forEach(function(sec){
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "icon-jump-chip";
+      chip.innerHTML = '<span aria-hidden="true">' + escapeHtml(sec.icons[0] || "") + '</span>' + escapeHtml(t("ic." + sec.key));
+      chip.addEventListener("click", function(){
+        var cible = document.getElementById("icsec-" + sec.key);
+        if(cible) cible.scrollIntoView({ block:"start", behavior:"smooth" });
+      });
+      saut.appendChild(chip);
+    });
+  }
+  var champ = $("iconCustomInput");
+  if(champ){
+    var dansGrille = ICON_SECTIONS.some(function(sec){ return sec.icons.indexOf(iconPickerCurrent) !== -1; });
+    champ.value = (!dansGrille && iconPickerCurrent) ? iconPickerCurrent : "";
+    $("iconCustomPreview").textContent = (!dansGrille && iconPickerCurrent) ? iconPickerCurrent : "😀";
+    $("iconCustomPreview").classList.toggle("on", !dansGrille && !!iconPickerCurrent);
+    $("iconCustomHint").textContent = t("ic.customHint");
+    $("iconCustomHint").classList.remove("err");
+  }
   ICON_SECTIONS.forEach(function(sec){
     var title = document.createElement("p");
     title.className = "icon-section-title";
+    title.id = "icsec-" + sec.key;
     title.textContent = t("ic." + sec.key);
     host.appendChild(title);
 
@@ -15755,6 +16062,8 @@ function renderIconSections(){
         var prev = host.querySelector(".icon-opt.selected");
         if(prev) prev.classList.remove("selected");
         b.classList.add("selected");
+        var champSaisie = $("iconCustomInput");
+        if(champSaisie){ champSaisie.value = ""; $("iconCustomPreview").textContent = "😀"; $("iconCustomPreview").classList.remove("on"); }
       });
       grid.appendChild(b);
     });
@@ -15773,6 +16082,29 @@ function openIconPicker(current, onPick){
     if(sel && sel.scrollIntoView) sel.scrollIntoView({ block:"center" });
   }, 60);
 }
+
+$("iconCustomInput").addEventListener("input", function(){
+  var e = premierEmoji(this.value);
+  var hint = $("iconCustomHint"), apercu = $("iconCustomPreview");
+  if(!this.value.trim()){
+    hint.textContent = t("ic.customHint"); hint.classList.remove("err");
+    apercu.textContent = "😀"; apercu.classList.remove("on");
+    return;
+  }
+  if(!e){
+    hint.textContent = t("ic.customErr"); hint.classList.add("err");
+    apercu.textContent = "😀"; apercu.classList.remove("on");
+    return;
+  }
+  iconPickerCurrent = e;
+  apercu.textContent = e; apercu.classList.add("on");
+  hint.textContent = t("ic.customOk"); hint.classList.remove("err");
+  var prev = $("iconSections").querySelector(".icon-opt.selected");
+  if(prev) prev.classList.remove("selected");
+});
+$("iconCustomInput").addEventListener("keydown", function(e){
+  if(e.key === "Enter"){ e.preventDefault(); $("btnConfirmIcon").click(); }
+});
 
 $("btnConfirmIcon").addEventListener("click", function(){
   if(iconPickerOnPick && iconPickerCurrent) iconPickerOnPick(iconPickerCurrent);
@@ -15953,17 +16285,53 @@ $("btnSaveCredit").addEventListener("click", function(){
    n'apportaient rien et allongeaient la page. */
 $("btnAddCategoryPage").addEventListener("click", function(){ openCategoryEditSheet(null, null); });
 
-function buildCatManageRow(c, isSub){
+/* Page Catégories : une carte par catégorie, avec ses sous-catégories.
+   Chaque ligne dit à quoi sert la catégorie ce mois-ci (montant, nombre
+   d'opérations, budget), pour décider d'un coup d'œil s'il faut la scinder,
+   la renommer ou lui fixer un plafond. */
+var catCollapsed = {};
+
+function catMonthStats(){
+  var mk = currentMonthKey(), exact = {}, parent = {};
+  /* Dépenses et rentrées comptées à part : une catégorie de revenus doit
+     afficher ce qui est entré, pas « aucune dépense ». */
+  state.transactions.forEach(function(tx){
+    if(tx.isEpargne || !tx.montant || monthKeyOfDate(tx.date) !== mk) return;
+    var id = tx.categorieId || "_none", pid = parentCategoryId(tx.categorieId);
+    [exact[id] || (exact[id] = { n: 0, out: 0, inc: 0 }), parent[pid] || (parent[pid] = { n: 0, out: 0, inc: 0 })].forEach(function(o){
+      o.n++;
+      if(tx.montant < 0) o.out += -tx.montant; else o.inc += tx.montant;
+    });
+  });
+  return { exact: exact, parent: parent };
+}
+
+function buildCatManageRow(c, isSub, stats){
   var row = document.createElement("div");
-  row.className = isSub ? "cat-manage-row cat-manage-row-sub" : "cat-manage-row";
+  row.className = isSub ? "cat-manage-row cat-manage-row-sub" : "cat-manage-row cat-card-head";
   row.setAttribute("data-id", c.id);
   if(isSub) row.setAttribute("data-parent", c.parentId);
+  var st = (isSub ? stats.exact[c.id] : stats.parent[c.id]) || { n: 0, out: 0, inc: 0 };
+  var budget = Number(state.budgets[c.id]) || 0;
+  var meta = [];
+  if(!isSub){
+    var nbSubs = getSubcategories(c.id).length;
+    meta.push(nbSubs ? tn("cat.metaSubs", nbSubs) : t("cat.noSub"));
+  }
+  if(budget > 0) meta.push(t("cat.metaBudget", { v: '<span class="pv">' + escapeHtml(fmtMoney(budget)) + '</span>' }));
+  var montantMois = st.out > 0 ? fmtMoney(st.out) : fmtMoneySigned(st.inc);
+  meta.push(st.n ? tn("cat.metaOps", st.n, { v: '<span class="pv' + (st.out > 0 ? '' : ' in') + '">' + escapeHtml(montantMois) + '</span>' }) : t("cat.metaNone"));
   row.innerHTML =
-    '<button type="button" class="cat-drag-handle" aria-label="' + t("cat.reorder", { name: escapeHtml(c.nom) }) + '">⠿</button>' +
-    '<div class="cat-manage-emoji" style="background:' + c.couleur + '22">' + iconHtml(c.emoji) + '</div>' +
-    '<span class="cat-manage-name">' + escapeHtml(c.nom) + '</span>' +
-    '<button class="cat-manage-edit">' + escapeHtml(t("common.edit")) + '</button>';
-  row.querySelector(".cat-manage-edit").addEventListener("click", function(){ openCategoryEditSheet(c, isSub ? c.parentId : null); });
+    '<button type="button" class="cat-drag-handle" aria-label="' + escapeHtml(t("cat.reorder", { name: c.nom })) + '"><svg class="icon"><use href="#icon-grip"/></svg></button>' +
+    '<span class="cat-manage-emoji">' + iconHtml(c.emoji) + '</span>' +
+    '<button type="button" class="cat-manage-main">' +
+      '<span class="cat-manage-name">' + escapeHtml(c.nom) + '</span>' +
+      '<span class="cat-manage-meta">' + meta.map(function(x){ return '<span class="cat-meta-item">' + x + '</span>'; }).join("") + '</span>' +
+    '</button>' +
+    '<button type="button" class="cat-manage-edit" aria-label="' + escapeHtml(t("common.edit") + " · " + c.nom) + '" title="' + escapeHtml(t("common.edit")) + '"><svg class="icon"><use href="#icon-pencil"/></svg></button>';
+  var ouvrir = function(){ openCategoryEditSheet(c, isSub ? c.parentId : null); };
+  row.querySelector(".cat-manage-edit").addEventListener("click", ouvrir);
+  row.querySelector(".cat-manage-main").addEventListener("click", ouvrir);
   row.querySelector(".cat-drag-handle").addEventListener("pointerdown", function(ev){
     startCategoryDrag(ev, isSub ? row : row.parentElement, isSub ? ".cat-manage-row-sub" : ".cat-manage-group");
   });
@@ -15974,28 +16342,53 @@ function renderCategoryManageList(){
   var host = $("categoryManageListPage");
   if(!host) return;
   host.innerHTML = "";
-  getTopLevelCategories().forEach(function(c){
+  var stats = catMonthStats();
+  var tops = getTopLevelCategories(), nbSubs = 0, nbBudgets = 0;
+  tops.forEach(function(c){
+    var subs = getSubcategories(c.id);
+    nbSubs += subs.length;
+    if(Number(state.budgets[c.id]) > 0) nbBudgets++;
     var group = document.createElement("div");
-    group.className = "cat-manage-group";
+    group.className = "cat-manage-group cat-card" + (catCollapsed[c.id] ? " collapsed" : "");
     group.setAttribute("data-id", c.id);
-    group.appendChild(buildCatManageRow(c, false));
+    var couleur = vividHex(c.couleur || "#6B7280");
+    group.style.setProperty("--cat", couleur);
+    group.style.setProperty("--cat-soft", couleur + "24");
+    group.appendChild(buildCatManageRow(c, false, stats));
 
     var subgroup = document.createElement("div");
     subgroup.className = "cat-manage-subgroup";
     subgroup.setAttribute("data-parent", c.id);
-    getSubcategories(c.id).forEach(function(sub){
-      subgroup.appendChild(buildCatManageRow(sub, true));
-    });
+    subs.forEach(function(sub){ subgroup.appendChild(buildCatManageRow(sub, true, stats)); });
     var addSub = document.createElement("button");
     addSub.type = "button";
     addSub.className = "cat-manage-add-sub";
-    addSub.textContent = t("cat.addSub");
+    addSub.innerHTML = '<svg class="icon"><use href="#icon-plus"/></svg><span>' + escapeHtml(t("cat.addSubShort")) + '</span>';
     addSub.addEventListener("click", function(){ openCategoryEditSheet(null, c.id); });
     subgroup.appendChild(addSub);
-
     group.appendChild(subgroup);
+
+    /* Repli d'une catégorie bien remplie, le temps de la session. */
+    if(subs.length){
+      var pli = document.createElement("button");
+      pli.type = "button";
+      pli.className = "cat-fold";
+      pli.setAttribute("aria-expanded", catCollapsed[c.id] ? "false" : "true");
+      pli.setAttribute("aria-label", t(catCollapsed[c.id] ? "an.showSubs" : "an.hideSubs"));
+      pli.innerHTML = '<svg class="icon"><use href="#icon-chevron"/></svg>';
+      pli.addEventListener("click", function(){ catCollapsed[c.id] = !catCollapsed[c.id]; renderCategoryManageList(); });
+      group.querySelector(".cat-card-head").insertBefore(pli, group.querySelector(".cat-card-head .cat-manage-edit"));
+    }
     host.appendChild(group);
   });
+
+  var sum = $("catSummary");
+  if(sum){
+    sum.innerHTML =
+      '<div class="cat-sum-cell"><b>' + tops.length + '</b><span>' + escapeHtml(tn("cat.sumCats", tops.length)) + '</span></div>' +
+      '<div class="cat-sum-cell"><b>' + nbSubs + '</b><span>' + escapeHtml(tn("cat.sumSubs", nbSubs)) + '</span></div>' +
+      '<div class="cat-sum-cell"><b>' + nbBudgets + '</b><span>' + escapeHtml(tn("cat.sumBudgets", nbBudgets)) + '</span></div>';
+  }
 }
 
 /* Réordonnancement des catégories par glisser-déposer (souris ou tactile via Pointer Events).
