@@ -140,7 +140,9 @@ trouve :
   bilan détaille d'où vient le résultat (versé, gains, frais, prélèvements
   sociaux, impôt), avec le rendement net annuel. Le simulateur suit aussi les
   règles des livrets (intérêts par quinzaine, ajoutés chaque 31 décembre ;
-  plus de dépôt possible une fois le solde au plafond, intérêts compris) et
+  plus de dépôt possible une fois le solde au plafond, intérêts compris ; le
+  Livret A se remplit d'abord, puis le LDDS, et le simulateur indique quand
+  chacun serait plein et ce qui revient à chacun) et
   celles du PEL et du PEA (plafond des versements, durées), compare les
   placements sur un même graphique,
   détaille chaque année au survol, au doigt ou au clavier, et peut tout
