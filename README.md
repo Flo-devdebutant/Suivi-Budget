@@ -237,8 +237,11 @@ et frais » pour les deux premiers, pas des données officielles.
 
 ## Didacticiel
 
-Une visite interactive en 8 chapitres est proposée à la première ouverture,
+Une visite interactive en 9 chapitres est proposée à la première ouverture,
 et reste accessible depuis le menu « Plus d'options › Didacticiel » ou les
-Réglages, chapitre par chapitre. Sur un compte vide, elle utilise des données
+Réglages, chapitre par chapitre. Le chapitre « Investissement » présente les
+quatre vues de l'onglet, la prochaine étape conseillée, la méthode, le test
+de profil, le simulateur (choix du placement, impôts et frais) et la liste
+des placements, dont on ouvre une fiche d'un geste. Sur un compte vide, elle utilise des données
 d'exemple **en mémoire uniquement** : rien n'est enregistré, synchronisé ni
 sauvegardé pendant la visite, et vos données sont rétablies à la sortie.
