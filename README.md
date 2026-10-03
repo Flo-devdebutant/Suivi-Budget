@@ -119,6 +119,15 @@ trouve :
 
 - **les taux du moment** (Livret A et LDDS, LEP, fonds en euros, inflation),
   leur période de validité et le rendement du Livret A après inflation ;
+- une **fiche détaillée pour chaque placement**, ouverte par le petit « i »
+  placé à côté de son nom partout dans l'onglet (simulateur, comparaison,
+  cartes, taux, étapes, projets, lexique). Écrite pour qui n'y connaît rien,
+  elle explique en mots simples ce que c'est, comment ça marche, ce que ça
+  rapporte, le risque, l'accès à l'argent, les impôts, pour qui, les pièges à
+  éviter et comment l'ouvrir. Elle donne aussi un exemple chiffré calculé
+  d'après la situation fiscale de l'utilisateur, le lien vers la fiche
+  officielle, des placements voisins et un bouton pour le simuler. Ses
+  chiffres viennent de `taux.json` ;
 - un **test de profil** simplifié ;
 - un **simulateur** à deux questions : « ce que j'aurai » et « ce qu'il faut
   verser » pour réunir une somme, sur dix placements : Livret A et LDDS, LEP,
