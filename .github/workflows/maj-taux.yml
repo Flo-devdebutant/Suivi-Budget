@@ -1,7 +1,8 @@
 # Met à jour taux.json chaque matin à partir des sources officielles
 # (service-public.gouv.fr, Insee). Rien n'est publié si les taux n'ont pas
-# changé. En cas d'échec (page officielle modifiée, valeur incohérente), le
-# fichier n'est pas touché et GitHub prévient le propriétaire par courriel.
+# changé. Si une rubrique ne peut pas être lue (page officielle modifiée,
+# valeur incohérente), elle garde ses valeurs, les autres sont publiées, puis
+# la tâche échoue pour que GitHub prévienne le propriétaire par courriel.
 name: Mise à jour des taux
 
 on:
@@ -28,7 +29,11 @@ jobs:
         with:
           node-version: 20
 
+      # Une rubrique illisible n'empêche pas de publier les autres : l'échec
+      # est signalé à la dernière étape.
       - name: Lire les taux officiels
+        id: lire
+        continue-on-error: true
         run: node scripts/maj-taux.mjs
 
       - name: Publier s'ils ont changé
@@ -52,3 +57,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
+
+      - name: Signaler les rubriques non lues
+        if: steps.lire.outcome == 'failure'
+        run: |
+          echo "::error::Certaines rubriques n'ont pas pu être mises à jour : voir l'étape « Lire les taux officiels »."
+          exit 1
