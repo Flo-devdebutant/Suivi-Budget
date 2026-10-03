@@ -114,14 +114,28 @@ par exemple pour consulter l'application en public.
 L'onglet **Investissement** aide à faire fructifier son épargne en privilégiant
 la sécurité. Il part des chiffres de l'utilisateur (épargne, dépenses
 habituelles, effort d'épargne, objectifs d'épargne) et propose une méthode en
-trois étapes : épargne de précaution, projets à 2–8 ans, puis long terme. On y
-trouve :
+trois étapes : épargne de précaution, projets à 2–8 ans, puis long terme.
+
+Pour ne pas avoir à faire défiler une longue page sur téléphone, l'onglet est
+découpé en **quatre vues**, accessibles depuis une barre qui reste collée sous
+l'en-tête : **Mon plan** (situation, prochaine étape, méthode, profil,
+projets), **Simuler** (simulateur, test de krach), **Placements** (taux du
+moment, liste des placements, droit au LEP) et **Comprendre** (règles d'or,
+risques, lexique). La vue choisie est retenue sur l'appareil ; la barre se
+pilote aussi au clavier (flèches, Début, Fin). La prochaine étape conseillée
+propose des boutons qui mènent directement à la bonne vue. Les étapes de la
+méthode et les questions du test se replient, l'étape en cours restant
+ouverte. Sur un écran étroit, le placement simulé se choisit dans une liste
+qui s'ouvre d'un geste, au lieu d'une série de puces.
+
+On y trouve :
 
 - **les taux du moment** (Livret A et LDDS, LEP, fonds en euros, inflation),
   leur période de validité et le rendement du Livret A après inflation ;
 - une **fiche détaillée pour chaque placement**, ouverte par le petit « i »
   placé à côté de son nom partout dans l'onglet (simulateur, comparaison,
-  cartes, taux, étapes, projets, lexique). Écrite pour qui n'y connaît rien,
+  taux, étapes, projets, lexique) ou d'un geste sur sa ligne dans la liste
+  des placements. Écrite pour qui n'y connaît rien,
   elle explique en mots simples ce que c'est, comment ça marche, ce que ça
   rapporte, le risque, l'accès à l'argent, les impôts, pour qui, les pièges à
   éviter et comment l'ouvrir. Elle donne aussi un exemple chiffré calculé
@@ -140,7 +154,9 @@ trouve :
   bilan détaille d'où vient le résultat (versé, gains, frais, prélèvements
   sociaux, impôt), avec le rendement net annuel. Le simulateur suit aussi les
   règles des livrets (intérêts par quinzaine, ajoutés chaque 31 décembre ;
-  plus de dépôt possible une fois le solde au plafond, intérêts compris) et
+  plus de dépôt possible une fois le solde au plafond, intérêts compris ; le
+  Livret A se remplit d'abord, puis le LDDS, et le simulateur indique quand
+  chacun serait plein et ce qui revient à chacun) et
   celles du PEL et du PEA (plafond des versements, durées), compare les
   placements sur un même graphique,
   détaille chaque année au survol, au doigt ou au clavier, et peut tout
@@ -157,8 +173,9 @@ trouve :
   le nombre de parts, avec le barème officiel ;
 - un **test de krach** : ce qu'une baisse des marchés représenterait en euros,
   avec les grandes baisses passées ;
-- le comparatif des placements, les risques (arnaques comprises), les règles
-  d'or et un lexique.
+- la **liste des placements**, classés par niveau de risque, avec pour chacun
+  sa disponibilité et son rendement ; une ligne ouvre la fiche complète ;
+- les risques (arnaques comprises), les règles d'or et un lexique.
 
 Ce sont des informations générales, pas un conseil en investissement
 personnalisé. Les réponses au test, le revenu saisi pour le LEP, la situation
