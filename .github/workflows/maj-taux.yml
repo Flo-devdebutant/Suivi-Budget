@@ -1,18 +1,30 @@
 # Met à jour taux.json chaque matin à partir des sources officielles
-# (service-public.gouv.fr, Insee). Rien n'est publié si les taux n'ont pas
-# changé. Si une rubrique ne peut pas être lue (page officielle modifiée,
-# valeur incohérente), elle garde ses valeurs, les autres sont publiées, puis
-# la tâche échoue pour que GitHub prévienne le propriétaire par courriel.
+# (service-public.gouv.fr, FGDR, Insee, Banque de France). Rien n'est publié
+# si les valeurs n'ont pas changé. Si une rubrique ne peut pas être lue (page
+# officielle modifiée, valeur incohérente), elle garde ses valeurs, les
+# autres sont publiées, puis la tâche échoue pour que GitHub prévienne le
+# propriétaire par courriel.
 name: Mise à jour des taux
 
 on:
   schedule:
     - cron: "17 6 * * *"   # chaque jour, vers 8 h à Paris
   workflow_dispatch:        # bouton « Run workflow » pour lancer à la main
+    inputs:
+      fonds_euros:
+        description: "Rendement moyen des fonds en euros publié par l'ACPR, en % (par exemple 2,63). Laisser vide pour ne rien changer."
+        required: false
+        default: ""
+      fonds_euros_annee:
+        description: "Année de ce rendement (par exemple 2025). Vide : l'année dernière."
+        required: false
+        default: ""
 
 permissions:
   contents: write
   pages: write
+  issues: write             # rappel annuel des fonds en euros
+  actions: write            # garder la tâche planifiée active
 
 concurrency:
   group: maj-taux
@@ -21,7 +33,7 @@ concurrency:
 jobs:
   taux:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -34,6 +46,10 @@ jobs:
       - name: Lire les taux officiels
         id: lire
         continue-on-error: true
+        env:
+          FONDS_EUROS: ${{ inputs.fonds_euros }}
+          FONDS_EUROS_ANNEE: ${{ inputs.fonds_euros_annee }}
+          RAPPELS: ${{ runner.temp }}/rappels.jsonl
         run: node scripts/maj-taux.mjs
 
       - name: Publier s'ils ont changé
@@ -57,6 +73,45 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh api -X POST "repos/${{ github.repository }}/pages/builds"
+
+      # Ouvre un rappel (une seule fois) quand une valeur doit être saisie à
+      # la main, et le ferme quand elle l'a été.
+      - name: Rappels
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RAPPELS: ${{ runner.temp }}/rappels.jsonl
+          DEPOT: ${{ github.repository }}
+        run: |
+          if [ ! -f "$RAPPELS" ]; then echo "Liste des rappels absente : rien à faire."; exit 0; fi
+          ouverts=$(gh api "repos/$DEPOT/issues?state=open&creator=github-actions%5Bbot%5D&per_page=100" --jq '.[] | select(.title | startswith("Taux : ")) | "\(.number)\t\(.title)"')
+          voulus=""
+          if [ -s "$RAPPELS" ]; then
+            while IFS= read -r ligne; do
+              titre=$(printf '%s' "$ligne" | jq -r .titre)
+              voulus="$voulus$titre"$'\n'
+              if ! printf '%s\n' "$ouverts" | cut -f2 | grep -xF "$titre" > /dev/null; then
+                printf '%s' "$ligne" | jq '{title: .titre, body: .corps}' | gh api -X POST "repos/$DEPOT/issues" --input - > /dev/null
+                echo "Rappel ouvert : $titre"
+              fi
+            done < "$RAPPELS"
+          fi
+          printf '%s\n' "$ouverts" | while IFS=$'\t' read -r numero titre; do
+            [ -n "$numero" ] || continue
+            if ! printf '%s' "$voulus" | grep -xF "$titre" > /dev/null; then
+              gh api -X PATCH "repos/$DEPOT/issues/$numero" -f state=closed -f state_reason=completed > /dev/null
+              echo "Rappel fermé : $titre"
+            fi
+          done
+
+      # GitHub suspend les tâches planifiées d'un dépôt resté 60 jours sans
+      # activité : la réactiver à chaque passage remet ce délai à zéro.
+      - name: Garder la tâche active
+        if: github.event_name == 'schedule'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/maj-taux.yml/enable"
 
       - name: Signaler les rubriques non lues
         if: steps.lire.outcome == 'failure'

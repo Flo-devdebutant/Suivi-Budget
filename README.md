@@ -130,8 +130,10 @@ trouve :
   la sortie, intérêts du PEL et du compte à terme imposés chaque année…). Un
   bilan détaille d'où vient le résultat (versé, gains, frais, prélèvements
   sociaux, impôt), avec le rendement net annuel. Le simulateur suit aussi les
-  règles des livrets (intérêts par quinzaine, ajoutés chaque 31 décembre,
-  plafonds de versement), compare les placements sur un même graphique,
+  règles des livrets (intérêts par quinzaine, ajoutés chaque 31 décembre ;
+  plus de dépôt possible une fois le solde au plafond, intérêts compris) et
+  celles du PEL et du PEA (plafond des versements, durées), compare les
+  placements sur un même graphique,
   détaille chaque année au survol, au doigt ou au clavier, et peut tout
   exprimer en euros d'aujourd'hui ;
 - un panneau facultatif **Impôts et frais** pour préciser la simulation : foyer
@@ -155,37 +157,57 @@ fiscale du simulateur et les échéances des projets restent sur l'appareil : il
 ne sont pas synchronisés (la synchronisation et ses règles Firestore sont
 inchangées).
 
-### Mise à jour automatique des taux
+### Mise à jour automatique des taux et des règles
 
-Les taux affichés viennent de `taux.json`, publié avec l'application. Le robot
-`.github/workflows/maj-taux.yml` le tient à jour chaque matin : il lit les
-pages officielles de service-public.gouv.fr (Livret A, LDDS, LEP et barème de
-revenus du LEP, PEL, et les règles fiscales : prélèvements sociaux, flat tax,
-assurance vie, plafond du PER, barème de l'impôt) et la série de l'inflation de
-l'Insee, contrôle chaque valeur, puis publie le fichier s'il a changé
-(`scripts/maj-taux.mjs`, Node 18 ou plus, sans dépendance ; `--dry-run` pour un
-essai). Chaque rubrique est lue séparément : si une page officielle change de
-forme ou donne une valeur incohérente, cette rubrique garde ses valeurs, les
-autres sont tout de même mises à jour, et le robot se termine en erreur pour
-que GitHub prévienne le propriétaire du dépôt par courriel.
+Tous les chiffres réglementaires de l'onglet viennent de `taux.json`, publié
+avec l'application : taux, plafonds, durées légales, règles fiscales et
+garanties, jusque dans les textes. Le robot `.github/workflows/maj-taux.yml`
+le tient à jour chaque matin à partir des sources officielles
+(`scripts/maj-taux.mjs`, Node 18 ou plus, sans dépendance ; `--dry-run` pour
+un essai) :
+
+| Rubrique | Source |
+|---|---|
+| Livret A, LDDS : taux, plafonds, période de validité | service-public.gouv.fr |
+| LEP : taux, plafond, barème de revenus | service-public.gouv.fr |
+| PEL : taux, plafond, versement minimum, durées (4, 10 et 15 ans) | service-public.gouv.fr |
+| PEA : plafond, durée avant laquelle un retrait clôture le plan | service-public.gouv.fr |
+| Prélèvements sociaux, flat tax, assurance vie (durée, abattements, taux), plafond du PER, barème de l'impôt | service-public.gouv.fr |
+| Garantie des dépôts bancaires | FGDR |
+| Inflation | Insee |
+| Taux moyen des nouveaux comptes à terme (valeur par défaut du simulateur) | Banque de France, diffusé par la BCE |
+
+Chaque valeur est contrôlée, puis le fichier n'est publié que s'il a changé.
+Chaque rubrique est lue séparément : si une page officielle change de forme ou
+donne une valeur incohérente, cette rubrique garde ses valeurs, les autres
+sont tout de même mises à jour, et le robot se termine en erreur pour que
+GitHub prévienne le propriétaire du dépôt par courriel. Une erreur passagère
+d'un site est retentée avant d'abandonner.
+
+Deux valeurs ne sont publiées dans aucune source lisible par un robot : le
+rendement moyen des **fonds en euros** (ACPR, une fois par an, sur un site
+fermé aux robots) et la garantie des contrats d'assurance vie (FGAP). Chaque
+année, à partir du 1er septembre, si le rendement de l'année écoulée manque,
+le robot ouvre un **rappel** (une *issue* GitHub) qui explique quoi faire :
+dans l'onglet *Actions*, « Mise à jour des taux », *Run workflow*, saisir le
+taux et l'année, puis valider. Aucune modification du code n'est nécessaire,
+et le rappel se ferme tout seul une fois le chiffre saisi.
+
+GitHub suspend les tâches planifiées d'un dépôt resté 60 jours sans activité :
+le robot se réactive lui-même à chaque passage pour l'éviter. Le bouton *Run
+workflow* lance aussi une mise à jour à la demande.
 
 Côté application, `taux.json` est lu sur le même site (aucun service tiers),
-au plus toutes les six heures quand l'onglet est ouvert, et gardé sur
-l'appareil pour fonctionner hors ligne. Chaque valeur est de nouveau
-contrôlée ; à défaut, ce sont les valeurs intégrées à `index.html` (objet
-`INV`) qui s'affichent. Si une révision du 1er février ou du 1er août passe
-sans que les nouveaux taux aient été confirmés, la page invite à les vérifier.
+au plus toutes les six heures quand l'onglet est ouvert ou quand l'application
+revient au premier plan, et gardé sur l'appareil pour fonctionner hors ligne.
+Chaque valeur est de nouveau contrôlée ; à défaut, ce sont les valeurs
+intégrées à `index.html` (objet `INV`) qui s'affichent. Si une révision du
+1er février ou du 1er août passe sans que les nouveaux taux aient été
+confirmés, la page invite à les vérifier.
 
-À savoir :
-
-- le rendement moyen des **fonds en euros** n'est publié qu'une fois par an
-  (ACPR) : il se met à jour à la main dans `taux.json` (`fondsEuros`) ;
-- les frais des contrats et le rendement des actions sont des hypothèses,
-  réglables dans le panneau « Impôts et frais », pas des données officielles ;
-- GitHub suspend les tâches planifiées d'un dépôt public après **60 jours sans
-  activité** sur le dépôt : il suffit alors de les réactiver dans l'onglet
-  *Actions*. Le bouton *Run workflow* du robot lance aussi une mise à jour à la
-  demande.
+Les frais des contrats, le rendement des actions et l'inflation de long terme
+(2 %, cible de la BCE) sont des hypothèses, réglables dans le panneau « Impôts
+et frais » pour les deux premiers, pas des données officielles.
 
 ## Didacticiel
 

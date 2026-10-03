@@ -55,7 +55,11 @@
   "pel": {
     "taux": 2,
     "annee": 2026,
-    "plafond": 61200
+    "plafond": 61200,
+    "min": 540,
+    "ansMin": 4,
+    "ansVers": 10,
+    "ansMax": 15
   },
   "fiscalite": {
     "annee": 2026,
@@ -67,6 +71,7 @@
     "avAbatt": [4600, 9200],
     "avTaux8": 7.5,
     "avSeuil": 150000,
+    "avAns": 8,
     "perPct": 10,
     "perMin": 4710,
     "perMax": 37680,
@@ -80,5 +85,17 @@
         [null, 45]
       ]
     }
+  },
+  "garanties": {
+    "depots": 100000,
+    "assurance": 70000
+  },
+  "pea": {
+    "plafond": 150000,
+    "ans": 5
+  },
+  "compteTerme": {
+    "taux": 2.36,
+    "mois": "2026-08"
   }
 }
