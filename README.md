@@ -11,8 +11,10 @@ ligne et se met à jour toute seule.
 |--------------|------|
 | `index.html` | L'application complète (interface, styles, polices, traductions). |
 | `sw.js`      | Le *service worker* : fonctionnement hors ligne et mises à jour automatiques. |
+| `taux.json`  | Les taux de l'onglet Investissement, tenus à jour par un robot (voir plus bas). |
+| `scripts/maj-taux.mjs`, `.github/workflows/maj-taux.yml` | Le robot de mise à jour des taux. |
 
-Les deux fichiers doivent rester **dans le même dossier**.
+`index.html`, `sw.js` et `taux.json` doivent rester **dans le même dossier**.
 
 ## Publier une nouvelle version
 
@@ -111,17 +113,58 @@ par exemple pour consulter l'application en public.
 
 L'onglet **Investissement** aide à faire fructifier son épargne en privilégiant
 la sécurité. Il part des chiffres de l'utilisateur (épargne, dépenses
-habituelles, effort d'épargne) et propose une méthode en trois étapes :
-épargne de précaution, projets à 2–8 ans, puis long terme. On y trouve aussi un
-test de profil simplifié, un simulateur (intérêts composés, fourchette pour les
-placements risqués, effet de l'inflation, plafonds des livrets), un comparatif
-des placements du plus sûr au plus risqué et les principaux risques, arnaques
-comprises.
+habituelles, effort d'épargne, objectifs d'épargne) et propose une méthode en
+trois étapes : épargne de précaution, projets à 2–8 ans, puis long terme. On y
+trouve :
+
+- **les taux du moment** (Livret A et LDDS, LEP, fonds en euros, inflation),
+  leur période de validité et le rendement du Livret A après inflation ;
+- un **test de profil** simplifié ;
+- un **simulateur** à deux questions : « ce que j'aurai » et « ce qu'il faut
+  verser » pour réunir une somme. Il suit les règles des livrets réglementés
+  (intérêts par quinzaine, ajoutés chaque 31 décembre, plafonds), compare les
+  placements sur un même graphique, détaille chaque année au survol, au doigt
+  ou au clavier, et peut tout exprimer en euros d'aujourd'hui ;
+- **vos projets** : chaque objectif d'épargne reçoit une échéance, qui donne le
+  placement adapté et le versement mensuel nécessaire. L'argent réservé à un
+  projet n'est pas compté dans l'épargne de précaution ;
+- un **test d'éligibilité au LEP**, d'après le revenu fiscal de référence et
+  le nombre de parts, avec le barème officiel ;
+- un **test de krach** : ce qu'une baisse des marchés représenterait en euros,
+  avec les grandes baisses passées ;
+- le comparatif des placements, les risques (arnaques comprises), les règles
+  d'or et un lexique.
 
 Ce sont des informations générales, pas un conseil en investissement
-personnalisé. Les taux des livrets réglementés sont révisés au 1er février et
-au 1er août : ils se mettent à jour dans l'objet `INV` de `index.html`
-(vérifiés le 2 octobre 2026).
+personnalisé. Les réponses au test, le revenu saisi pour le LEP et les
+échéances des projets restent sur l'appareil : ils ne sont pas synchronisés.
+
+### Mise à jour automatique des taux
+
+Les taux affichés viennent de `taux.json`, publié avec l'application. Le robot
+`.github/workflows/maj-taux.yml` le tient à jour chaque matin : il lit les
+pages officielles de service-public.gouv.fr (Livret A, LDDS, LEP et barème de
+revenus du LEP) et la série de l'inflation de l'Insee, contrôle chaque valeur,
+puis publie le fichier s'il a changé (`scripts/maj-taux.mjs`, Node 18 ou plus,
+sans dépendance ; `--dry-run` pour un essai). Une page officielle modifiée ou
+une valeur incohérente arrête le robot sans rien écrire, et GitHub prévient le
+propriétaire du dépôt par courriel.
+
+Côté application, `taux.json` est lu sur le même site (aucun service tiers),
+au plus toutes les six heures quand l'onglet est ouvert, et gardé sur
+l'appareil pour fonctionner hors ligne. Chaque valeur est de nouveau
+contrôlée ; à défaut, ce sont les valeurs intégrées à `index.html` (objet
+`INV`) qui s'affichent. Si une révision du 1er février ou du 1er août passe
+sans que les nouveaux taux aient été confirmés, la page invite à les vérifier.
+
+À savoir :
+
+- le rendement moyen des **fonds en euros** n'est publié qu'une fois par an
+  (ACPR) : il se met à jour à la main dans `taux.json` (`fondsEuros`) ;
+- GitHub suspend les tâches planifiées d'un dépôt public après **60 jours sans
+  activité** sur le dépôt : il suffit alors de les réactiver dans l'onglet
+  *Actions*. Le bouton *Run workflow* du robot lance aussi une mise à jour à la
+  demande.
 
 ## Didacticiel
 
