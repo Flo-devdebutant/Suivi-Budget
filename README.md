@@ -104,10 +104,33 @@ intactes, son code est conservé, et il suffit de le relier à votre projet.
 |-------------------|--------|
 | `Ctrl K` / `⌘ K`, `/` | Rechercher une opération, une page ou une action |
 | `N`               | Nouvelle opération |
-| `1` à `9`, `0`    | Changer de page (`8` : Investissement, `0` : Réglages) |
+| `1` à `9`, `0`    | Changer de page, dans l'ordre de la barre latérale (à l'origine, `8` : Investissement, `0` : Réglages) |
 
 Le **mode discret** (icône d'œil en haut de l'écran) masque les montants,
 par exemple pour consulter l'application en public.
+
+## Personnaliser l'application
+
+Chacun peut ranger l'application à sa façon, depuis **Réglages ›
+Personnalisation** ou le menu « Plus d'options » › **Personnaliser** :
+
+- **les onglets** : on choisit ceux de la barre du bas (de 2 à 5) et leur
+  ordre, les autres passant dans le menu « Plus d'options ». Sur grand
+  écran, la barre latérale suit le même ordre, tout comme les raccourcis
+  clavier `1` à `9` et `0` ;
+- **les sections des pages** (Accueil, À venir, Épargne, Analyse,
+  Statistiques, Investissement) : le bouton **Personnaliser cette page**, en
+  bas de chaque page, transforme les sections en cartes que l'on déplace
+  (glisser la poignée ⠿ ou flèches) et que l'on masque d'un geste (l'œil).
+  Sur l'onglet Investissement, chaque vue se range séparément.
+
+Sur grand écran, une section qui se retrouve seule sur sa ligne s'élargit
+pour ne pas laisser de vide. Tout se remet comme à l'origine, page par page
+ou d'un coup. La disposition est propre à chaque appareil (un téléphone et
+un ordinateur n'ont pas les mêmes besoins) : elle est gardée dans le
+navigateur, hors des données, des sauvegardes et de la synchronisation, dont
+les règles Firestore sont inchangées. Le didacticiel montre toujours la
+disposition d'origine, puis rend la vôtre.
 
 ## Investissement
 
