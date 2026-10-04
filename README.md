@@ -115,22 +115,42 @@ Chacun peut ranger l'application à sa façon, depuis **Réglages ›
 Personnalisation** ou le menu « Plus d'options » › **Personnaliser** :
 
 - **les onglets** : on choisit ceux de la barre du bas (de 2 à 5) et leur
-  ordre, les autres passant dans le menu « Plus d'options ». Sur grand
-  écran, la barre latérale suit le même ordre, tout comme les raccourcis
-  clavier `1` à `9` et `0` ;
+  ordre, les autres passant dans le menu « Plus d'options ». Un aperçu de la
+  barre suit chaque changement. Sur grand écran, la barre latérale suit le
+  même ordre, tout comme les raccourcis clavier `1` à `9` et `0` ;
+- **la page d'ouverture** : l'Accueil, une autre page, ou la dernière page
+  consultée ;
+- **les raccourcis de l'Accueil** : quatre boutons choisis parmi Dépense,
+  Gain, Virement, Programmer, Paiement régulier, Utiliser l'épargne,
+  Nouvel objectif et Rechercher ;
 - **les sections des pages** (Accueil, À venir, Épargne, Analyse,
   Statistiques, Investissement) : le bouton **Personnaliser cette page**, en
   bas de chaque page, transforme les sections en cartes que l'on déplace
   (glisser la poignée ⠿ ou flèches) et que l'on masque d'un geste (l'œil).
-  Sur l'onglet Investissement, chaque vue se range séparément.
+  Sur grand écran, une section peut aussi passer en pleine largeur. Sur
+  l'onglet Investissement, chaque vue se range séparément ;
+- **des modules en plus sur l'Accueil**, masqués à l'origine : « Reste à
+  dépenser » (le montant disponible par jour jusqu'à la fin du mois) et
+  « Prochaines opérations » (les 30 prochains jours, chaque ligne s'ouvre
+  d'un toucher). Les budgets du mois et les objectifs sont désormais deux
+  sections distinctes.
 
-Sur grand écran, une section qui se retrouve seule sur sa ligne s'élargit
-pour ne pas laisser de vide. Tout se remet comme à l'origine, page par page
-ou d'un coup. La disposition est propre à chaque appareil (un téléphone et
-un ordinateur n'ont pas les mêmes besoins) : elle est gardée dans le
-navigateur, hors des données, des sauvegardes et de la synchronisation, dont
-les règles Firestore sont inchangées. Le didacticiel montre toujours la
-disposition d'origine, puis rend la vôtre.
+Hors du mode Personnaliser, chaque section se **replie** d'un toucher sur
+la flèche de son titre, pour raccourcir les pages longues ; le repli est
+retenu. Sur grand écran, une section qui se retrouve seule sur sa ligne
+s'élargit pour ne pas laisser de vide. Tout se remet comme à l'origine, page
+par page ou d'un coup, et le message qui suit propose **Annuler**. La
+disposition est propre à chaque appareil (un téléphone et un ordinateur
+n'ont pas les mêmes besoins) : elle est gardée dans le navigateur, hors des
+données, des sauvegardes et de la synchronisation, dont les règles Firestore
+sont inchangées. Une disposition enregistrée par une version précédente est
+reprise telle quelle. Le didacticiel montre toujours la disposition
+d'origine, puis rend la vôtre.
+
+La suppression d'une opération, d'un virement ou d'une opération programmée
+demande toujours confirmation, puis le message propose **Annuler** pendant
+quelques secondes : l'élément revient à l'identique, avec l'argent qu'il
+réservait dans un objectif.
 
 ## Investissement
 
