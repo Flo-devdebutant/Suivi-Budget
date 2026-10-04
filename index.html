@@ -3867,6 +3867,136 @@ body.ly-editing-on .toast{ bottom:calc(var(--safe-bottom) + var(--tabbar-h) + 94
 .sr-card .bud-kpi span{ min-width:0; }
 @container content (min-width:620px){ .sr-legend{ max-width:560px; } }
 
+/* =========================================================================
+   SAISIE : suggestions, catégorie devinée, répartition, partage, relevé
+   ========================================================================= */
+
+/* Libellés déjà saisis, proposés sous le champ */
+.ev-sugg{ display:flex; flex-wrap:wrap; gap:6px; margin:-4px 0 12px; }
+.ev-sugg-chip{
+  display:inline-flex; align-items:center; gap:6px; max-width:100%;
+  padding:7px 12px; border-radius:999px; font-size:13px; font-weight:700; color:var(--text);
+  background:var(--surface-2); box-shadow:0 0 0 1px var(--line) inset;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.ev-sugg-chip:active{ transform:scale(.97); }
+.ev-sugg-chip .chip-ic{ flex-shrink:0; }
+
+/* Catégorie devinée */
+.ev-guess{ margin:-2px 2px 10px; font-size:12.5px; font-weight:650; color:var(--gold-ink); }
+.ev-guess::before{ content:"✦ "; }
+
+/* Répartir / Partager */
+.ev-opts{ display:flex; flex-wrap:wrap; gap:8px; margin:2px 0 12px; }
+.ev-opt{
+  display:inline-flex; align-items:center; gap:7px; padding:8px 13px; border-radius:999px;
+  font-size:13px; font-weight:750; color:var(--text-2); background:transparent;
+  box-shadow:0 0 0 1.5px var(--line-2) inset; transition:background-color .15s ease, color .15s ease;
+}
+.ev-opt.on{ color:var(--gold-ink); background:var(--gold-soft); box-shadow:0 0 0 1.5px var(--gold) inset; }
+.ev-opt[hidden]{ display:none; }
+.ev-panel{ margin:0 0 14px; padding:12px; border-radius:16px; background:var(--surface-2); box-shadow:0 0 0 1px var(--line) inset; }
+.ev-panel-title{ font-size:13px; font-weight:800; color:var(--text); margin:0 0 8px; }
+.ev-panel-hint{ margin:8px 2px 0; font-size:12.5px; line-height:1.45; color:var(--text-3); }
+.ev-panel-hint.neg{ color:var(--neg); font-weight:700; }
+.ev-panel .field-label{ margin-top:0; }
+.split-line{ display:grid; grid-template-columns:minmax(0, 1fr) 118px 36px; gap:8px; align-items:center; margin-bottom:8px; }
+.split-line .field{ margin:0; }
+.split-cat{ width:100%; padding:11px 34px 11px 12px; font-size:14px; font-weight:650; }
+[dir="rtl"] .split-cat{ padding:11px 12px 11px 34px; }
+.split-amt-wrap input{ font-size:16px; }
+.split-del{ width:36px; height:36px; border-radius:50%; color:var(--text-3); font-weight:800; }
+.split-del:active{ background:var(--surface-3); }
+.ev-share-row{ display:flex; gap:8px; align-items:center; }
+.ev-share-row .field{ flex:1; margin:0; min-width:0; }
+
+/* Mention sous une opération partagée */
+.sp-badge{
+  display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:999px;
+  font-size:11.5px; font-weight:750; color:var(--gold-ink); background:var(--gold-soft);
+}
+.sp-badge::before{ content:"🤝"; font-size:11px; }
+.sp-badge.done{ color:var(--text-3); background:var(--surface-2); }
+
+/* Qui doit quoi */
+.sp-empty p{ font-size:13.5px; line-height:1.5; color:var(--text-3); }
+.sp-card{ padding-top:6px; padding-bottom:6px; }
+.sp-person{ padding:10px 0; }
+.sp-person + .sp-person{ border-top:1px solid var(--line); }
+.sp-head{ display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+.sp-avatar{
+  flex-shrink:0; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:850; color:var(--gold-ink); background:var(--gold-soft);
+}
+.sp-title{ flex:1; min-width:0; font-size:14.5px; font-weight:800; color:var(--text); line-height:1.3; }
+.sp-title.pos{ color:var(--pos); } .sp-title.neg{ color:var(--neg); }
+.sp-item{ display:grid; grid-template-columns:minmax(0, 1fr) auto 40px; align-items:center; gap:8px; padding-inline-start:44px; }
+.sp-item-main{ display:flex; flex-direction:column; align-items:flex-start; text-align:start; padding:7px 0; min-width:0; }
+.sp-item-lib{ font-size:13.5px; font-weight:700; color:var(--text); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sp-item-meta{ font-size:12px; font-weight:600; color:var(--text-3); }
+.sp-item b{ font-size:13.5px; font-weight:800; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.sp-item b.pos{ color:var(--pos); } .sp-item b.neg{ color:var(--neg); }
+.sp-tick{
+  width:36px; height:36px; border-radius:50%; font-size:15px; font-weight:900; color:var(--pos);
+  box-shadow:0 0 0 1.5px var(--line-2) inset;
+}
+.sp-tick:hover{ background:var(--pos-soft); }
+.sp-tick:active{ transform:scale(.92); }
+.sp-note{ margin-top:10px; }
+
+/* Import d'un relevé */
+.rl-intro p{ font-size:14px; line-height:1.55; color:var(--text-2); margin-bottom:10px; }
+.rl-intro .rl-privacy{ font-size:12.5px; color:var(--text-3); }
+.rl-summary{ font-size:13.5px; font-weight:700; color:var(--text); margin-bottom:10px; overflow-wrap:anywhere; }
+.rl-map{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px 10px; margin-bottom:10px; }
+.rl-map label{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+.rl-map label > span:first-child{ font-size:12px; font-weight:750; color:var(--text-3); }
+.rl-map .field{ margin:0; }
+.rl-map select{ width:100%; padding:10px 32px 10px 12px; font-size:14px; font-weight:650; }
+[dir="rtl"] .rl-map select{ padding:10px 12px 10px 32px; }
+.rl-check{ display:flex; align-items:center; gap:8px; margin:6px 2px; font-size:13px; font-weight:650; color:var(--text-2); }
+.rl-check input{ width:18px; height:18px; accent-color:var(--gold); }
+.rl-count{ margin:10px 2px 8px; font-size:13px; font-weight:750; color:var(--text); }
+.rl-list{ display:flex; flex-direction:column; border-radius:16px; background:var(--surface); box-shadow:0 0 0 1px var(--line) inset; }
+.rl-row{ display:grid; grid-template-columns:28px minmax(0, 1fr) auto; gap:10px; align-items:start; padding:10px 12px; transition:opacity .15s ease; }
+.rl-row + .rl-row{ border-top:1px solid var(--line); }
+.rl-row.off{ opacity:.5; }
+.rl-pick{ width:20px; height:20px; margin-top:2px; accent-color:var(--gold); }
+.rl-main{ min-width:0; }
+.rl-lib{ font-size:14px; font-weight:750; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.rl-meta{ font-size:12px; font-weight:600; color:var(--text-3); margin-top:1px; }
+.rl-badge{ color:var(--gold-ink); font-weight:800; }
+.rl-cat{ display:block; margin:6px 0 0; }
+.rl-cat select{ width:100%; padding:7px 30px 7px 10px; font-size:12.5px; font-weight:650; border-radius:10px; }
+[dir="rtl"] .rl-cat select{ padding:7px 10px 7px 30px; }
+.rl-cat .icon{ width:14px; height:14px; }
+.rl-amt{ font-size:14px; font-weight:800; font-variant-numeric:tabular-nums; white-space:nowrap; color:var(--text); }
+.rl-amt.pos{ color:var(--pos); }
+.rl-more{ margin:10px 2px 0; font-size:12.5px; color:var(--text-3); }
+#btnImportStatement{ margin-top:10px; margin-bottom:0; }
+.settings-hint{ margin:8px 2px 0; font-size:12.5px; line-height:1.45; color:var(--text-3); }
+@media (prefers-reduced-motion: reduce){ .ev-opt, .rl-row{ transition:none; } }
+
+/* Une liste déroulante dans un champ se comporte comme un bloc. */
+span.field.select-wrap{ display:block; }
+
+/* Cases à cocher de l'import (l'apparence native est retirée partout). */
+.rl-pick, .rl-check input{
+  -webkit-appearance:none; appearance:none; flex-shrink:0; width:20px; height:20px; margin:0; border-radius:6px;
+  display:inline-grid; place-content:center; cursor:pointer;
+  background:var(--surface); box-shadow:0 0 0 1.5px var(--line-2) inset;
+  transition:background-color .15s ease, box-shadow .15s ease;
+}
+.rl-pick{ margin-top:2px; }
+.rl-pick:checked, .rl-check input:checked{ background:var(--gold); box-shadow:none; }
+.rl-pick:checked::after, .rl-check input:checked::after{
+  content:""; width:10px; height:5px; border-left:2.5px solid #0F1F17; border-bottom:2.5px solid #0F1F17;
+  transform:translateY(-1px) rotate(-45deg);
+}
+.rl-pick:disabled{ opacity:.3; cursor:default; }
+.rl-pick:focus-visible, .rl-check input:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+.split-line{ grid-template-columns:minmax(0, 1fr) 104px 34px; }
+
 </style>
 <!--/@app--></head>
 <body><!--@app-->
@@ -4168,6 +4298,13 @@ body.ly-editing-on .toast{ bottom:calc(var(--safe-bottom) + var(--tabbar-h) + 94
         </div>
         <p class="section-sub" data-i18n="up.recurringSub">Répétées automatiquement selon la fréquence choisie.</p>
         <div id="recurringList"></div>
+      </div>
+      <div class="blk span-12" data-sec="partages">
+        <div class="section-head">
+          <h2 data-i18n="sp.title">Qui doit quoi</h2>
+          <button class="link-btn" id="btnNewDebt" data-i18n="sp.newDebt">+ Noter une dette</button>
+        </div>
+        <div id="shareLedger"></div>
       </div>
     </div>
   </section>
@@ -4510,6 +4647,8 @@ body.ly-editing-on .toast{ bottom:calc(var(--safe-bottom) + var(--tabbar-h) + 94
           <div class="divider"></div>
           <button class="btn btn-secondary" id="btnImport" style="margin-bottom:0;" data-i18n="bk.import">⬆ Importer une sauvegarde</button>
           <input type="file" id="fileImport" accept="application/json" hidden>
+          <button class="btn btn-secondary" id="btnImportStatement" data-i18n="rl.btn">⬆ Importer un relevé bancaire (CSV)</button>
+          <p class="settings-hint" data-i18n="rl.btnHint">Le fichier exporté par votre banque : les doublons sont repérés et les catégories devinées.</p>
         </div>
 
         <div class="section-head"><h2 data-i18n="dz.title">Zone de danger</h2></div>
@@ -4562,6 +4701,11 @@ body.ly-editing-on .toast{ bottom:calc(var(--safe-bottom) + var(--tabbar-h) + 94
       <div class="action-row-text"><div class="action-row-title" data-i18n="op.savingsAction">Virement épargne</div><div class="action-row-sub" data-i18n="op.savingsActionSub">Vers ou depuis votre compte épargne</div></div>
       <svg class="icon" style="color:var(--paper-line)"><use href="#icon-chevron"/></svg>
     </div>
+    <div class="action-row" id="actionImportStatement">
+      <div class="action-row-icon"><span style="font-size:17px;">📄</span></div>
+      <div class="action-row-text"><div class="action-row-title" data-i18n="rl.fabTitle">Importer un relevé</div><div class="action-row-sub" data-i18n="rl.fabSub">Le fichier CSV exporté par votre banque</div></div>
+      <svg class="icon" style="color:var(--paper-line)"><use href="#icon-chevron"/></svg>
+    </div>
     <div class="action-row" id="actionUseSavings">
       <div class="action-row-icon"><span style="font-size:17px;">💸</span></div>
       <div class="action-row-text"><div class="action-row-title" data-i18n="op.useSavingsAction">Utiliser l'épargne</div><div class="action-row-sub" data-i18n="op.useSavingsActionSub">Payer une dépense avec l'argent déjà mis de côté</div></div>
@@ -4590,9 +4734,33 @@ body.ly-editing-on .toast{ bottom:calc(var(--safe-bottom) + var(--tabbar-h) + 94
 
     <label class="field-label" data-i18n="common.comment">Commentaire</label>
     <div class="field"><input type="text" id="inputCommentaire" placeholder="Ex. Courses, Salaire…" data-i18n-ph="op.commentPh2" autocomplete="off"></div>
+    <div class="ev-sugg" id="addSugg" hidden></div>
 
     <label class="field-label" data-i18n="common.category">Catégorie</label>
     <div class="cat-picker" id="catPickerAdd"></div>
+    <p class="ev-guess" id="addGuess" hidden></p>
+    <div class="ev-opts" id="addOpts">
+      <button type="button" class="ev-opt" id="btnSplit" aria-expanded="false" aria-controls="splitPanel" data-i18n="sp.splitBtn">Répartir sur plusieurs catégories</button>
+      <button type="button" class="ev-opt" id="btnShare" aria-expanded="false" aria-controls="sharePanel" data-i18n="sp.shareBtn">Partager avec quelqu’un</button>
+    </div>
+    <div class="ev-panel" id="splitPanel" hidden>
+      <p class="ev-panel-title" data-i18n="sp.splitTitle">Autres catégories du même ticket</p>
+      <div id="splitLines"></div>
+      <button type="button" class="link-btn" id="splitAdd" data-i18n="sp.splitAdd">+ Ajouter une catégorie</button>
+      <p class="ev-panel-hint" id="splitHint" aria-live="polite"></p>
+    </div>
+    <div class="ev-panel" id="sharePanel" hidden>
+      <label class="field-label" for="shareWith" data-i18n="sp.shareWith">Partagée avec</label>
+      <div class="field"><input type="text" id="shareWith" list="shareNames" autocomplete="off" placeholder="Prénom" data-i18n-ph="sp.namePh"></div>
+      <datalist id="shareNames"></datalist>
+      <label class="field-label" for="sharePart" data-i18n="sp.sharePart">Sa part</label>
+      <div class="ev-share-row">
+        <div class="field amount-field"><span class="amount-prefix">€</span><input type="text" inputmode="decimal" id="sharePart" placeholder="0,00" autocomplete="off"></div>
+        <button type="button" class="pill-btn" data-share="half" data-i18n="sp.shareHalf">Moitié</button>
+        <button type="button" class="pill-btn" data-share="all" data-i18n="sp.shareAll">Tout</button>
+      </div>
+      <p class="ev-panel-hint" id="shareHint" aria-live="polite"></p>
+    </div>
 
     <label class="field-label" data-i18n="op.dateLabel">Date de l'opération</label>
     <div class="field"><input type="date" id="inputDate"></div>
@@ -5170,6 +5338,52 @@ body.ly-editing-on .toast{ bottom:calc(var(--safe-bottom) + var(--tabbar-h) + 94
     <button type="button" class="link-btn ghost ly-reset-all" id="layoutResetAll" data-i18n="ly.resetAll">Tout remettre comme à l'origine</button>
     <div class="sheet-actions">
       <button class="btn btn-primary" id="layoutDone" data-i18n="ly.done">Terminé</button>
+    </div>
+  </div>
+</div>
+
+<!-- Dette envers quelqu'un : « Paul a payé pour moi » -->
+<div class="sheet-overlay" id="overlayDette">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2 class="sheet-title" id="detteTitle" data-i18n="sp.debtNew">Noter une dette</h2>
+    <label class="field-label" for="dettePersonne" data-i18n="sp.debtWho">Qui a payé pour vous ?</label>
+    <div class="field"><input type="text" id="dettePersonne" list="detteNoms" autocomplete="off" placeholder="Prénom" data-i18n-ph="sp.namePh"></div>
+    <datalist id="detteNoms"></datalist>
+    <label class="field-label" for="detteMontant" data-i18n="sp.debtAmount">Montant que vous devez</label>
+    <div class="field amount-field"><span class="amount-prefix">€</span><input type="text" inputmode="decimal" id="detteMontant" placeholder="0,00" autocomplete="off"></div>
+    <label class="field-label" for="detteLibelle" data-i18n="sp.debtLabel">Pour quoi</label>
+    <div class="field"><input type="text" id="detteLibelle" autocomplete="off" placeholder="Ex. Restaurant, place de cinéma…" data-i18n-ph="sp.debtLabelPh"></div>
+    <label class="field-label" for="detteCat" data-i18n="sp.debtCat">Catégorie, lors du règlement</label>
+    <span class="field select-wrap"><select id="detteCat"></select><svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg></span>
+    <label class="field-label" for="detteDate" data-i18n="sp.debtDate">Date</label>
+    <div class="field"><input type="date" id="detteDate"></div>
+    <p class="field-hint" data-i18n="sp.debtHint">Rien n'est enregistré dans votre compte tant que vous n'avez pas remboursé : la dépense sera créée au moment du règlement.</p>
+    <p class="field-error" id="detteError"></p>
+    <div class="sheet-actions">
+      <button class="btn btn-primary" id="btnDetteSave" data-i18n="sp.save">Enregistrer</button>
+      <button class="btn btn-danger-text" id="btnDetteDelete" hidden data-i18n="common.delete">Supprimer</button>
+      <button class="btn btn-text" id="btnDetteCancel" data-i18n="common.cancel">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import d'un relevé bancaire (CSV) -->
+<div class="sheet-overlay" id="overlayReleve">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2 class="sheet-title" data-i18n="rl.title">Importer un relevé bancaire</h2>
+    <div class="rl-intro" id="rlIntro">
+      <p data-i18n="rl.intro">Choisissez le fichier CSV exporté depuis l'espace en ligne de votre banque.</p>
+      <p class="rl-privacy" data-i18n="rl.privacy">Le fichier est lu sur cet appareil uniquement ; rien n'est envoyé ailleurs.</p>
+      <button type="button" class="btn btn-secondary" id="rlPick" data-i18n="rl.pick">Choisir le fichier</button>
+      <input type="file" id="rlFile" accept=".csv,.txt,text/csv,text/plain" hidden>
+    </div>
+    <p class="field-error" id="rlError"></p>
+    <div id="rlBody"></div>
+    <div class="sheet-actions">
+      <button class="btn btn-primary" id="rlImport" hidden></button>
+      <button class="btn btn-text" id="rlCancel" data-i18n="common.cancel">Annuler</button>
     </div>
   </div>
 </div>
@@ -8541,13 +8755,13 @@ function withIconText(v, nom){
 "ar":{"ly.sQuick":"الاختصارات والرصيد المتوقع","ly.sSavForecast":"الادخار المتوقع في نهاية الشهر","tab.analysis":"التحليل","tab.stats":"إحصاءات","tab.invest":"استثمار","tab.categories":"الفئات","tab.settings":"الإعدادات","ly.mHome":"الرصيد والاختصارات وآخر العمليات","ly.mHistory":"كل عملياتك، مع البحث والتصفية","ly.mUpcoming":"العمليات المجدولة والمدفوعات المنتظمة","ly.mSavings":"حساب الادخار والأهداف والتحويلات","ly.mBudgets":"حدودك الشهرية، فئة بفئة","ly.sideMore":"صفحات أخرى","ly.menuTitle":"تخصيص","ly.menuSub":"ترتيب التبويبات والأقسام","ly.setTitle":"التخصيص","ly.setLead":"اختر تبويبات الشريط السفلي وترتيبها، ومكان كل قسم في الصفحات. تنطبق هذه الإعدادات على هذا الجهاز فقط.","ly.open":"تخصيص التطبيق","ly.stateDefault":"الترتيب الأصلي","ly.stateTabs":"تبويبات مخصّصة","ly.statePages":"{n} صفحات مخصّصة","ly.statePages_1":"صفحة واحدة مخصّصة","ly.title":"تخصيص التطبيق","ly.lead":"تنطبق هذه الإعدادات على هذا الجهاز فقط.","ly.hTabs":"التبويبات","ly.tabsHelp":"تظهر الأولى في الشريط السفلي (من {min} إلى {max})، والباقي في قائمة «خيارات إضافية». اسحب ⠿ أو استخدم الأسهم.","ly.tabsHelpWide":"يتبع الشريط الجانبي هذا الترتيب. تشكّل الأولى (من {min} إلى {max}) مجموعة «ميزانيتي»، وهي أيضًا التبويبات السفلية على الشاشة الصغيرة. اسحب ⠿ أو استخدم الأسهم.","ly.gBar":"الشريط السفلي","ly.gMenu":"قائمة «خيارات إضافية»","ly.barCount":"{n} من {max}","ly.hPages":"أقسام الصفحات","ly.pagesHelp":"غيّر ترتيب أقسام صفحة ما أو أخفِ ما لا تستخدمه منها.","ly.pageDefault":"الترتيب الأصلي","ly.pageCustom":"مخصّصة","ly.pageHidden":"{n} أقسام مخفية","ly.pageHidden_1":"قسم واحد مخفي","ly.current":"الصفحة الحالية","ly.edit":"تخصيص","ly.reset":"إعادة التعيين","ly.resetPage":"إعادة تعيين صفحة «{page}»","ly.resetAll":"إعادة كل شيء إلى الترتيب الأصلي","ly.resetAllQ":"إعادة كل شيء إلى الترتيب الأصلي؟","ly.resetAllBody":"ستعود التبويبات وأقسام كل الصفحات إلى مكانها الأصلي. لا تتأثر بياناتك.","ly.resetAllOk":"إعادة الكل","ly.done":"تم","ly.editPage":"تخصيص هذه الصفحة","ly.editTitle":"تخصيص «{page}»","ly.editHint":"اسحب ⠿ أو استخدم الأسهم لتغيير الترتيب. العين تخفي القسم أو تعيد إظهاره.","ly.editHintInv":"تُخصَّص كل طريقة عرض على حدة: اخترها من الشريط أعلاه.","ly.up":"نقل «{name}» إلى الأعلى","ly.down":"نقل «{name}» إلى الأسفل","ly.move":"تحريك «{name}»","ly.hide":"إخفاء «{name}»","ly.show":"إظهار «{name}»","ly.hiddenBadge":"مخفي","ly.shown":"ظاهر","ly.pos":"«{name}»: الموضع {n} من {total}","ly.posBar":"«{name}»: الشريط السفلي، الموضع {n}","ly.posMenu":"«{name}»: قائمة «خيارات إضافية»، الموضع {n}","ly.posSide":"«{name}»: مجموعة «ميزانيتي»، الموضع {n}","ly.posSideMore":"«{name}»: صفحات أخرى، الموضع {n}","ly.allHidden":"كل أقسام هذه الصفحة مخفية.","ly.resetDone":"أُعيد الترتيب الأصلي","common.undo":"تراجع","common.restored":"تم التراجع عن الحذف","qa.recurring":"متكرر","qa.useSavings":"سحب","qa.goal":"هدف","qa.search":"بحث","ly.qaRecurring":"دفعة منتظمة","ly.qaUseSavings":"استخدام المدخرات","ly.qaGoal":"هدف جديد","ly.qaSearch":"بحث","ly.hUpcoming":"العمليات القادمة","ly.upNone":"لا شيء مخطط له في الأيام الثلاثين القادمة.","ly.upSum":"خلال 30 يومًا: مداخيل {inc}، ومصاريف {out}","ly.startTitle":"الصفحة عند الفتح","ly.startHelp":"الصفحة التي يعرضها التطبيق عند تشغيله.","ly.startLast":"آخر صفحة تمت زيارتها","ly.hQuick":"اختصارات الصفحة الرئيسية","ly.quickHelp":"تظهر الأربعة الأولى تحت رصيدك. اسحب ⠿ أو استخدم الأسهم لاختيار غيرها.","ly.gQuickOn":"معروضة","ly.gQuickOff":"متاحة","ly.posQuickOn":"«{name}»: معروض، الموضع {n}","ly.posQuickOff":"«{name}»: غير معروض","ly.fold":"طيّ «{name}»","ly.unfold":"فتح «{name}»","ly.foldShort":"طيّ","ly.unfoldShort":"فتح","ly.wide":"عرض كامل لـ«{name}»","ly.wideShort":"عرض كامل","ly.wideOn":"عرض كامل","ly.wideOff":"العرض الأصلي","ly.optionalBadge":"متاح","ly.editHintOptional":"الأقسام «المتاحة» وحدات إضافية: المس العين لإظهارها.","ly.undo":"تراجع","ly.undone":"أُعيد الترتيب","ly.resetPageDone":"عادت «{page}» إلى ترتيبها الأصلي","ly.pageAdded":"{n} أقسام مضافة","ly.pageAdded_1":"قسم واحد مضاف","ly.pageFolded":"{n} أقسام مطوية","ly.pageFolded_1":"قسم واحد مطوي","ly.stateQuick":"اختصارات مخصّصة","ly.stateStart":"يُفتح على: {page}","tour.rowHint":"10 فصول قصيرة، دفعة واحدة أو حسب اختيارك","tu.ch.layout":"تخصيص","tu.layout.foot.t":"رتّب الصفحة كما تحب","tu.layout.foot.b":"يمكن ترتيب كل صفحة كما تشاء. هذا الزر، في أسفل الصفحة، يحوّلها إلى وضع التخصيص. أثناء الجولة، لا يُحفظ أي شيء تجربه.","tu.layout.foot.do":"المس «تخصيص هذه الصفحة».","tu.layout.edit.t":"النقل والإخفاء","tu.layout.edit.b":"يصبح كل قسم بطاقة. اسحب المقبض ⠿ أو استخدم الأسهم لتغيير الترتيب؛ وتخفي العين القسم أو تعيد إظهاره.","tu.layout.edit.do":"جرّب: انقل «آخر العمليات» إلى الأعلى أو الأسفل.","tu.layout.optional.t":"وحدات إضافية","tu.layout.optional.b":"الأقسام الموسومة «متاح» مخفية في البداية: «المتبقي للإنفاق» و«العمليات القادمة». تظهر بلمسة واحدة.","tu.layout.optional.do":"المس عين «العمليات القادمة».","tu.layout.done.t":"الحفظ","tu.layout.done.b":"يحتفظ «تم» بالترتيب. وتعيد «إعادة التعيين» الصفحة كما كانت في الأصل، وتتيح الرسالة التالية التراجع.","tu.layout.done.do":"المس «تم».","tu.layout.module.t":"العمليات القادمة","tu.layout.module.b":"تظهر الوحدة الآن في الصفحة الرئيسية: الأيام الثلاثون القادمة بنظرة واحدة. لمس سطر يفتح العملية لتعديلها.","tu.layout.fold.t":"طيّ قسم","tu.layout.fold.b":"خارج وضع التخصيص، يطوي السهم في نهاية العنوان قسمه: تصبح الصفحة أقصر ويُحفظ هذا الاختيار. ومرة ثانية يعيد فتحه.","tu.layout.fold.do":"المس سهم «آخر العمليات».","tu.layout.menu.t":"قائمة «خيارات إضافية»","tu.layout.menu.b":"هنا الإعدادات التي تسري على التطبيق كله.","tu.layout.menu.do":"المس هذا الزر.","tu.layout.menuRow.t":"تخصيص التطبيق","tu.layout.menuRow.b":"التبويبات، والصفحة عند الفتح، واختصارات الصفحة الرئيسية، وملخص لكل صفحة، كلها في مكان واحد.","tu.layout.menuRow.do":"المس «تخصيص».","tu.layout.tabs.t":"التبويبات","tu.layout.tabs.b":"توضع الأولى في الشريط السفلي، من 2 إلى 5، والباقية في قائمة «خيارات إضافية». وعلى الحاسوب، يرتّب الترتيب نفسه الشريط الجانبي واختصارات لوحة المفاتيح.","tu.layout.tabs.do":"جرّب الأسهم أو المقبض ⠿.","tu.layout.start.t":"الصفحة عند الفتح","tu.layout.start.b":"الصفحة التي يعرضها التطبيق عند تشغيله: الرئيسية، أو صفحة أخرى، أو آخر صفحة تمت زيارتها.","tu.layout.quick.t":"اختصارات الصفحة الرئيسية","tu.layout.quick.b":"الأزرار الأربعة تحت رصيدك، تختارها من بين ثمانية: دفعة منتظمة، هدف جديد، بحث…","tu.layout.pages.t":"صفحة بصفحة","tu.layout.pages.b":"هنا ملخص كل صفحة: يقودك «تخصيص» إليها، ويعود كل شيء إلى أصله بلمسة. لا تسري هذه الإعدادات إلا على هذا الجهاز، ولا يُحتفظ بما تجربه أثناء الجولة."}
 }; for(var L in SUPPERSO){ for(var k in SUPPERSO[L]){ I18N[L][k] = SUPPERSO[L][k]; } } })();
 (function(){ var SUPEVO = {
-"fr":{"tu.history.filters.b":"Touchez une catégorie pour ne garder qu'elle ; ses sous-catégories apparaissent alors pour affiner. Les plus utilisées sont proposées d'office, « + autres » ouvre la liste complète. « Épargne » isole les virements et les utilisations de l'épargne.","tu.analysis.rings.t":"Vue d'ensemble en anneaux","tu.analysis.rings.b":"La part de vos revenus dépensée, votre taux d'épargne face à l'objectif choisi, vos dépenses fixes et variables, vos jours sans dépense et vos budgets tenus. Le sélecteur passe du mois à l'année.","hf.more":"+ {n} autres","hf.moreAll":"Toutes les catégories","hf.title":"Filtrer par catégorie","hf.all":"Toutes les catégories","hf.allSub":"Aucun filtre","hf.searchPh":"Chercher une catégorie","hf.searchClear":"Effacer la recherche","hf.count":"{n} opérations · {v}","hf.count_1":"1 opération · {v}","hf.none":"Aucune opération sur la période","hf.expand":"Sous-catégories de {name}","hf.empty":"Aucune catégorie ne correspond.","cal.noOps":"Aucune opération ce jour-là.","cal.addHere":"+ Ajouter une opération à cette date","cal.planned":"Prévu ce jour-là :","cal.nothingPlanned":"Rien de prévu ce jour-là.","cal.planHere":"+ Programmer une opération à cette date","sr.title":"Vue d'ensemble","sr.catTitle":"Répartition des dépenses","sr.periodAria":"Période des graphiques","sr.perMonth":"ce mois-ci","sr.perYear":"cette année","sr.spentTitle":"Part des revenus dépensée","sr.spentSub":"des revenus","sr.spentAria":"{p} des revenus dépensés","sr.left":"Reste","sr.over":"Dépassement","sr.spentOk":"Vous avez dépensé {p} de vos revenus {per} : il en reste pour épargner.","sr.spentHigh":"Vous avez dépensé {p} de vos revenus {per} : la marge pour épargner est mince.","sr.spentOver":"Vos dépenses dépassent vos revenus de {v} {per}.","sr.noIncome":"Aucun revenu enregistré sur la période.","sr.rateTitle":"Taux d'épargne","sr.rateSub":"épargné","sr.rateAria":"Taux d'épargne {p}, objectif {o}","sr.saved":"Mis de côté","sr.target":"Objectif {p}","sr.targetAria":"Objectif d'épargne : {p}. Touchez pour le changer.","sr.toGo":"Il manque","sr.beyond":"Au-delà de l'objectif","sr.rateOk":"Avec {p}, vous atteignez votre objectif de {o}.","sr.rateLow":"Encore {v} pour atteindre votre objectif de {o}.","sr.rateBasis":"Le taux rapporte ce que vous avez mis de côté à l'argent disponible (solde de départ et revenus).","sr.noRate":"Pas encore assez de données pour calculer un taux d'épargne.","sr.fixTitle":"Dépenses fixes ou variables","sr.fixSub":"fixes","sr.fixAria":"{p} de dépenses fixes","sr.fixed":"Fixes","sr.variable":"Variables","sr.total":"Total","sr.fixNote":"Les dépenses fixes reviennent d'elles-mêmes : loyer, abonnements, opérations récurrentes. Moins faciles à réduire, mais chaque économie compte tous les mois.","sr.noSpend":"Aucune dépense sur la période.","sr.regTitle":"Régularité et objectifs","sr.noSpendDays":"Jours sans dépense","sr.ofDays":"sur {n} jours","sr.budgetsKept":"Budgets respectés","sr.budgetsMonthSub":"ce mois-ci","sr.budgetsYearSub":"mois par mois","sr.noBudgets":"Aucun budget","sr.goals":"Objectifs d'épargne","sr.goalsSub":"{n} objectifs · {done} atteints","sr.goalsSub_1":"1 objectif · {done} atteint","sr.noGoals":"Aucun objectif","sr.regNote":"Les objectifs d'épargne sont mesurés à ce jour, quelle que soit la période.","sr.spentMonth":"dépensés ce mois-ci","sr.spentYear":"dépensés cette année","sr.catAria":"Répartition de {v} de dépenses par catégorie","sr.uncategorized":"Sans catégorie","sr.others":"{n} autres catégories","sr.seeOps":"Voir les opérations →"},
-"en":{"tu.history.filters.b":"Tap a category to keep only that one; its subcategories then appear so you can narrow down. The most used ones are offered straight away, “+ more” opens the full list. “Savings” isolates transfers and uses of your savings.","tu.analysis.rings.t":"Overview in rings","tu.analysis.rings.b":"The share of your income spent, your savings rate against the target you choose, your fixed and variable spending, your no-spend days and the budgets you kept. The selector switches from month to year.","hf.more":"+ {n} more","hf.moreAll":"All categories","hf.title":"Filter by category","hf.all":"All categories","hf.allSub":"No filter","hf.searchPh":"Find a category","hf.searchClear":"Clear search","hf.count":"{n} transactions · {v}","hf.count_1":"1 transaction · {v}","hf.none":"No transactions in this period","hf.expand":"Subcategories of {name}","hf.empty":"No category matches.","cal.noOps":"No transactions on this day.","cal.addHere":"+ Add a transaction on this date","cal.planned":"Planned for this day:","cal.nothingPlanned":"Nothing planned for this day.","cal.planHere":"+ Schedule a transaction on this date","sr.title":"Overview","sr.catTitle":"Spending breakdown","sr.periodAria":"Chart period","sr.perMonth":"this month","sr.perYear":"this year","sr.spentTitle":"Share of income spent","sr.spentSub":"of income","sr.spentAria":"{p} of income spent","sr.left":"Left","sr.over":"Overspent","sr.spentOk":"You have spent {p} of your income {per}: there is room left to save.","sr.spentHigh":"You have spent {p} of your income {per}: little room is left to save.","sr.spentOver":"Your spending exceeds your income by {v} {per}.","sr.noIncome":"No income recorded in this period.","sr.rateTitle":"Savings rate","sr.rateSub":"saved","sr.rateAria":"Savings rate {p}, target {o}","sr.saved":"Set aside","sr.target":"Target {p}","sr.targetAria":"Savings target: {p}. Tap to change it.","sr.toGo":"Still to go","sr.beyond":"Beyond the target","sr.rateOk":"At {p}, you reach your {o} target.","sr.rateLow":"{v} more to reach your {o} target.","sr.rateBasis":"The rate compares what you set aside with the money available (opening balance plus income).","sr.noRate":"Not enough data yet to work out a savings rate.","sr.fixTitle":"Fixed or variable spending","sr.fixSub":"fixed","sr.fixAria":"{p} fixed spending","sr.fixed":"Fixed","sr.variable":"Variable","sr.total":"Total","sr.fixNote":"Fixed spending comes back on its own: rent, subscriptions, recurring transactions. Harder to cut, but every saving counts every month.","sr.noSpend":"No spending in this period.","sr.regTitle":"Consistency and goals","sr.noSpendDays":"No-spend days","sr.ofDays":"out of {n} days","sr.budgetsKept":"Budgets kept","sr.budgetsMonthSub":"this month","sr.budgetsYearSub":"month by month","sr.noBudgets":"No budgets","sr.goals":"Savings goals","sr.goalsSub":"{n} goals · {done} reached","sr.goalsSub_1":"1 goal · {done} reached","sr.noGoals":"No goals","sr.regNote":"Savings goals are measured as of today, whatever the period.","sr.spentMonth":"spent this month","sr.spentYear":"spent this year","sr.catAria":"Breakdown of {v} of spending by category","sr.uncategorized":"Uncategorised","sr.others":"{n} other categories","sr.seeOps":"See the transactions →"},
-"de":{"tu.history.filters.b":"Tippen Sie auf eine Kategorie, um nur diese zu behalten; ihre Unterkategorien erscheinen dann zum Verfeinern. Die meistgenutzten werden direkt angeboten, „+ weitere“ öffnet die vollständige Liste. „Sparen“ zeigt nur Überträge und Entnahmen aus den Ersparnissen.","tu.analysis.rings.t":"Überblick in Ringen","tu.analysis.rings.b":"Der Anteil Ihrer ausgegebenen Einnahmen, Ihre Sparquote im Vergleich zum gewählten Ziel, fixe und variable Ausgaben, Tage ohne Ausgaben und eingehaltene Budgets. Der Schalter wechselt zwischen Monat und Jahr.","hf.more":"+ {n} weitere","hf.moreAll":"Alle Kategorien","hf.title":"Nach Kategorie filtern","hf.all":"Alle Kategorien","hf.allSub":"Kein Filter","hf.searchPh":"Kategorie suchen","hf.searchClear":"Suche löschen","hf.count":"{n} Buchungen · {v}","hf.count_1":"1 Buchung · {v}","hf.none":"Keine Buchungen im Zeitraum","hf.expand":"Unterkategorien von {name}","hf.empty":"Keine passende Kategorie.","cal.noOps":"Keine Buchungen an diesem Tag.","cal.addHere":"+ Buchung an diesem Datum hinzufügen","cal.planned":"Für diesen Tag geplant:","cal.nothingPlanned":"Für diesen Tag ist nichts geplant.","cal.planHere":"+ Buchung für dieses Datum planen","sr.title":"Überblick","sr.catTitle":"Aufteilung der Ausgaben","sr.periodAria":"Zeitraum der Diagramme","sr.perMonth":"in diesem Monat","sr.perYear":"in diesem Jahr","sr.spentTitle":"Anteil der ausgegebenen Einnahmen","sr.spentSub":"der Einnahmen","sr.spentAria":"{p} der Einnahmen ausgegeben","sr.left":"Rest","sr.over":"Überschreitung","sr.spentOk":"Sie haben {per} {p} Ihrer Einnahmen ausgegeben: Es bleibt Spielraum zum Sparen.","sr.spentHigh":"Sie haben {per} {p} Ihrer Einnahmen ausgegeben: Der Spielraum zum Sparen ist gering.","sr.spentOver":"Ihre Ausgaben übersteigen Ihre Einnahmen {per} um {v}.","sr.noIncome":"Keine Einnahmen im Zeitraum erfasst.","sr.rateTitle":"Sparquote","sr.rateSub":"gespart","sr.rateAria":"Sparquote {p}, Ziel {o}","sr.saved":"Zurückgelegt","sr.target":"Ziel {p}","sr.targetAria":"Sparziel: {p}. Tippen Sie, um es zu ändern.","sr.toGo":"Es fehlen","sr.beyond":"Über dem Ziel","sr.rateOk":"Mit {p} erreichen Sie Ihr Ziel von {o}.","sr.rateLow":"Noch {v} bis zu Ihrem Ziel von {o}.","sr.rateBasis":"Die Quote setzt das Zurückgelegte ins Verhältnis zum verfügbaren Geld (Anfangsstand plus Einnahmen).","sr.noRate":"Noch nicht genug Daten für eine Sparquote.","sr.fixTitle":"Fixe oder variable Ausgaben","sr.fixSub":"fix","sr.fixAria":"{p} fixe Ausgaben","sr.fixed":"Fix","sr.variable":"Variabel","sr.total":"Gesamt","sr.fixNote":"Fixe Ausgaben kommen von selbst wieder: Miete, Abos, wiederkehrende Buchungen. Schwerer zu senken, aber jede Ersparnis zählt jeden Monat.","sr.noSpend":"Keine Ausgaben im Zeitraum.","sr.regTitle":"Regelmäßigkeit und Ziele","sr.noSpendDays":"Tage ohne Ausgaben","sr.ofDays":"von {n} Tagen","sr.budgetsKept":"Eingehaltene Budgets","sr.budgetsMonthSub":"in diesem Monat","sr.budgetsYearSub":"Monat für Monat","sr.noBudgets":"Keine Budgets","sr.goals":"Sparziele","sr.goalsSub":"{n} Ziele · {done} erreicht","sr.goalsSub_1":"1 Ziel · {done} erreicht","sr.noGoals":"Keine Ziele","sr.regNote":"Sparziele werden zum heutigen Stand gemessen, unabhängig vom Zeitraum.","sr.spentMonth":"in diesem Monat ausgegeben","sr.spentYear":"in diesem Jahr ausgegeben","sr.catAria":"Aufteilung von {v} Ausgaben nach Kategorie","sr.uncategorized":"Ohne Kategorie","sr.others":"{n} weitere Kategorien","sr.seeOps":"Buchungen ansehen →"},
-"es":{"tu.history.filters.b":"Toque una categoría para quedarse solo con ella; aparecen entonces sus subcategorías para afinar. Las más usadas se proponen directamente, «+ más» abre la lista completa. «Ahorro» aísla las transferencias y los usos del ahorro.","tu.analysis.rings.t":"Vista general en anillos","tu.analysis.rings.b":"La parte de sus ingresos gastada, su tasa de ahorro frente al objetivo elegido, sus gastos fijos y variables, sus días sin gastos y los presupuestos respetados. El selector pasa del mes al año.","hf.more":"+ {n} más","hf.moreAll":"Todas las categorías","hf.title":"Filtrar por categoría","hf.all":"Todas las categorías","hf.allSub":"Sin filtro","hf.searchPh":"Buscar una categoría","hf.searchClear":"Borrar la búsqueda","hf.count":"{n} operaciones · {v}","hf.count_1":"1 operación · {v}","hf.none":"Ninguna operación en el periodo","hf.expand":"Subcategorías de {name}","hf.empty":"Ninguna categoría coincide.","cal.noOps":"Ninguna operación ese día.","cal.addHere":"+ Añadir una operación en esta fecha","cal.planned":"Previsto para ese día:","cal.nothingPlanned":"Nada previsto para ese día.","cal.planHere":"+ Programar una operación en esta fecha","sr.title":"Vista general","sr.catTitle":"Reparto de los gastos","sr.periodAria":"Periodo de los gráficos","sr.perMonth":"este mes","sr.perYear":"este año","sr.spentTitle":"Parte de los ingresos gastada","sr.spentSub":"de los ingresos","sr.spentAria":"{p} de los ingresos gastados","sr.left":"Resto","sr.over":"Exceso","sr.spentOk":"Ha gastado el {p} de sus ingresos {per}: queda margen para ahorrar.","sr.spentHigh":"Ha gastado el {p} de sus ingresos {per}: el margen para ahorrar es escaso.","sr.spentOver":"Sus gastos superan sus ingresos en {v} {per}.","sr.noIncome":"Ningún ingreso registrado en el periodo.","sr.rateTitle":"Tasa de ahorro","sr.rateSub":"ahorrado","sr.rateAria":"Tasa de ahorro {p}, objetivo {o}","sr.saved":"Apartado","sr.target":"Objetivo {p}","sr.targetAria":"Objetivo de ahorro: {p}. Toque para cambiarlo.","sr.toGo":"Falta","sr.beyond":"Por encima del objetivo","sr.rateOk":"Con un {p}, alcanza su objetivo del {o}.","sr.rateLow":"Faltan {v} para alcanzar su objetivo del {o}.","sr.rateBasis":"La tasa compara lo que ha apartado con el dinero disponible (saldo inicial más ingresos).","sr.noRate":"Aún no hay datos suficientes para calcular una tasa de ahorro.","sr.fixTitle":"Gastos fijos o variables","sr.fixSub":"fijos","sr.fixAria":"{p} de gastos fijos","sr.fixed":"Fijos","sr.variable":"Variables","sr.total":"Total","sr.fixNote":"Los gastos fijos vuelven solos: alquiler, suscripciones, operaciones periódicas. Más difíciles de reducir, pero cada ahorro cuenta todos los meses.","sr.noSpend":"Ningún gasto en el periodo.","sr.regTitle":"Regularidad y objetivos","sr.noSpendDays":"Días sin gastos","sr.ofDays":"de {n} días","sr.budgetsKept":"Presupuestos respetados","sr.budgetsMonthSub":"este mes","sr.budgetsYearSub":"mes a mes","sr.noBudgets":"Sin presupuestos","sr.goals":"Objetivos de ahorro","sr.goalsSub":"{n} objetivos · {done} alcanzados","sr.goalsSub_1":"1 objetivo · {done} alcanzado","sr.noGoals":"Sin objetivos","sr.regNote":"Los objetivos de ahorro se miden a día de hoy, sea cual sea el periodo.","sr.spentMonth":"gastados este mes","sr.spentYear":"gastados este año","sr.catAria":"Reparto de {v} de gastos por categoría","sr.uncategorized":"Sin categoría","sr.others":"{n} categorías más","sr.seeOps":"Ver las operaciones →"},
-"pt":{"tu.history.filters.b":"Toque numa categoria para ficar só com ela; as subcategorias aparecem então para afinar. As mais usadas são propostas de imediato, «+ outras» abre a lista completa. «Poupança» isola as transferências e as utilizações da poupança.","tu.analysis.rings.t":"Visão geral em anéis","tu.analysis.rings.b":"A parte dos seus rendimentos gasta, a sua taxa de poupança face ao objetivo escolhido, as despesas fixas e variáveis, os dias sem despesas e os orçamentos cumpridos. O seletor passa do mês ao ano.","hf.more":"+ {n} outras","hf.moreAll":"Todas as categorias","hf.title":"Filtrar por categoria","hf.all":"Todas as categorias","hf.allSub":"Sem filtro","hf.searchPh":"Procurar uma categoria","hf.searchClear":"Limpar a pesquisa","hf.count":"{n} operações · {v}","hf.count_1":"1 operação · {v}","hf.none":"Nenhuma operação no período","hf.expand":"Subcategorias de {name}","hf.empty":"Nenhuma categoria corresponde.","cal.noOps":"Nenhuma operação nesse dia.","cal.addHere":"+ Adicionar uma operação nesta data","cal.planned":"Previsto para esse dia:","cal.nothingPlanned":"Nada previsto para esse dia.","cal.planHere":"+ Programar uma operação nesta data","sr.title":"Visão geral","sr.catTitle":"Distribuição das despesas","sr.periodAria":"Período dos gráficos","sr.perMonth":"este mês","sr.perYear":"este ano","sr.spentTitle":"Parte dos rendimentos gasta","sr.spentSub":"dos rendimentos","sr.spentAria":"{p} dos rendimentos gastos","sr.left":"Resta","sr.over":"Excesso","sr.spentOk":"Gastou {p} dos seus rendimentos {per}: ainda há margem para poupar.","sr.spentHigh":"Gastou {p} dos seus rendimentos {per}: a margem para poupar é curta.","sr.spentOver":"As suas despesas excedem os seus rendimentos em {v} {per}.","sr.noIncome":"Nenhum rendimento registado no período.","sr.rateTitle":"Taxa de poupança","sr.rateSub":"poupado","sr.rateAria":"Taxa de poupança {p}, objetivo {o}","sr.saved":"Posto de parte","sr.target":"Objetivo {p}","sr.targetAria":"Objetivo de poupança: {p}. Toque para o alterar.","sr.toGo":"Faltam","sr.beyond":"Acima do objetivo","sr.rateOk":"Com {p}, atinge o seu objetivo de {o}.","sr.rateLow":"Faltam {v} para atingir o seu objetivo de {o}.","sr.rateBasis":"A taxa compara o que pôs de parte com o dinheiro disponível (saldo inicial mais rendimentos).","sr.noRate":"Ainda não há dados suficientes para calcular uma taxa de poupança.","sr.fixTitle":"Despesas fixas ou variáveis","sr.fixSub":"fixas","sr.fixAria":"{p} de despesas fixas","sr.fixed":"Fixas","sr.variable":"Variáveis","sr.total":"Total","sr.fixNote":"As despesas fixas repetem-se sozinhas: renda, assinaturas, operações recorrentes. Mais difíceis de reduzir, mas cada poupança conta todos os meses.","sr.noSpend":"Nenhuma despesa no período.","sr.regTitle":"Regularidade e objetivos","sr.noSpendDays":"Dias sem despesas","sr.ofDays":"em {n} dias","sr.budgetsKept":"Orçamentos cumpridos","sr.budgetsMonthSub":"este mês","sr.budgetsYearSub":"mês a mês","sr.noBudgets":"Sem orçamentos","sr.goals":"Objetivos de poupança","sr.goalsSub":"{n} objetivos · {done} atingidos","sr.goalsSub_1":"1 objetivo · {done} atingido","sr.noGoals":"Sem objetivos","sr.regNote":"Os objetivos de poupança são medidos à data de hoje, seja qual for o período.","sr.spentMonth":"gastos este mês","sr.spentYear":"gastos este ano","sr.catAria":"Distribuição de {v} de despesas por categoria","sr.uncategorized":"Sem categoria","sr.others":"{n} outras categorias","sr.seeOps":"Ver as operações →"},
-"it":{"tu.history.filters.b":"Tocchi una categoria per tenere solo quella; compaiono allora le sottocategorie per affinare. Le più usate sono proposte subito, «+ altre» apre l'elenco completo. «Risparmi» isola i trasferimenti e gli utilizzi del risparmio.","tu.analysis.rings.t":"Panoramica ad anelli","tu.analysis.rings.b":"La quota delle entrate spesa, il tasso di risparmio rispetto all'obiettivo scelto, le spese fisse e variabili, i giorni senza spese e i budget rispettati. Il selettore passa dal mese all'anno.","hf.more":"+ altre {n}","hf.moreAll":"Tutte le categorie","hf.title":"Filtra per categoria","hf.all":"Tutte le categorie","hf.allSub":"Nessun filtro","hf.searchPh":"Cerca una categoria","hf.searchClear":"Cancella la ricerca","hf.count":"{n} operazioni · {v}","hf.count_1":"1 operazione · {v}","hf.none":"Nessuna operazione nel periodo","hf.expand":"Sottocategorie di {name}","hf.empty":"Nessuna categoria corrisponde.","cal.noOps":"Nessuna operazione in quel giorno.","cal.addHere":"+ Aggiungi un'operazione in questa data","cal.planned":"Previsto per quel giorno:","cal.nothingPlanned":"Niente di previsto per quel giorno.","cal.planHere":"+ Programma un'operazione in questa data","sr.title":"Panoramica","sr.catTitle":"Ripartizione delle spese","sr.periodAria":"Periodo dei grafici","sr.perMonth":"questo mese","sr.perYear":"quest'anno","sr.spentTitle":"Quota delle entrate spesa","sr.spentSub":"delle entrate","sr.spentAria":"{p} delle entrate speso","sr.left":"Resta","sr.over":"Sforamento","sr.spentOk":"Ha speso il {p} delle sue entrate {per}: resta margine per risparmiare.","sr.spentHigh":"Ha speso il {p} delle sue entrate {per}: il margine per risparmiare è ridotto.","sr.spentOver":"Le sue spese superano le entrate di {v} {per}.","sr.noIncome":"Nessuna entrata registrata nel periodo.","sr.rateTitle":"Tasso di risparmio","sr.rateSub":"risparmiato","sr.rateAria":"Tasso di risparmio {p}, obiettivo {o}","sr.saved":"Messo da parte","sr.target":"Obiettivo {p}","sr.targetAria":"Obiettivo di risparmio: {p}. Tocchi per cambiarlo.","sr.toGo":"Mancano","sr.beyond":"Oltre l'obiettivo","sr.rateOk":"Con il {p}, raggiunge il suo obiettivo del {o}.","sr.rateLow":"Ancora {v} per raggiungere il suo obiettivo del {o}.","sr.rateBasis":"Il tasso confronta ciò che ha messo da parte con il denaro disponibile (saldo iniziale più entrate).","sr.noRate":"Non ci sono ancora dati sufficienti per calcolare un tasso di risparmio.","sr.fixTitle":"Spese fisse o variabili","sr.fixSub":"fisse","sr.fixAria":"{p} di spese fisse","sr.fixed":"Fisse","sr.variable":"Variabili","sr.total":"Totale","sr.fixNote":"Le spese fisse tornano da sole: affitto, abbonamenti, operazioni ricorrenti. Più difficili da ridurre, ma ogni risparmio conta ogni mese.","sr.noSpend":"Nessuna spesa nel periodo.","sr.regTitle":"Regolarità e obiettivi","sr.noSpendDays":"Giorni senza spese","sr.ofDays":"su {n} giorni","sr.budgetsKept":"Budget rispettati","sr.budgetsMonthSub":"questo mese","sr.budgetsYearSub":"mese per mese","sr.noBudgets":"Nessun budget","sr.goals":"Obiettivi di risparmio","sr.goalsSub":"{n} obiettivi · {done} raggiunti","sr.goalsSub_1":"1 obiettivo · {done} raggiunto","sr.noGoals":"Nessun obiettivo","sr.regNote":"Gli obiettivi di risparmio sono misurati a oggi, qualunque sia il periodo.","sr.spentMonth":"spesi questo mese","sr.spentYear":"spesi quest'anno","sr.catAria":"Ripartizione di {v} di spese per categoria","sr.uncategorized":"Senza categoria","sr.others":"altre {n} categorie","sr.seeOps":"Vedi le operazioni →"},
-"ar":{"tu.history.filters.b":"المس فئة لتبقي عليها وحدها؛ تظهر عندها فئاتها الفرعية للتدقيق. تُعرض الفئات الأكثر استخدامًا مباشرة، ويفتح «+ أخرى» القائمة الكاملة. يعزل «الادخار» التحويلات واستخدامات الادخار.","tu.analysis.rings.t":"نظرة عامة بالحلقات","tu.analysis.rings.b":"حصة دخلك المنفقة، ومعدل ادخارك مقارنة بالهدف الذي تختاره، ونفقاتك الثابتة والمتغيرة، وأيامك بلا إنفاق، والميزانيات المحترمة. يبدّل المحدِّد بين الشهر والعام.","hf.more":"+ {n} أخرى","hf.moreAll":"كل الفئات","hf.title":"التصفية حسب الفئة","hf.all":"كل الفئات","hf.allSub":"من دون تصفية","hf.searchPh":"ابحث عن فئة","hf.searchClear":"مسح البحث","hf.count":"{n} عمليات · {v}","hf.count_1":"عملية واحدة · {v}","hf.none":"لا توجد عمليات في هذه الفترة","hf.expand":"الفئات الفرعية لـ{name}","hf.empty":"لا توجد فئة مطابقة.","cal.noOps":"لا توجد عمليات في هذا اليوم.","cal.addHere":"+ إضافة عملية بهذا التاريخ","cal.planned":"المقرر في هذا اليوم:","cal.nothingPlanned":"لا شيء مقرر في هذا اليوم.","cal.planHere":"+ جدولة عملية بهذا التاريخ","sr.title":"نظرة عامة","sr.catTitle":"توزيع النفقات","sr.periodAria":"فترة الرسوم البيانية","sr.perMonth":"هذا الشهر","sr.perYear":"هذا العام","sr.spentTitle":"حصة الدخل المنفقة","sr.spentSub":"من الدخل","sr.spentAria":"أُنفق {p} من الدخل","sr.left":"المتبقي","sr.over":"التجاوز","sr.spentOk":"أنفقت {p} من دخلك {per}: يبقى هامش للادخار.","sr.spentHigh":"أنفقت {p} من دخلك {per}: هامش الادخار ضيق.","sr.spentOver":"تتجاوز نفقاتك دخلك بمقدار {v} {per}.","sr.noIncome":"لم يُسجَّل أي دخل في هذه الفترة.","sr.rateTitle":"معدل الادخار","sr.rateSub":"مُدَّخر","sr.rateAria":"معدل الادخار {p}، والهدف {o}","sr.saved":"المُدَّخر","sr.target":"الهدف {p}","sr.targetAria":"هدف الادخار: {p}. المس لتغييره.","sr.toGo":"المتبقي للهدف","sr.beyond":"فوق الهدف","sr.rateOk":"بمعدل {p}، تبلغ هدفك البالغ {o}.","sr.rateLow":"يتبقى {v} لبلوغ هدفك البالغ {o}.","sr.rateBasis":"يقارن المعدل ما ادخرته بالمال المتاح (الرصيد الأولي مع الدخل).","sr.noRate":"لا توجد بيانات كافية بعد لحساب معدل الادخار.","sr.fixTitle":"نفقات ثابتة أو متغيرة","sr.fixSub":"ثابتة","sr.fixAria":"{p} من النفقات ثابتة","sr.fixed":"ثابتة","sr.variable":"متغيرة","sr.total":"المجموع","sr.fixNote":"تتكرر النفقات الثابتة من تلقاء نفسها: الإيجار والاشتراكات والعمليات المتكررة. يصعب خفضها، لكن كل توفير يُحتسب كل شهر.","sr.noSpend":"لا توجد نفقات في هذه الفترة.","sr.regTitle":"الانتظام والأهداف","sr.noSpendDays":"أيام بلا إنفاق","sr.ofDays":"من أصل {n} يومًا","sr.budgetsKept":"الميزانيات المحترمة","sr.budgetsMonthSub":"هذا الشهر","sr.budgetsYearSub":"شهرًا بشهر","sr.noBudgets":"لا توجد ميزانيات","sr.goals":"أهداف الادخار","sr.goalsSub":"{n} أهداف · {done} محققة","sr.goalsSub_1":"هدف واحد · {done} محقق","sr.noGoals":"لا توجد أهداف","sr.regNote":"تُقاس أهداف الادخار حتى اليوم، أيًا كانت الفترة.","sr.spentMonth":"أُنفقت هذا الشهر","sr.spentYear":"أُنفقت هذا العام","sr.catAria":"توزيع {v} من النفقات حسب الفئة","sr.uncategorized":"من دون فئة","sr.others":"{n} فئات أخرى","sr.seeOps":"عرض العمليات ←"}
+"fr":{"tu.history.filters.b":"Touchez une catégorie pour ne garder qu'elle ; ses sous-catégories apparaissent alors pour affiner. Les plus utilisées sont proposées d'office, « + autres » ouvre la liste complète. « Épargne » isole les virements et les utilisations de l'épargne.","tu.analysis.rings.t":"Vue d'ensemble en anneaux","tu.analysis.rings.b":"La part de vos revenus dépensée, votre taux d'épargne face à l'objectif choisi, vos dépenses fixes et variables, vos jours sans dépense et vos budgets tenus. Le sélecteur passe du mois à l'année.","hf.more":"+ {n} autres","hf.moreAll":"Toutes les catégories","hf.title":"Filtrer par catégorie","hf.all":"Toutes les catégories","hf.allSub":"Aucun filtre","hf.searchPh":"Chercher une catégorie","hf.searchClear":"Effacer la recherche","hf.count":"{n} opérations · {v}","hf.count_1":"1 opération · {v}","hf.none":"Aucune opération sur la période","hf.expand":"Sous-catégories de {name}","hf.empty":"Aucune catégorie ne correspond.","cal.noOps":"Aucune opération ce jour-là.","cal.addHere":"+ Ajouter une opération à cette date","cal.planned":"Prévu ce jour-là :","cal.nothingPlanned":"Rien de prévu ce jour-là.","cal.planHere":"+ Programmer une opération à cette date","sr.title":"Vue d'ensemble","sr.catTitle":"Répartition des dépenses","sr.periodAria":"Période des graphiques","sr.perMonth":"ce mois-ci","sr.perYear":"cette année","sr.spentTitle":"Part des revenus dépensée","sr.spentSub":"des revenus","sr.spentAria":"{p} des revenus dépensés","sr.left":"Reste","sr.over":"Dépassement","sr.spentOk":"Vous avez dépensé {p} de vos revenus {per} : il en reste pour épargner.","sr.spentHigh":"Vous avez dépensé {p} de vos revenus {per} : la marge pour épargner est mince.","sr.spentOver":"Vos dépenses dépassent vos revenus de {v} {per}.","sr.noIncome":"Aucun revenu enregistré sur la période.","sr.rateTitle":"Taux d'épargne","sr.rateSub":"épargné","sr.rateAria":"Taux d'épargne {p}, objectif {o}","sr.saved":"Mis de côté","sr.target":"Objectif {p}","sr.targetAria":"Objectif d'épargne : {p}. Touchez pour le changer.","sr.toGo":"Il manque","sr.beyond":"Au-delà de l'objectif","sr.rateOk":"Avec {p}, vous atteignez votre objectif de {o}.","sr.rateLow":"Encore {v} pour atteindre votre objectif de {o}.","sr.rateBasis":"Le taux rapporte ce que vous avez mis de côté à l'argent disponible (solde de départ et revenus).","sr.noRate":"Pas encore assez de données pour calculer un taux d'épargne.","sr.fixTitle":"Dépenses fixes ou variables","sr.fixSub":"fixes","sr.fixAria":"{p} de dépenses fixes","sr.fixed":"Fixes","sr.variable":"Variables","sr.total":"Total","sr.fixNote":"Les dépenses fixes reviennent d'elles-mêmes : loyer, abonnements, opérations récurrentes. Moins faciles à réduire, mais chaque économie compte tous les mois.","sr.noSpend":"Aucune dépense sur la période.","sr.regTitle":"Régularité et objectifs","sr.noSpendDays":"Jours sans dépense","sr.ofDays":"sur {n} jours","sr.budgetsKept":"Budgets respectés","sr.budgetsMonthSub":"ce mois-ci","sr.budgetsYearSub":"mois par mois","sr.noBudgets":"Aucun budget","sr.goals":"Objectifs d'épargne","sr.goalsSub":"{n} objectifs · {done} atteints","sr.goalsSub_1":"1 objectif · {done} atteint","sr.noGoals":"Aucun objectif","sr.regNote":"Les objectifs d'épargne sont mesurés à ce jour, quelle que soit la période.","sr.spentMonth":"dépensés ce mois-ci","sr.spentYear":"dépensés cette année","sr.catAria":"Répartition de {v} de dépenses par catégorie","sr.uncategorized":"Sans catégorie","sr.others":"{n} autres catégories","sr.seeOps":"Voir les opérations →","sp.guessed":"Catégorie devinée d'après vos opérations « {label} » ; touchez-en une autre pour la changer.","sp.pickCat":"Choisir une catégorie","sp.removeLine":"Retirer cette ligne","sp.mainCat":"la catégorie choisie","sp.splitBtn":"Répartir sur plusieurs catégories","sp.shareBtn":"Partager avec quelqu'un","sp.splitTitle":"Autres catégories du même ticket","sp.splitAdd":"+ Ajouter une catégorie","sp.splitRest":"Le reste, {v}, va dans {cat}.","sp.errSplitAmount":"Indiquez un montant positif pour chaque catégorie ajoutée.","sp.errSplitCat":"Choisissez une catégorie pour chaque montant ajouté.","sp.errSplitSum":"Les catégories ajoutées dépassent le total de {v} : il doit rester une part pour la catégorie choisie.","sp.splitDone":"Opération répartie sur {n} catégories","sp.splitDone_1":"Opération enregistrée","sp.shareWith":"Partagée avec","sp.namePh":"Prénom","sp.sharePart":"Sa part","sp.shareHalf":"Moitié","sp.shareAll":"Tout","sp.shareHelp":"Indiquez avec qui et sa part : elle apparaîtra dans « Qui doit quoi », sur la page À venir.","sp.shareWill":"{name} vous devra {v}. Une fois remboursée, la dépense ne gardera que votre part.","sp.shareRepaid":"Part remboursée par {name} le {date} : la dépense ne garde que votre part.","sp.errShareName":"Indiquez le nom de la personne.","sp.errSharePart":"Indiquez sa part.","sp.errShareMax":"Sa part ne peut pas dépasser le montant payé ({v}).","sp.badgeOwed":"{name} · {v} à rembourser","sp.badgeRepaid":"Remboursé par {name}","sp.title":"Qui doit quoi","sp.newDebt":"+ Noter une dette","sp.empty":"Personne ne vous doit rien, et vous ne devez rien. Partagez une dépense au moment de la saisir, ou notez ce que vous devez à quelqu'un.","sp.owesYou":"{name} vous doit {v}","sp.youOwe":"Vous devez {v} à {name}","sp.even":"Vous êtes quittes avec {name}","sp.settleAll":"Tout solder","sp.itemOwed":"sa part","sp.itemOwe":"votre dette","sp.markSettled":"Marquer comme réglé","sp.note":"Une part remboursée ramène la dépense à votre part ; une dette réglée devient une dépense à la date du règlement.","sp.repayLabel":"Remboursement à {name} · {label}","sp.settledAll":"Comptes soldés avec {name}","sp.settledOne":"Marqué comme réglé","sp.debtNew":"Noter une dette","sp.debtEdit":"Modifier la dette","sp.debtWho":"Qui a payé pour vous ?","sp.debtAmount":"Montant que vous devez","sp.debtLabel":"Pour quoi","sp.debtLabelPh":"Ex. Restaurant, place de cinéma…","sp.debtCat":"Catégorie, lors du règlement","sp.debtDate":"Date","sp.debtHint":"Rien n'est enregistré dans votre compte tant que vous n'avez pas remboursé : la dépense sera créée au moment du règlement.","sp.save":"Enregistrer","sp.debtSaved":"Dette envers {name} enregistrée","sp.debtDeleted":"Dette supprimée","rl.title":"Importer un relevé bancaire","rl.btn":"⬆ Importer un relevé bancaire (CSV)","rl.btnHint":"Le fichier exporté par votre banque : les doublons sont repérés et les catégories devinées.","rl.fabTitle":"Importer un relevé","rl.fabSub":"Le fichier CSV exporté par votre banque","rl.intro":"Choisissez le fichier CSV exporté depuis l'espace en ligne de votre banque. Les colonnes sont reconnues automatiquement, les catégories devinées d'après vos habitudes, et les opérations déjà présentes écartées.","rl.privacy":"Le fichier est lu sur cet appareil uniquement ; rien n'est envoyé ailleurs.","rl.pick":"Choisir le fichier","rl.column":"Colonne {n}","rl.none":"Aucune","rl.read":"{n} lignes lues dans « {file} »","rl.colDate":"Date","rl.colLabel":"Libellé","rl.colAmount":"Montant","rl.colDebit":"Débit","rl.colCredit":"Crédit","rl.clean":"Simplifier les libellés (« CB CARREFOUR 03/10 » devient « Carrefour »)","rl.usDates":"Dates au format mois/jour (américain)","rl.selected":"{n} sur {total} à importer","rl.dups":"{n} doublons probables écartés","rl.dups_1":"1 doublon probable écarté","rl.badgeDup":"déjà enregistrée ?","rl.badgeFuture":"à venir","rl.badgeInvalid":"illisible","rl.badgeSavings":"virement d'épargne","rl.pickAria":"Importer « {label} »","rl.more":"Et {n} lignes de plus, importées avec leur catégorie devinée.","rl.import":"Importer {n} opérations","rl.errFormat":"Ce fichier ne ressemble pas à un relevé : aucune colonne de dates ou de montants n'a été trouvée.","rl.errRead":"Le fichier n'a pas pu être lu.","rl.done":"{n} opérations importées","rl.done_1":"1 opération importée","tu.add.options.t":"Répartir ou partager","tu.add.options.b":"Un ticket qui mêle courses et maison se répartit sur plusieurs catégories. Une dépense partagée note la part de l'autre : elle apparaît dans « Qui doit quoi » jusqu'au remboursement."},
+"en":{"tu.history.filters.b":"Tap a category to keep only that one; its subcategories then appear so you can narrow down. The most used ones are offered straight away, “+ more” opens the full list. “Savings” isolates transfers and uses of your savings.","tu.analysis.rings.t":"Overview in rings","tu.analysis.rings.b":"The share of your income spent, your savings rate against the target you choose, your fixed and variable spending, your no-spend days and the budgets you kept. The selector switches from month to year.","hf.more":"+ {n} more","hf.moreAll":"All categories","hf.title":"Filter by category","hf.all":"All categories","hf.allSub":"No filter","hf.searchPh":"Find a category","hf.searchClear":"Clear search","hf.count":"{n} transactions · {v}","hf.count_1":"1 transaction · {v}","hf.none":"No transactions in this period","hf.expand":"Subcategories of {name}","hf.empty":"No category matches.","cal.noOps":"No transactions on this day.","cal.addHere":"+ Add a transaction on this date","cal.planned":"Planned for this day:","cal.nothingPlanned":"Nothing planned for this day.","cal.planHere":"+ Schedule a transaction on this date","sr.title":"Overview","sr.catTitle":"Spending breakdown","sr.periodAria":"Chart period","sr.perMonth":"this month","sr.perYear":"this year","sr.spentTitle":"Share of income spent","sr.spentSub":"of income","sr.spentAria":"{p} of income spent","sr.left":"Left","sr.over":"Overspent","sr.spentOk":"You have spent {p} of your income {per}: there is room left to save.","sr.spentHigh":"You have spent {p} of your income {per}: little room is left to save.","sr.spentOver":"Your spending exceeds your income by {v} {per}.","sr.noIncome":"No income recorded in this period.","sr.rateTitle":"Savings rate","sr.rateSub":"saved","sr.rateAria":"Savings rate {p}, target {o}","sr.saved":"Set aside","sr.target":"Target {p}","sr.targetAria":"Savings target: {p}. Tap to change it.","sr.toGo":"Still to go","sr.beyond":"Beyond the target","sr.rateOk":"At {p}, you reach your {o} target.","sr.rateLow":"{v} more to reach your {o} target.","sr.rateBasis":"The rate compares what you set aside with the money available (opening balance plus income).","sr.noRate":"Not enough data yet to work out a savings rate.","sr.fixTitle":"Fixed or variable spending","sr.fixSub":"fixed","sr.fixAria":"{p} fixed spending","sr.fixed":"Fixed","sr.variable":"Variable","sr.total":"Total","sr.fixNote":"Fixed spending comes back on its own: rent, subscriptions, recurring transactions. Harder to cut, but every saving counts every month.","sr.noSpend":"No spending in this period.","sr.regTitle":"Consistency and goals","sr.noSpendDays":"No-spend days","sr.ofDays":"out of {n} days","sr.budgetsKept":"Budgets kept","sr.budgetsMonthSub":"this month","sr.budgetsYearSub":"month by month","sr.noBudgets":"No budgets","sr.goals":"Savings goals","sr.goalsSub":"{n} goals · {done} reached","sr.goalsSub_1":"1 goal · {done} reached","sr.noGoals":"No goals","sr.regNote":"Savings goals are measured as of today, whatever the period.","sr.spentMonth":"spent this month","sr.spentYear":"spent this year","sr.catAria":"Breakdown of {v} of spending by category","sr.uncategorized":"Uncategorised","sr.others":"{n} other categories","sr.seeOps":"See the transactions →","sp.guessed":"Category guessed from your “{label}” transactions; tap another one to change it.","sp.pickCat":"Choose a category","sp.removeLine":"Remove this line","sp.mainCat":"the chosen category","sp.splitBtn":"Split across categories","sp.shareBtn":"Share with someone","sp.splitTitle":"Other categories on the same receipt","sp.splitAdd":"+ Add a category","sp.splitRest":"The rest, {v}, goes to {cat}.","sp.errSplitAmount":"Enter a positive amount for each added category.","sp.errSplitCat":"Choose a category for each added amount.","sp.errSplitSum":"The added categories exceed the {v} total: a share must remain for the chosen category.","sp.splitDone":"Transaction split across {n} categories","sp.splitDone_1":"Transaction saved","sp.shareWith":"Shared with","sp.namePh":"First name","sp.sharePart":"Their share","sp.shareHalf":"Half","sp.shareAll":"All","sp.shareHelp":"Enter who and their share: it will appear under “Who owes what”, on the Upcoming page.","sp.shareWill":"{name} will owe you {v}. Once repaid, the expense will keep only your share.","sp.shareRepaid":"Share repaid by {name} on {date}: the expense keeps only your share.","sp.errShareName":"Enter the person's name.","sp.errSharePart":"Enter their share.","sp.errShareMax":"Their share cannot exceed the amount paid ({v}).","sp.badgeOwed":"{name} · {v} to repay","sp.badgeRepaid":"Repaid by {name}","sp.title":"Who owes what","sp.newDebt":"+ Record a debt","sp.empty":"Nobody owes you anything, and you owe nothing. Share an expense when you record it, or note what you owe someone.","sp.owesYou":"{name} owes you {v}","sp.youOwe":"You owe {name} {v}","sp.even":"You are even with {name}","sp.settleAll":"Settle all","sp.itemOwed":"their share","sp.itemOwe":"your debt","sp.markSettled":"Mark as settled","sp.note":"A repaid share brings the expense down to your share; a settled debt becomes an expense on the settlement date.","sp.repayLabel":"Repayment to {name} · {label}","sp.settledAll":"All settled with {name}","sp.settledOne":"Marked as settled","sp.debtNew":"Record a debt","sp.debtEdit":"Edit the debt","sp.debtWho":"Who paid for you?","sp.debtAmount":"Amount you owe","sp.debtLabel":"What for","sp.debtLabelPh":"E.g. Restaurant, cinema ticket…","sp.debtCat":"Category, when settled","sp.debtDate":"Date","sp.debtHint":"Nothing is recorded in your account until you repay: the expense will be created when you settle.","sp.save":"Save","sp.debtSaved":"Debt to {name} saved","sp.debtDeleted":"Debt deleted","rl.title":"Import a bank statement","rl.btn":"⬆ Import a bank statement (CSV)","rl.btnHint":"The file exported by your bank: duplicates are detected and categories guessed.","rl.fabTitle":"Import a statement","rl.fabSub":"The CSV file exported by your bank","rl.intro":"Choose the CSV file exported from your bank's online space. Columns are recognised automatically, categories guessed from your habits, and transactions already recorded left out.","rl.privacy":"The file is read on this device only; nothing is sent anywhere.","rl.pick":"Choose the file","rl.column":"Column {n}","rl.none":"None","rl.read":"{n} lines read from “{file}”","rl.colDate":"Date","rl.colLabel":"Description","rl.colAmount":"Amount","rl.colDebit":"Debit","rl.colCredit":"Credit","rl.clean":"Simplify descriptions (“CB CARREFOUR 03/10” becomes “Carrefour”)","rl.usDates":"Dates in month/day format (US)","rl.selected":"{n} of {total} to import","rl.dups":"{n} likely duplicates left out","rl.dups_1":"1 likely duplicate left out","rl.badgeDup":"already recorded?","rl.badgeFuture":"upcoming","rl.badgeInvalid":"unreadable","rl.badgeSavings":"savings transfer","rl.pickAria":"Import “{label}”","rl.more":"And {n} more lines, imported with their guessed category.","rl.import":"Import {n} transactions","rl.errFormat":"This file does not look like a statement: no column of dates or amounts was found.","rl.errRead":"The file could not be read.","rl.done":"{n} transactions imported","rl.done_1":"1 transaction imported","tu.add.options.t":"Split or share","tu.add.options.b":"A receipt mixing groceries and household goods can be split across categories. A shared expense records the other person's share: it appears under “Who owes what” until it is repaid."},
+"de":{"tu.history.filters.b":"Tippen Sie auf eine Kategorie, um nur diese zu behalten; ihre Unterkategorien erscheinen dann zum Verfeinern. Die meistgenutzten werden direkt angeboten, „+ weitere“ öffnet die vollständige Liste. „Sparen“ zeigt nur Überträge und Entnahmen aus den Ersparnissen.","tu.analysis.rings.t":"Überblick in Ringen","tu.analysis.rings.b":"Der Anteil Ihrer ausgegebenen Einnahmen, Ihre Sparquote im Vergleich zum gewählten Ziel, fixe und variable Ausgaben, Tage ohne Ausgaben und eingehaltene Budgets. Der Schalter wechselt zwischen Monat und Jahr.","hf.more":"+ {n} weitere","hf.moreAll":"Alle Kategorien","hf.title":"Nach Kategorie filtern","hf.all":"Alle Kategorien","hf.allSub":"Kein Filter","hf.searchPh":"Kategorie suchen","hf.searchClear":"Suche löschen","hf.count":"{n} Buchungen · {v}","hf.count_1":"1 Buchung · {v}","hf.none":"Keine Buchungen im Zeitraum","hf.expand":"Unterkategorien von {name}","hf.empty":"Keine passende Kategorie.","cal.noOps":"Keine Buchungen an diesem Tag.","cal.addHere":"+ Buchung an diesem Datum hinzufügen","cal.planned":"Für diesen Tag geplant:","cal.nothingPlanned":"Für diesen Tag ist nichts geplant.","cal.planHere":"+ Buchung für dieses Datum planen","sr.title":"Überblick","sr.catTitle":"Aufteilung der Ausgaben","sr.periodAria":"Zeitraum der Diagramme","sr.perMonth":"in diesem Monat","sr.perYear":"in diesem Jahr","sr.spentTitle":"Anteil der ausgegebenen Einnahmen","sr.spentSub":"der Einnahmen","sr.spentAria":"{p} der Einnahmen ausgegeben","sr.left":"Rest","sr.over":"Überschreitung","sr.spentOk":"Sie haben {per} {p} Ihrer Einnahmen ausgegeben: Es bleibt Spielraum zum Sparen.","sr.spentHigh":"Sie haben {per} {p} Ihrer Einnahmen ausgegeben: Der Spielraum zum Sparen ist gering.","sr.spentOver":"Ihre Ausgaben übersteigen Ihre Einnahmen {per} um {v}.","sr.noIncome":"Keine Einnahmen im Zeitraum erfasst.","sr.rateTitle":"Sparquote","sr.rateSub":"gespart","sr.rateAria":"Sparquote {p}, Ziel {o}","sr.saved":"Zurückgelegt","sr.target":"Ziel {p}","sr.targetAria":"Sparziel: {p}. Tippen Sie, um es zu ändern.","sr.toGo":"Es fehlen","sr.beyond":"Über dem Ziel","sr.rateOk":"Mit {p} erreichen Sie Ihr Ziel von {o}.","sr.rateLow":"Noch {v} bis zu Ihrem Ziel von {o}.","sr.rateBasis":"Die Quote setzt das Zurückgelegte ins Verhältnis zum verfügbaren Geld (Anfangsstand plus Einnahmen).","sr.noRate":"Noch nicht genug Daten für eine Sparquote.","sr.fixTitle":"Fixe oder variable Ausgaben","sr.fixSub":"fix","sr.fixAria":"{p} fixe Ausgaben","sr.fixed":"Fix","sr.variable":"Variabel","sr.total":"Gesamt","sr.fixNote":"Fixe Ausgaben kommen von selbst wieder: Miete, Abos, wiederkehrende Buchungen. Schwerer zu senken, aber jede Ersparnis zählt jeden Monat.","sr.noSpend":"Keine Ausgaben im Zeitraum.","sr.regTitle":"Regelmäßigkeit und Ziele","sr.noSpendDays":"Tage ohne Ausgaben","sr.ofDays":"von {n} Tagen","sr.budgetsKept":"Eingehaltene Budgets","sr.budgetsMonthSub":"in diesem Monat","sr.budgetsYearSub":"Monat für Monat","sr.noBudgets":"Keine Budgets","sr.goals":"Sparziele","sr.goalsSub":"{n} Ziele · {done} erreicht","sr.goalsSub_1":"1 Ziel · {done} erreicht","sr.noGoals":"Keine Ziele","sr.regNote":"Sparziele werden zum heutigen Stand gemessen, unabhängig vom Zeitraum.","sr.spentMonth":"in diesem Monat ausgegeben","sr.spentYear":"in diesem Jahr ausgegeben","sr.catAria":"Aufteilung von {v} Ausgaben nach Kategorie","sr.uncategorized":"Ohne Kategorie","sr.others":"{n} weitere Kategorien","sr.seeOps":"Buchungen ansehen →","sp.guessed":"Kategorie aus Ihren Buchungen „{label}“ erraten; tippen Sie auf eine andere, um sie zu ändern.","sp.pickCat":"Kategorie wählen","sp.removeLine":"Diese Zeile entfernen","sp.mainCat":"die gewählte Kategorie","sp.splitBtn":"Auf mehrere Kategorien aufteilen","sp.shareBtn":"Mit jemandem teilen","sp.splitTitle":"Weitere Kategorien desselben Belegs","sp.splitAdd":"+ Kategorie hinzufügen","sp.splitRest":"Der Rest, {v}, geht an {cat}.","sp.errSplitAmount":"Geben Sie für jede hinzugefügte Kategorie einen positiven Betrag ein.","sp.errSplitCat":"Wählen Sie für jeden hinzugefügten Betrag eine Kategorie.","sp.errSplitSum":"Die hinzugefügten Kategorien übersteigen den Gesamtbetrag von {v}: Für die gewählte Kategorie muss ein Anteil bleiben.","sp.splitDone":"Buchung auf {n} Kategorien aufgeteilt","sp.splitDone_1":"Buchung gespeichert","sp.shareWith":"Geteilt mit","sp.namePh":"Vorname","sp.sharePart":"Sein Anteil","sp.shareHalf":"Hälfte","sp.shareAll":"Alles","sp.shareHelp":"Geben Sie an, mit wem und welchen Anteil: Er erscheint unter „Wer schuldet wem“ auf der Seite „Geplant“.","sp.shareWill":"{name} wird Ihnen {v} schulden. Nach der Rückzahlung behält die Ausgabe nur Ihren Anteil.","sp.shareRepaid":"Anteil von {name} am {date} zurückgezahlt: Die Ausgabe behält nur Ihren Anteil.","sp.errShareName":"Geben Sie den Namen der Person ein.","sp.errSharePart":"Geben Sie den Anteil ein.","sp.errShareMax":"Der Anteil darf den bezahlten Betrag ({v}) nicht übersteigen.","sp.badgeOwed":"{name} · {v} offen","sp.badgeRepaid":"Von {name} zurückgezahlt","sp.title":"Wer schuldet wem","sp.newDebt":"+ Schuld notieren","sp.empty":"Niemand schuldet Ihnen etwas, und Sie schulden nichts. Teilen Sie eine Ausgabe bei der Eingabe oder notieren Sie, was Sie jemandem schulden.","sp.owesYou":"{name} schuldet Ihnen {v}","sp.youOwe":"Sie schulden {name} {v}","sp.even":"Sie sind mit {name} quitt","sp.settleAll":"Alles begleichen","sp.itemOwed":"sein Anteil","sp.itemOwe":"Ihre Schuld","sp.markSettled":"Als beglichen markieren","sp.note":"Ein zurückgezahlter Anteil senkt die Ausgabe auf Ihren Anteil; eine beglichene Schuld wird zur Ausgabe am Tag der Zahlung.","sp.repayLabel":"Rückzahlung an {name} · {label}","sp.settledAll":"Mit {name} alles beglichen","sp.settledOne":"Als beglichen markiert","sp.debtNew":"Schuld notieren","sp.debtEdit":"Schuld bearbeiten","sp.debtWho":"Wer hat für Sie bezahlt?","sp.debtAmount":"Betrag, den Sie schulden","sp.debtLabel":"Wofür","sp.debtLabelPh":"z. B. Restaurant, Kinokarte …","sp.debtCat":"Kategorie bei der Begleichung","sp.debtDate":"Datum","sp.debtHint":"Bis zur Rückzahlung wird nichts in Ihrem Konto erfasst: Die Ausgabe entsteht bei der Begleichung.","sp.save":"Speichern","sp.debtSaved":"Schuld bei {name} gespeichert","sp.debtDeleted":"Schuld gelöscht","rl.title":"Kontoauszug importieren","rl.btn":"⬆ Kontoauszug importieren (CSV)","rl.btnHint":"Die von Ihrer Bank exportierte Datei: Doppelte werden erkannt und Kategorien erraten.","rl.fabTitle":"Kontoauszug importieren","rl.fabSub":"Die von Ihrer Bank exportierte CSV-Datei","rl.intro":"Wählen Sie die CSV-Datei aus dem Online-Banking Ihrer Bank. Die Spalten werden automatisch erkannt, Kategorien nach Ihren Gewohnheiten erraten und bereits erfasste Buchungen ausgelassen.","rl.privacy":"Die Datei wird nur auf diesem Gerät gelesen; nichts wird verschickt.","rl.pick":"Datei wählen","rl.column":"Spalte {n}","rl.none":"Keine","rl.read":"{n} Zeilen aus „{file}“ gelesen","rl.colDate":"Datum","rl.colLabel":"Text","rl.colAmount":"Betrag","rl.colDebit":"Soll","rl.colCredit":"Haben","rl.clean":"Buchungstexte vereinfachen („CB CARREFOUR 03/10“ wird zu „Carrefour“)","rl.usDates":"Datum im Format Monat/Tag (US)","rl.selected":"{n} von {total} zu importieren","rl.dups":"{n} wahrscheinliche Doppelte ausgelassen","rl.dups_1":"1 wahrscheinliche Doppelte ausgelassen","rl.badgeDup":"schon erfasst?","rl.badgeFuture":"geplant","rl.badgeInvalid":"unlesbar","rl.badgeSavings":"Sparüberweisung","rl.pickAria":"„{label}“ importieren","rl.more":"Und {n} weitere Zeilen, mit erratener Kategorie importiert.","rl.import":"{n} Buchungen importieren","rl.errFormat":"Diese Datei sieht nicht wie ein Kontoauszug aus: Es wurde keine Spalte mit Daten oder Beträgen gefunden.","rl.errRead":"Die Datei konnte nicht gelesen werden.","rl.done":"{n} Buchungen importiert","rl.done_1":"1 Buchung importiert","tu.add.options.t":"Aufteilen oder teilen","tu.add.options.b":"Ein Beleg mit Lebensmitteln und Haushaltswaren lässt sich auf mehrere Kategorien aufteilen. Eine geteilte Ausgabe vermerkt den Anteil der anderen Person: Er erscheint unter „Wer schuldet wem“ bis zur Rückzahlung."},
+"es":{"tu.history.filters.b":"Toque una categoría para quedarse solo con ella; aparecen entonces sus subcategorías para afinar. Las más usadas se proponen directamente, «+ más» abre la lista completa. «Ahorro» aísla las transferencias y los usos del ahorro.","tu.analysis.rings.t":"Vista general en anillos","tu.analysis.rings.b":"La parte de sus ingresos gastada, su tasa de ahorro frente al objetivo elegido, sus gastos fijos y variables, sus días sin gastos y los presupuestos respetados. El selector pasa del mes al año.","hf.more":"+ {n} más","hf.moreAll":"Todas las categorías","hf.title":"Filtrar por categoría","hf.all":"Todas las categorías","hf.allSub":"Sin filtro","hf.searchPh":"Buscar una categoría","hf.searchClear":"Borrar la búsqueda","hf.count":"{n} operaciones · {v}","hf.count_1":"1 operación · {v}","hf.none":"Ninguna operación en el periodo","hf.expand":"Subcategorías de {name}","hf.empty":"Ninguna categoría coincide.","cal.noOps":"Ninguna operación ese día.","cal.addHere":"+ Añadir una operación en esta fecha","cal.planned":"Previsto para ese día:","cal.nothingPlanned":"Nada previsto para ese día.","cal.planHere":"+ Programar una operación en esta fecha","sr.title":"Vista general","sr.catTitle":"Reparto de los gastos","sr.periodAria":"Periodo de los gráficos","sr.perMonth":"este mes","sr.perYear":"este año","sr.spentTitle":"Parte de los ingresos gastada","sr.spentSub":"de los ingresos","sr.spentAria":"{p} de los ingresos gastados","sr.left":"Resto","sr.over":"Exceso","sr.spentOk":"Ha gastado el {p} de sus ingresos {per}: queda margen para ahorrar.","sr.spentHigh":"Ha gastado el {p} de sus ingresos {per}: el margen para ahorrar es escaso.","sr.spentOver":"Sus gastos superan sus ingresos en {v} {per}.","sr.noIncome":"Ningún ingreso registrado en el periodo.","sr.rateTitle":"Tasa de ahorro","sr.rateSub":"ahorrado","sr.rateAria":"Tasa de ahorro {p}, objetivo {o}","sr.saved":"Apartado","sr.target":"Objetivo {p}","sr.targetAria":"Objetivo de ahorro: {p}. Toque para cambiarlo.","sr.toGo":"Falta","sr.beyond":"Por encima del objetivo","sr.rateOk":"Con un {p}, alcanza su objetivo del {o}.","sr.rateLow":"Faltan {v} para alcanzar su objetivo del {o}.","sr.rateBasis":"La tasa compara lo que ha apartado con el dinero disponible (saldo inicial más ingresos).","sr.noRate":"Aún no hay datos suficientes para calcular una tasa de ahorro.","sr.fixTitle":"Gastos fijos o variables","sr.fixSub":"fijos","sr.fixAria":"{p} de gastos fijos","sr.fixed":"Fijos","sr.variable":"Variables","sr.total":"Total","sr.fixNote":"Los gastos fijos vuelven solos: alquiler, suscripciones, operaciones periódicas. Más difíciles de reducir, pero cada ahorro cuenta todos los meses.","sr.noSpend":"Ningún gasto en el periodo.","sr.regTitle":"Regularidad y objetivos","sr.noSpendDays":"Días sin gastos","sr.ofDays":"de {n} días","sr.budgetsKept":"Presupuestos respetados","sr.budgetsMonthSub":"este mes","sr.budgetsYearSub":"mes a mes","sr.noBudgets":"Sin presupuestos","sr.goals":"Objetivos de ahorro","sr.goalsSub":"{n} objetivos · {done} alcanzados","sr.goalsSub_1":"1 objetivo · {done} alcanzado","sr.noGoals":"Sin objetivos","sr.regNote":"Los objetivos de ahorro se miden a día de hoy, sea cual sea el periodo.","sr.spentMonth":"gastados este mes","sr.spentYear":"gastados este año","sr.catAria":"Reparto de {v} de gastos por categoría","sr.uncategorized":"Sin categoría","sr.others":"{n} categorías más","sr.seeOps":"Ver las operaciones →","sp.guessed":"Categoría deducida de sus operaciones «{label}»; toque otra para cambiarla.","sp.pickCat":"Elegir una categoría","sp.removeLine":"Quitar esta línea","sp.mainCat":"la categoría elegida","sp.splitBtn":"Repartir entre varias categorías","sp.shareBtn":"Compartir con alguien","sp.splitTitle":"Otras categorías del mismo ticket","sp.splitAdd":"+ Añadir una categoría","sp.splitRest":"El resto, {v}, va a {cat}.","sp.errSplitAmount":"Indique un importe positivo para cada categoría añadida.","sp.errSplitCat":"Elija una categoría para cada importe añadido.","sp.errSplitSum":"Las categorías añadidas superan el total de {v}: debe quedar una parte para la categoría elegida.","sp.splitDone":"Operación repartida entre {n} categorías","sp.splitDone_1":"Operación guardada","sp.shareWith":"Compartida con","sp.namePh":"Nombre","sp.sharePart":"Su parte","sp.shareHalf":"Mitad","sp.shareAll":"Todo","sp.shareHelp":"Indique con quién y su parte: aparecerá en «Quién debe qué», en la página Próximos.","sp.shareWill":"{name} le deberá {v}. Una vez reembolsada, el gasto conservará solo su parte.","sp.shareRepaid":"Parte reembolsada por {name} el {date}: el gasto conserva solo su parte.","sp.errShareName":"Indique el nombre de la persona.","sp.errSharePart":"Indique su parte.","sp.errShareMax":"Su parte no puede superar el importe pagado ({v}).","sp.badgeOwed":"{name} · {v} por reembolsar","sp.badgeRepaid":"Reembolsado por {name}","sp.title":"Quién debe qué","sp.newDebt":"+ Anotar una deuda","sp.empty":"Nadie le debe nada y usted no debe nada. Comparta un gasto al registrarlo, o anote lo que debe a alguien.","sp.owesYou":"{name} le debe {v}","sp.youOwe":"Usted debe {v} a {name}","sp.even":"Está en paz con {name}","sp.settleAll":"Saldarlo todo","sp.itemOwed":"su parte","sp.itemOwe":"su deuda","sp.markSettled":"Marcar como saldado","sp.note":"Una parte reembolsada reduce el gasto a su parte; una deuda saldada se convierte en un gasto en la fecha del pago.","sp.repayLabel":"Reembolso a {name} · {label}","sp.settledAll":"Cuentas saldadas con {name}","sp.settledOne":"Marcado como saldado","sp.debtNew":"Anotar una deuda","sp.debtEdit":"Modificar la deuda","sp.debtWho":"¿Quién pagó por usted?","sp.debtAmount":"Importe que debe","sp.debtLabel":"Por qué","sp.debtLabelPh":"Ej. Restaurante, entrada de cine…","sp.debtCat":"Categoría al saldar","sp.debtDate":"Fecha","sp.debtHint":"No se registra nada en su cuenta hasta que reembolse: el gasto se creará al saldar.","sp.save":"Guardar","sp.debtSaved":"Deuda con {name} guardada","sp.debtDeleted":"Deuda eliminada","rl.title":"Importar un extracto bancario","rl.btn":"⬆ Importar un extracto bancario (CSV)","rl.btnHint":"El archivo exportado por su banco: se detectan los duplicados y se deducen las categorías.","rl.fabTitle":"Importar un extracto","rl.fabSub":"El archivo CSV exportado por su banco","rl.intro":"Elija el archivo CSV exportado desde la banca en línea. Las columnas se reconocen automáticamente, las categorías se deducen de sus hábitos y se descartan las operaciones ya registradas.","rl.privacy":"El archivo se lee solo en este dispositivo; no se envía nada.","rl.pick":"Elegir el archivo","rl.column":"Columna {n}","rl.none":"Ninguna","rl.read":"{n} líneas leídas de «{file}»","rl.colDate":"Fecha","rl.colLabel":"Concepto","rl.colAmount":"Importe","rl.colDebit":"Débito","rl.colCredit":"Crédito","rl.clean":"Simplificar los conceptos («CB CARREFOUR 03/10» pasa a «Carrefour»)","rl.usDates":"Fechas en formato mes/día (EE. UU.)","rl.selected":"{n} de {total} por importar","rl.dups":"{n} duplicados probables descartados","rl.dups_1":"1 duplicado probable descartado","rl.badgeDup":"¿ya registrada?","rl.badgeFuture":"próxima","rl.badgeInvalid":"ilegible","rl.badgeSavings":"transferencia de ahorro","rl.pickAria":"Importar «{label}»","rl.more":"Y {n} líneas más, importadas con su categoría deducida.","rl.import":"Importar {n} operaciones","rl.errFormat":"Este archivo no parece un extracto: no se encontró ninguna columna de fechas ni de importes.","rl.errRead":"No se pudo leer el archivo.","rl.done":"{n} operaciones importadas","rl.done_1":"1 operación importada","tu.add.options.t":"Repartir o compartir","tu.add.options.b":"Un ticket que mezcla comida y hogar se reparte entre varias categorías. Un gasto compartido anota la parte de la otra persona: aparece en «Quién debe qué» hasta el reembolso."},
+"pt":{"tu.history.filters.b":"Toque numa categoria para ficar só com ela; as subcategorias aparecem então para afinar. As mais usadas são propostas de imediato, «+ outras» abre a lista completa. «Poupança» isola as transferências e as utilizações da poupança.","tu.analysis.rings.t":"Visão geral em anéis","tu.analysis.rings.b":"A parte dos seus rendimentos gasta, a sua taxa de poupança face ao objetivo escolhido, as despesas fixas e variáveis, os dias sem despesas e os orçamentos cumpridos. O seletor passa do mês ao ano.","hf.more":"+ {n} outras","hf.moreAll":"Todas as categorias","hf.title":"Filtrar por categoria","hf.all":"Todas as categorias","hf.allSub":"Sem filtro","hf.searchPh":"Procurar uma categoria","hf.searchClear":"Limpar a pesquisa","hf.count":"{n} operações · {v}","hf.count_1":"1 operação · {v}","hf.none":"Nenhuma operação no período","hf.expand":"Subcategorias de {name}","hf.empty":"Nenhuma categoria corresponde.","cal.noOps":"Nenhuma operação nesse dia.","cal.addHere":"+ Adicionar uma operação nesta data","cal.planned":"Previsto para esse dia:","cal.nothingPlanned":"Nada previsto para esse dia.","cal.planHere":"+ Programar uma operação nesta data","sr.title":"Visão geral","sr.catTitle":"Distribuição das despesas","sr.periodAria":"Período dos gráficos","sr.perMonth":"este mês","sr.perYear":"este ano","sr.spentTitle":"Parte dos rendimentos gasta","sr.spentSub":"dos rendimentos","sr.spentAria":"{p} dos rendimentos gastos","sr.left":"Resta","sr.over":"Excesso","sr.spentOk":"Gastou {p} dos seus rendimentos {per}: ainda há margem para poupar.","sr.spentHigh":"Gastou {p} dos seus rendimentos {per}: a margem para poupar é curta.","sr.spentOver":"As suas despesas excedem os seus rendimentos em {v} {per}.","sr.noIncome":"Nenhum rendimento registado no período.","sr.rateTitle":"Taxa de poupança","sr.rateSub":"poupado","sr.rateAria":"Taxa de poupança {p}, objetivo {o}","sr.saved":"Posto de parte","sr.target":"Objetivo {p}","sr.targetAria":"Objetivo de poupança: {p}. Toque para o alterar.","sr.toGo":"Faltam","sr.beyond":"Acima do objetivo","sr.rateOk":"Com {p}, atinge o seu objetivo de {o}.","sr.rateLow":"Faltam {v} para atingir o seu objetivo de {o}.","sr.rateBasis":"A taxa compara o que pôs de parte com o dinheiro disponível (saldo inicial mais rendimentos).","sr.noRate":"Ainda não há dados suficientes para calcular uma taxa de poupança.","sr.fixTitle":"Despesas fixas ou variáveis","sr.fixSub":"fixas","sr.fixAria":"{p} de despesas fixas","sr.fixed":"Fixas","sr.variable":"Variáveis","sr.total":"Total","sr.fixNote":"As despesas fixas repetem-se sozinhas: renda, assinaturas, operações recorrentes. Mais difíceis de reduzir, mas cada poupança conta todos os meses.","sr.noSpend":"Nenhuma despesa no período.","sr.regTitle":"Regularidade e objetivos","sr.noSpendDays":"Dias sem despesas","sr.ofDays":"em {n} dias","sr.budgetsKept":"Orçamentos cumpridos","sr.budgetsMonthSub":"este mês","sr.budgetsYearSub":"mês a mês","sr.noBudgets":"Sem orçamentos","sr.goals":"Objetivos de poupança","sr.goalsSub":"{n} objetivos · {done} atingidos","sr.goalsSub_1":"1 objetivo · {done} atingido","sr.noGoals":"Sem objetivos","sr.regNote":"Os objetivos de poupança são medidos à data de hoje, seja qual for o período.","sr.spentMonth":"gastos este mês","sr.spentYear":"gastos este ano","sr.catAria":"Distribuição de {v} de despesas por categoria","sr.uncategorized":"Sem categoria","sr.others":"{n} outras categorias","sr.seeOps":"Ver as operações →","sp.guessed":"Categoria deduzida das suas operações «{label}»; toque noutra para a alterar.","sp.pickCat":"Escolher uma categoria","sp.removeLine":"Remover esta linha","sp.mainCat":"a categoria escolhida","sp.splitBtn":"Repartir por várias categorias","sp.shareBtn":"Partilhar com alguém","sp.splitTitle":"Outras categorias do mesmo talão","sp.splitAdd":"+ Adicionar uma categoria","sp.splitRest":"O resto, {v}, vai para {cat}.","sp.errSplitAmount":"Indique um montante positivo para cada categoria adicionada.","sp.errSplitCat":"Escolha uma categoria para cada montante adicionado.","sp.errSplitSum":"As categorias adicionadas excedem o total de {v}: tem de ficar uma parte para a categoria escolhida.","sp.splitDone":"Operação repartida por {n} categorias","sp.splitDone_1":"Operação guardada","sp.shareWith":"Partilhada com","sp.namePh":"Nome","sp.sharePart":"A parte dele","sp.shareHalf":"Metade","sp.shareAll":"Tudo","sp.shareHelp":"Indique com quem e a parte dele: aparecerá em «Quem deve o quê», na página Futuras.","sp.shareWill":"{name} ficará a dever-lhe {v}. Depois de reembolsada, a despesa fica só com a sua parte.","sp.shareRepaid":"Parte reembolsada por {name} em {date}: a despesa fica só com a sua parte.","sp.errShareName":"Indique o nome da pessoa.","sp.errSharePart":"Indique a parte dele.","sp.errShareMax":"A parte dele não pode exceder o montante pago ({v}).","sp.badgeOwed":"{name} · {v} por reembolsar","sp.badgeRepaid":"Reembolsado por {name}","sp.title":"Quem deve o quê","sp.newDebt":"+ Registar uma dívida","sp.empty":"Ninguém lhe deve nada e não deve nada. Partilhe uma despesa ao registá-la, ou anote o que deve a alguém.","sp.owesYou":"{name} deve-lhe {v}","sp.youOwe":"Deve {v} a {name}","sp.even":"Está quite com {name}","sp.settleAll":"Saldar tudo","sp.itemOwed":"a parte dele","sp.itemOwe":"a sua dívida","sp.markSettled":"Marcar como saldado","sp.note":"Uma parte reembolsada reduz a despesa à sua parte; uma dívida saldada torna-se uma despesa na data do pagamento.","sp.repayLabel":"Reembolso a {name} · {label}","sp.settledAll":"Contas saldadas com {name}","sp.settledOne":"Marcado como saldado","sp.debtNew":"Registar uma dívida","sp.debtEdit":"Alterar a dívida","sp.debtWho":"Quem pagou por si?","sp.debtAmount":"Montante que deve","sp.debtLabel":"Para quê","sp.debtLabelPh":"Ex. Restaurante, bilhete de cinema…","sp.debtCat":"Categoria ao saldar","sp.debtDate":"Data","sp.debtHint":"Nada é registado na sua conta até reembolsar: a despesa é criada ao saldar.","sp.save":"Guardar","sp.debtSaved":"Dívida a {name} guardada","sp.debtDeleted":"Dívida eliminada","rl.title":"Importar um extrato bancário","rl.btn":"⬆ Importar um extrato bancário (CSV)","rl.btnHint":"O ficheiro exportado pelo seu banco: os duplicados são detetados e as categorias deduzidas.","rl.fabTitle":"Importar um extrato","rl.fabSub":"O ficheiro CSV exportado pelo seu banco","rl.intro":"Escolha o ficheiro CSV exportado do homebanking. As colunas são reconhecidas automaticamente, as categorias deduzidas dos seus hábitos e as operações já registadas postas de parte.","rl.privacy":"O ficheiro é lido apenas neste dispositivo; nada é enviado.","rl.pick":"Escolher o ficheiro","rl.column":"Coluna {n}","rl.none":"Nenhuma","rl.read":"{n} linhas lidas de «{file}»","rl.colDate":"Data","rl.colLabel":"Descritivo","rl.colAmount":"Montante","rl.colDebit":"Débito","rl.colCredit":"Crédito","rl.clean":"Simplificar os descritivos («CB CARREFOUR 03/10» passa a «Carrefour»)","rl.usDates":"Datas no formato mês/dia (EUA)","rl.selected":"{n} de {total} a importar","rl.dups":"{n} duplicados prováveis postos de parte","rl.dups_1":"1 duplicado provável posto de parte","rl.badgeDup":"já registada?","rl.badgeFuture":"futura","rl.badgeInvalid":"ilegível","rl.badgeSavings":"transferência de poupança","rl.pickAria":"Importar «{label}»","rl.more":"E mais {n} linhas, importadas com a categoria deduzida.","rl.import":"Importar {n} operações","rl.errFormat":"Este ficheiro não parece um extrato: não foi encontrada nenhuma coluna de datas ou de montantes.","rl.errRead":"Não foi possível ler o ficheiro.","rl.done":"{n} operações importadas","rl.done_1":"1 operação importada","tu.add.options.t":"Repartir ou partilhar","tu.add.options.b":"Um talão com compras e casa reparte-se por várias categorias. Uma despesa partilhada anota a parte da outra pessoa: aparece em «Quem deve o quê» até ao reembolso."},
+"it":{"tu.history.filters.b":"Tocchi una categoria per tenere solo quella; compaiono allora le sottocategorie per affinare. Le più usate sono proposte subito, «+ altre» apre l'elenco completo. «Risparmi» isola i trasferimenti e gli utilizzi del risparmio.","tu.analysis.rings.t":"Panoramica ad anelli","tu.analysis.rings.b":"La quota delle entrate spesa, il tasso di risparmio rispetto all'obiettivo scelto, le spese fisse e variabili, i giorni senza spese e i budget rispettati. Il selettore passa dal mese all'anno.","hf.more":"+ altre {n}","hf.moreAll":"Tutte le categorie","hf.title":"Filtra per categoria","hf.all":"Tutte le categorie","hf.allSub":"Nessun filtro","hf.searchPh":"Cerca una categoria","hf.searchClear":"Cancella la ricerca","hf.count":"{n} operazioni · {v}","hf.count_1":"1 operazione · {v}","hf.none":"Nessuna operazione nel periodo","hf.expand":"Sottocategorie di {name}","hf.empty":"Nessuna categoria corrisponde.","cal.noOps":"Nessuna operazione in quel giorno.","cal.addHere":"+ Aggiungi un'operazione in questa data","cal.planned":"Previsto per quel giorno:","cal.nothingPlanned":"Niente di previsto per quel giorno.","cal.planHere":"+ Programma un'operazione in questa data","sr.title":"Panoramica","sr.catTitle":"Ripartizione delle spese","sr.periodAria":"Periodo dei grafici","sr.perMonth":"questo mese","sr.perYear":"quest'anno","sr.spentTitle":"Quota delle entrate spesa","sr.spentSub":"delle entrate","sr.spentAria":"{p} delle entrate speso","sr.left":"Resta","sr.over":"Sforamento","sr.spentOk":"Ha speso il {p} delle sue entrate {per}: resta margine per risparmiare.","sr.spentHigh":"Ha speso il {p} delle sue entrate {per}: il margine per risparmiare è ridotto.","sr.spentOver":"Le sue spese superano le entrate di {v} {per}.","sr.noIncome":"Nessuna entrata registrata nel periodo.","sr.rateTitle":"Tasso di risparmio","sr.rateSub":"risparmiato","sr.rateAria":"Tasso di risparmio {p}, obiettivo {o}","sr.saved":"Messo da parte","sr.target":"Obiettivo {p}","sr.targetAria":"Obiettivo di risparmio: {p}. Tocchi per cambiarlo.","sr.toGo":"Mancano","sr.beyond":"Oltre l'obiettivo","sr.rateOk":"Con il {p}, raggiunge il suo obiettivo del {o}.","sr.rateLow":"Ancora {v} per raggiungere il suo obiettivo del {o}.","sr.rateBasis":"Il tasso confronta ciò che ha messo da parte con il denaro disponibile (saldo iniziale più entrate).","sr.noRate":"Non ci sono ancora dati sufficienti per calcolare un tasso di risparmio.","sr.fixTitle":"Spese fisse o variabili","sr.fixSub":"fisse","sr.fixAria":"{p} di spese fisse","sr.fixed":"Fisse","sr.variable":"Variabili","sr.total":"Totale","sr.fixNote":"Le spese fisse tornano da sole: affitto, abbonamenti, operazioni ricorrenti. Più difficili da ridurre, ma ogni risparmio conta ogni mese.","sr.noSpend":"Nessuna spesa nel periodo.","sr.regTitle":"Regolarità e obiettivi","sr.noSpendDays":"Giorni senza spese","sr.ofDays":"su {n} giorni","sr.budgetsKept":"Budget rispettati","sr.budgetsMonthSub":"questo mese","sr.budgetsYearSub":"mese per mese","sr.noBudgets":"Nessun budget","sr.goals":"Obiettivi di risparmio","sr.goalsSub":"{n} obiettivi · {done} raggiunti","sr.goalsSub_1":"1 obiettivo · {done} raggiunto","sr.noGoals":"Nessun obiettivo","sr.regNote":"Gli obiettivi di risparmio sono misurati a oggi, qualunque sia il periodo.","sr.spentMonth":"spesi questo mese","sr.spentYear":"spesi quest'anno","sr.catAria":"Ripartizione di {v} di spese per categoria","sr.uncategorized":"Senza categoria","sr.others":"altre {n} categorie","sr.seeOps":"Vedi le operazioni →","sp.guessed":"Categoria dedotta dalle sue operazioni «{label}»; ne tocchi un'altra per cambiarla.","sp.pickCat":"Scegliere una categoria","sp.removeLine":"Rimuovi questa riga","sp.mainCat":"la categoria scelta","sp.splitBtn":"Ripartire su più categorie","sp.shareBtn":"Condividere con qualcuno","sp.splitTitle":"Altre categorie dello stesso scontrino","sp.splitAdd":"+ Aggiungi una categoria","sp.splitRest":"Il resto, {v}, va in {cat}.","sp.errSplitAmount":"Indichi un importo positivo per ogni categoria aggiunta.","sp.errSplitCat":"Scelga una categoria per ogni importo aggiunto.","sp.errSplitSum":"Le categorie aggiunte superano il totale di {v}: deve restare una parte per la categoria scelta.","sp.splitDone":"Operazione ripartita su {n} categorie","sp.splitDone_1":"Operazione salvata","sp.shareWith":"Condivisa con","sp.namePh":"Nome","sp.sharePart":"La sua quota","sp.shareHalf":"Metà","sp.shareAll":"Tutto","sp.shareHelp":"Indichi con chi e la sua quota: comparirà in «Chi deve cosa», nella pagina In arrivo.","sp.shareWill":"{name} le dovrà {v}. Una volta rimborsata, la spesa terrà solo la sua parte.","sp.shareRepaid":"Quota rimborsata da {name} il {date}: la spesa tiene solo la sua parte.","sp.errShareName":"Indichi il nome della persona.","sp.errSharePart":"Indichi la sua quota.","sp.errShareMax":"La quota non può superare l'importo pagato ({v}).","sp.badgeOwed":"{name} · {v} da rimborsare","sp.badgeRepaid":"Rimborsato da {name}","sp.title":"Chi deve cosa","sp.newDebt":"+ Annota un debito","sp.empty":"Nessuno le deve nulla e lei non deve nulla. Condivida una spesa quando la registra, o annoti ciò che deve a qualcuno.","sp.owesYou":"{name} le deve {v}","sp.youOwe":"Lei deve {v} a {name}","sp.even":"È pari con {name}","sp.settleAll":"Salda tutto","sp.itemOwed":"la sua quota","sp.itemOwe":"il suo debito","sp.markSettled":"Segna come saldato","sp.note":"Una quota rimborsata riduce la spesa alla sua parte; un debito saldato diventa una spesa alla data del pagamento.","sp.repayLabel":"Rimborso a {name} · {label}","sp.settledAll":"Conti saldati con {name}","sp.settledOne":"Segnato come saldato","sp.debtNew":"Annota un debito","sp.debtEdit":"Modifica il debito","sp.debtWho":"Chi ha pagato per lei?","sp.debtAmount":"Importo che deve","sp.debtLabel":"Per cosa","sp.debtLabelPh":"Es. Ristorante, biglietto del cinema…","sp.debtCat":"Categoria al saldo","sp.debtDate":"Data","sp.debtHint":"Nulla viene registrato nel suo conto finché non rimborsa: la spesa sarà creata al saldo.","sp.save":"Salva","sp.debtSaved":"Debito con {name} salvato","sp.debtDeleted":"Debito eliminato","rl.title":"Importa un estratto conto","rl.btn":"⬆ Importa un estratto conto (CSV)","rl.btnHint":"Il file esportato dalla sua banca: i doppioni vengono riconosciuti e le categorie dedotte.","rl.fabTitle":"Importa un estratto","rl.fabSub":"Il file CSV esportato dalla sua banca","rl.intro":"Scelga il file CSV esportato dall'home banking. Le colonne vengono riconosciute automaticamente, le categorie dedotte dalle sue abitudini e le operazioni già registrate escluse.","rl.privacy":"Il file viene letto solo su questo dispositivo; nulla viene inviato.","rl.pick":"Scegli il file","rl.column":"Colonna {n}","rl.none":"Nessuna","rl.read":"{n} righe lette da «{file}»","rl.colDate":"Data","rl.colLabel":"Descrizione","rl.colAmount":"Importo","rl.colDebit":"Addebito","rl.colCredit":"Accredito","rl.clean":"Semplificare le descrizioni («CB CARREFOUR 03/10» diventa «Carrefour»)","rl.usDates":"Date nel formato mese/giorno (USA)","rl.selected":"{n} su {total} da importare","rl.dups":"{n} probabili doppioni esclusi","rl.dups_1":"1 probabile doppione escluso","rl.badgeDup":"già registrata?","rl.badgeFuture":"futura","rl.badgeInvalid":"illeggibile","rl.badgeSavings":"trasferimento di risparmio","rl.pickAria":"Importa «{label}»","rl.more":"E altre {n} righe, importate con la categoria dedotta.","rl.import":"Importa {n} operazioni","rl.errFormat":"Questo file non sembra un estratto conto: non è stata trovata alcuna colonna di date o di importi.","rl.errRead":"Impossibile leggere il file.","rl.done":"{n} operazioni importate","rl.done_1":"1 operazione importata","tu.add.options.t":"Ripartire o condividere","tu.add.options.b":"Uno scontrino che mescola spesa e casa si ripartisce su più categorie. Una spesa condivisa annota la quota dell'altra persona: compare in «Chi deve cosa» fino al rimborso."},
+"ar":{"tu.history.filters.b":"المس فئة لتبقي عليها وحدها؛ تظهر عندها فئاتها الفرعية للتدقيق. تُعرض الفئات الأكثر استخدامًا مباشرة، ويفتح «+ أخرى» القائمة الكاملة. يعزل «الادخار» التحويلات واستخدامات الادخار.","tu.analysis.rings.t":"نظرة عامة بالحلقات","tu.analysis.rings.b":"حصة دخلك المنفقة، ومعدل ادخارك مقارنة بالهدف الذي تختاره، ونفقاتك الثابتة والمتغيرة، وأيامك بلا إنفاق، والميزانيات المحترمة. يبدّل المحدِّد بين الشهر والعام.","hf.more":"+ {n} أخرى","hf.moreAll":"كل الفئات","hf.title":"التصفية حسب الفئة","hf.all":"كل الفئات","hf.allSub":"من دون تصفية","hf.searchPh":"ابحث عن فئة","hf.searchClear":"مسح البحث","hf.count":"{n} عمليات · {v}","hf.count_1":"عملية واحدة · {v}","hf.none":"لا توجد عمليات في هذه الفترة","hf.expand":"الفئات الفرعية لـ{name}","hf.empty":"لا توجد فئة مطابقة.","cal.noOps":"لا توجد عمليات في هذا اليوم.","cal.addHere":"+ إضافة عملية بهذا التاريخ","cal.planned":"المقرر في هذا اليوم:","cal.nothingPlanned":"لا شيء مقرر في هذا اليوم.","cal.planHere":"+ جدولة عملية بهذا التاريخ","sr.title":"نظرة عامة","sr.catTitle":"توزيع النفقات","sr.periodAria":"فترة الرسوم البيانية","sr.perMonth":"هذا الشهر","sr.perYear":"هذا العام","sr.spentTitle":"حصة الدخل المنفقة","sr.spentSub":"من الدخل","sr.spentAria":"أُنفق {p} من الدخل","sr.left":"المتبقي","sr.over":"التجاوز","sr.spentOk":"أنفقت {p} من دخلك {per}: يبقى هامش للادخار.","sr.spentHigh":"أنفقت {p} من دخلك {per}: هامش الادخار ضيق.","sr.spentOver":"تتجاوز نفقاتك دخلك بمقدار {v} {per}.","sr.noIncome":"لم يُسجَّل أي دخل في هذه الفترة.","sr.rateTitle":"معدل الادخار","sr.rateSub":"مُدَّخر","sr.rateAria":"معدل الادخار {p}، والهدف {o}","sr.saved":"المُدَّخر","sr.target":"الهدف {p}","sr.targetAria":"هدف الادخار: {p}. المس لتغييره.","sr.toGo":"المتبقي للهدف","sr.beyond":"فوق الهدف","sr.rateOk":"بمعدل {p}، تبلغ هدفك البالغ {o}.","sr.rateLow":"يتبقى {v} لبلوغ هدفك البالغ {o}.","sr.rateBasis":"يقارن المعدل ما ادخرته بالمال المتاح (الرصيد الأولي مع الدخل).","sr.noRate":"لا توجد بيانات كافية بعد لحساب معدل الادخار.","sr.fixTitle":"نفقات ثابتة أو متغيرة","sr.fixSub":"ثابتة","sr.fixAria":"{p} من النفقات ثابتة","sr.fixed":"ثابتة","sr.variable":"متغيرة","sr.total":"المجموع","sr.fixNote":"تتكرر النفقات الثابتة من تلقاء نفسها: الإيجار والاشتراكات والعمليات المتكررة. يصعب خفضها، لكن كل توفير يُحتسب كل شهر.","sr.noSpend":"لا توجد نفقات في هذه الفترة.","sr.regTitle":"الانتظام والأهداف","sr.noSpendDays":"أيام بلا إنفاق","sr.ofDays":"من أصل {n} يومًا","sr.budgetsKept":"الميزانيات المحترمة","sr.budgetsMonthSub":"هذا الشهر","sr.budgetsYearSub":"شهرًا بشهر","sr.noBudgets":"لا توجد ميزانيات","sr.goals":"أهداف الادخار","sr.goalsSub":"{n} أهداف · {done} محققة","sr.goalsSub_1":"هدف واحد · {done} محقق","sr.noGoals":"لا توجد أهداف","sr.regNote":"تُقاس أهداف الادخار حتى اليوم، أيًا كانت الفترة.","sr.spentMonth":"أُنفقت هذا الشهر","sr.spentYear":"أُنفقت هذا العام","sr.catAria":"توزيع {v} من النفقات حسب الفئة","sr.uncategorized":"من دون فئة","sr.others":"{n} فئات أخرى","sr.seeOps":"عرض العمليات ←","sp.guessed":"استُنتجت الفئة من عملياتك «{label}»؛ المس فئة أخرى لتغييرها.","sp.pickCat":"اختر فئة","sp.removeLine":"إزالة هذا السطر","sp.mainCat":"الفئة المختارة","sp.splitBtn":"التوزيع على عدة فئات","sp.shareBtn":"المشاركة مع شخص","sp.splitTitle":"فئات أخرى من الإيصال نفسه","sp.splitAdd":"+ إضافة فئة","sp.splitRest":"الباقي، {v}، يذهب إلى {cat}.","sp.errSplitAmount":"أدخل مبلغًا موجبًا لكل فئة مضافة.","sp.errSplitCat":"اختر فئة لكل مبلغ مضاف.","sp.errSplitSum":"تتجاوز الفئات المضافة المجموع البالغ {v}: يجب أن يبقى جزء للفئة المختارة.","sp.splitDone":"وُزّعت العملية على {n} فئات","sp.splitDone_1":"حُفظت العملية","sp.shareWith":"مشتركة مع","sp.namePh":"الاسم","sp.sharePart":"حصته","sp.shareHalf":"النصف","sp.shareAll":"الكل","sp.shareHelp":"حدّد مع من وحصته: ستظهر في «من يدين بماذا» في صفحة القادمة.","sp.shareWill":"سيدين لك {name} بمبلغ {v}. بعد السداد، لن تحتفظ النفقة إلا بحصتك.","sp.shareRepaid":"سدّد {name} حصته في {date}: لا تحتفظ النفقة إلا بحصتك.","sp.errShareName":"أدخل اسم الشخص.","sp.errSharePart":"أدخل حصته.","sp.errShareMax":"لا يمكن أن تتجاوز حصته المبلغ المدفوع ({v}).","sp.badgeOwed":"{name} · {v} للسداد","sp.badgeRepaid":"سدّده {name}","sp.title":"من يدين بماذا","sp.newDebt":"+ تسجيل دين","sp.empty":"لا أحد يدين لك بشيء، ولا تدين بشيء. شارك نفقة عند تسجيلها، أو سجّل ما تدين به لشخص ما.","sp.owesYou":"يدين لك {name} بمبلغ {v}","sp.youOwe":"تدين لـ{name} بمبلغ {v}","sp.even":"حساباتك مع {name} متعادلة","sp.settleAll":"تسوية الكل","sp.itemOwed":"حصته","sp.itemOwe":"دينك","sp.markSettled":"تعليم كمسدَّد","sp.note":"الحصة المسدَّدة تُرجع النفقة إلى حصتك؛ والدين المسدَّد يصبح نفقة بتاريخ السداد.","sp.repayLabel":"سداد لـ{name} · {label}","sp.settledAll":"سُوّيت الحسابات مع {name}","sp.settledOne":"عُلّم كمسدَّد","sp.debtNew":"تسجيل دين","sp.debtEdit":"تعديل الدين","sp.debtWho":"من دفع عنك؟","sp.debtAmount":"المبلغ الذي تدين به","sp.debtLabel":"مقابل ماذا","sp.debtLabelPh":"مثال: مطعم، تذكرة سينما…","sp.debtCat":"الفئة عند السداد","sp.debtDate":"التاريخ","sp.debtHint":"لا يُسجَّل شيء في حسابك قبل السداد: ستُنشأ النفقة عند التسوية.","sp.save":"حفظ","sp.debtSaved":"حُفظ الدين لـ{name}","sp.debtDeleted":"حُذف الدين","rl.title":"استيراد كشف حساب بنكي","rl.btn":"⬆ استيراد كشف حساب بنكي (CSV)","rl.btnHint":"الملف الذي يصدّره بنكك: تُكتشف العمليات المكررة وتُستنتج الفئات.","rl.fabTitle":"استيراد كشف","rl.fabSub":"ملف CSV الذي يصدّره بنكك","rl.intro":"اختر ملف CSV المصدَّر من الخدمة المصرفية عبر الإنترنت. تُعرف الأعمدة تلقائيًا، وتُستنتج الفئات من عاداتك، وتُستبعد العمليات المسجلة مسبقًا.","rl.privacy":"يُقرأ الملف على هذا الجهاز فقط؛ لا يُرسل أي شيء.","rl.pick":"اختيار الملف","rl.column":"العمود {n}","rl.none":"لا شيء","rl.read":"قُرئ {n} سطرًا من «{file}»","rl.colDate":"التاريخ","rl.colLabel":"البيان","rl.colAmount":"المبلغ","rl.colDebit":"مدين","rl.colCredit":"دائن","rl.clean":"تبسيط البيانات («CB CARREFOUR 03/10» يصبح «Carrefour»)","rl.usDates":"تواريخ بصيغة شهر/يوم (أمريكية)","rl.selected":"{n} من {total} للاستيراد","rl.dups":"استُبعدت {n} عمليات مكررة محتملة","rl.dups_1":"استُبعدت عملية مكررة محتملة واحدة","rl.badgeDup":"مسجلة مسبقًا؟","rl.badgeFuture":"قادمة","rl.badgeInvalid":"غير مقروءة","rl.badgeSavings":"تحويل ادخار","rl.pickAria":"استيراد «{label}»","rl.more":"و{n} سطرًا آخر، تُستورد بفئتها المستنتجة.","rl.import":"استيراد {n} عمليات","rl.errFormat":"لا يبدو هذا الملف كشف حساب: لم يُعثر على عمود للتواريخ أو للمبالغ.","rl.errRead":"تعذّرت قراءة الملف.","rl.done":"استُوردت {n} عمليات","rl.done_1":"استُوردت عملية واحدة","tu.add.options.t":"التوزيع أو المشاركة","tu.add.options.b":"يُوزَّع الإيصال الذي يجمع المشتريات واللوازم المنزلية على عدة فئات. وتسجّل النفقة المشتركة حصة الشخص الآخر: تظهر في «من يدين بماذا» حتى السداد."}
 }; for(var L in SUPEVO){ for(var k in SUPEVO[L]){ I18N[L][k] = SUPEVO[L][k]; } } })();
 
 var STORAGE_KEY = "suiviBudget.v2";
@@ -8621,6 +8835,7 @@ function loadState(){
         state.planAmount = Number(parsed.planAmount) || 0;
         state.planStart = (parsed.planStart === "next") ? "next" : "this";
         state.planGoalIds = Array.isArray(parsed.planGoalIds) ? parsed.planGoalIds : [];
+        evoLireEtat(parsed);
         state.investProfile = {};
         if(parsed.investProfile && typeof parsed.investProfile === "object"){
           ["q1", "q2", "q3", "q4"].forEach(function(k){
@@ -13426,6 +13641,740 @@ function renderStatCatRing(D){
     }
   });
 })();
+
+/* =========================================================================
+   SAISIE : catégorie devinée, répartition, partage et relevé bancaire
+   ========================================================================= */
+
+/* --- Champs ajoutés à l'état ---------------------------------------------
+   Ils suivent les mêmes chemins que les autres : appareil, synchronisation,
+   sauvegardes, import. Chaque champ a son nettoyage. */
+function evoClesEtat(){
+  return {
+    /* Dettes envers d'autres personnes : « Paul a payé pour moi ». */
+    dettes: function(v){
+      return Array.isArray(v) ? v.filter(function(d){
+        return d && typeof d.id === "string" && typeof d.personne === "string" && d.personne.trim() &&
+          typeof d.montant === "number" && isFinite(d.montant) && d.montant > 0;
+      }) : [];
+    }
+  };
+}
+/* garder : une source qui ignore un champ (un appareil pas encore mis à
+   jour) ne doit pas l'effacer. */
+function evoLireEtat(src, garder){
+  var cles = evoClesEtat();
+  Object.keys(cles).forEach(function(k){
+    if(garder && (!src || !(k in src))) return;
+    state[k] = cles[k](src ? src[k] : null);
+  });
+}
+function evoEcrireEtat(obj){
+  var cles = evoClesEtat();
+  Object.keys(cles).forEach(function(k){ obj[k] = state[k] !== undefined ? state[k] : cles[k](null); });
+  return obj;
+}
+
+/* --- Catégorie devinée ---------------------------------------------------
+   D'après l'historique : le libellé exact d'abord (« Carrefour »), sinon son
+   premier mot significatif (« CARREFOUR MARKET 1234 »). Les opérations les
+   plus récentes pèsent un peu plus lourd : une habitude qui change est
+   suivie. */
+function evoCle(lib){ return normalizeSearch(String(lib || "").trim()).replace(/\s+/g, " "); }
+function evoRacine(cle){
+  var mots = cle.split(" ").filter(function(w){ return w.length >= 3 && !/^\d+$/.test(w) && EVO_MOTS_VIDES.indexOf(w) === -1; });
+  return mots[0] || "";
+}
+var EVO_MOTS_VIDES = ["cb", "carte", "paiement", "prlv", "prelevement", "sepa", "vir", "virement", "facture", "achat", "retrait", "dab", "the", "les", "des", "pour", "chez"];
+function devinerCategorie(libelle, signe){
+  var cle = evoCle(libelle);
+  if(cle.length < 2) return null;
+  var racine = evoRacine(cle), exact = {}, proche = {}, nEx = 0, n = state.transactions.length;
+  state.transactions.forEach(function(tx, i){
+    if(tx.isEpargne || !tx.categorieId || !getCategory(tx.categorieId)) return;
+    if(signe && (tx.montant < 0 ? -1 : 1) !== signe) return;
+    var k = evoCle(tx.commentaire);
+    if(!k) return;
+    var poids = 1 + i / Math.max(1, n);
+    if(k === cle){ exact[tx.categorieId] = (exact[tx.categorieId] || 0) + poids; nEx++; }
+    else if(racine && evoRacine(k) === racine) proche[tx.categorieId] = (proche[tx.categorieId] || 0) + poids;
+  });
+  var m = nEx ? exact : proche, best = null;
+  Object.keys(m).forEach(function(id){ if(!best || m[id] > m[best]) best = id; });
+  return best;
+}
+/* Libellés déjà saisis qui commencent comme la saisie : trois au plus, du
+   plus récent au plus ancien. */
+function suggestionsLibelle(saisie, signe){
+  var q = evoCle(saisie);
+  if(q.length < 2) return [];
+  var vus = {}, l = [];
+  for(var i = state.transactions.length - 1; i >= 0 && l.length < 3; i--){
+    var tx = state.transactions[i];
+    if(tx.isEpargne || (signe && (tx.montant < 0 ? -1 : 1) !== signe)) continue;
+    var lib = String(tx.commentaire || "").trim(), k = evoCle(lib);
+    if(!k || vus[k] || k === q || (k.indexOf(q) !== 0 && k.indexOf(" " + q) === -1)) continue;
+    vus[k] = true;
+    l.push({ libelle: lib, cat: tx.categorieId || null });
+  }
+  return l;
+}
+
+/* Fiche de saisie : la catégorie choisie automatiquement l'est jusqu'à ce
+   que l'utilisateur en touche une lui-même. */
+var addCatAuto = false;
+function saisieSigne(){ return currentAddType === "Dépense" ? -1 : 1; }
+function devinetteMaj(){
+  var hint = $("addGuess");
+  if(!hint) return;
+  var c = addCatAuto && currentAddCategory ? getCategory(currentAddCategory) : null;
+  hint.hidden = !c;
+  if(c) hint.textContent = t("sp.guessed", { label: inputCommentaire.value.trim() });
+}
+function devinetteSaisie(){
+  var host = $("addSugg");
+  if(currentAddEditing){ host.hidden = true; return; }
+  var signe = saisieSigne(), lib = inputCommentaire.value;
+  var sugg = suggestionsLibelle(lib, signe);
+  host.hidden = !sugg.length;
+  host.innerHTML = sugg.map(function(s, i){
+    var c = s.cat ? getCategory(s.cat) : null;
+    return '<button type="button" class="ev-sugg-chip" data-sugg="' + i + '">' + (c ? '<span class="chip-ic">' + iconHtml(c.emoji) + '</span>' : '') + escapeHtml(s.libelle) + '</button>';
+  }).join("");
+  host._sugg = sugg;
+  if(currentAddCategory && !addCatAuto){ devinetteMaj(); return; }
+  var g = devinerCategorie(lib, signe);
+  if(g){ if(g !== currentAddCategory){ currentAddCategory = g; addCatAuto = true; renderCategoryPicker($("catPickerAdd"), currentAddCategory, onCatPickAdd); } }
+  else if(addCatAuto){ currentAddCategory = null; addCatAuto = false; renderCategoryPicker($("catPickerAdd"), currentAddCategory, onCatPickAdd); }
+  devinetteMaj();
+}
+
+function saisieCatChoisie(){
+  addCatAuto = false;
+  devinetteMaj();
+  if(!$("splitPanel").hidden) splitMaj();
+}
+/* Mention sous une opération partagée, dans les listes. */
+function partageBadgeEl(tx){
+  var p = tx.partage, b = document.createElement("span");
+  b.className = "sp-badge" + (p.rembourse ? " done" : "");
+  b.textContent = p.rembourse ? t("sp.badgeRepaid", { name: p.avec }) : t("sp.badgeOwed", { name: p.avec, v: fmtMoney(p.part) });
+  return b;
+}
+
+/* Même chose pour une opération programmée. */
+var schedCatAuto = false;
+function schedDevinette(){
+  if(scheduleState.editing || (scheduleState.categorie && !schedCatAuto)) return;
+  var g = devinerCategorie($("scheduleCommentaire").value, scheduleState.type === "Dépense" ? -1 : 1);
+  if(g){ if(g !== scheduleState.categorie){ scheduleState.categorie = g; schedCatAuto = true; renderCategoryPicker($("catPickerSchedule"), g, onCatPickSchedule); } }
+  else if(schedCatAuto){ scheduleState.categorie = null; schedCatAuto = false; renderCategoryPicker($("catPickerSchedule"), null, onCatPickSchedule); }
+}
+
+/* --- Répartition et partage ---------------------------------------------- */
+function evoOptionsCategories(sel){
+  var h = '<option value="">' + escapeHtml(t("sp.pickCat")) + '</option>';
+  getTopLevelCategories().forEach(function(c){
+    h += '<option value="' + escapeHtml(c.id) + '"' + (c.id === sel ? " selected" : "") + '>' + escapeHtml(withIconText(c.emoji, c.nom)) + '</option>';
+    getSubcategories(c.id).forEach(function(s){
+      h += '<option value="' + escapeHtml(s.id) + '"' + (s.id === sel ? " selected" : "") + '>' + escapeHtml(c.nom + " › " + s.nom) + '</option>';
+    });
+  });
+  return h;
+}
+function evoNoms(){
+  var vus = {}, l = [];
+  state.transactions.forEach(function(tx){ if(tx.partage && tx.partage.avec) vus[tx.partage.avec.trim()] = true; });
+  (state.dettes || []).forEach(function(d){ vus[d.personne.trim()] = true; });
+  Object.keys(vus).sort().forEach(function(n){ l.push(n); });
+  return l;
+}
+function splitLigneHtml(cat, montant){
+  return '<div class="split-line"><span class="field select-wrap split-cat-wrap"><select class="split-cat" aria-label="' + escapeHtml(t("common.category")) + '">' + evoOptionsCategories(cat) + '</select><svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg></span>' +
+    '<div class="field amount-field split-amt-wrap"><span class="amount-prefix">€</span><input type="text" inputmode="decimal" class="split-amt" placeholder="0,00" value="' + escapeHtml(montant || "") + '" aria-label="' + escapeHtml(t("common.amount")) + '"></div>' +
+    '<button type="button" class="split-del" aria-label="' + escapeHtml(t("sp.removeLine")) + '">✕</button></div>';
+}
+function splitLignes(){
+  return Array.prototype.map.call($("splitLines").querySelectorAll(".split-line"), function(l){
+    return { cat: l.querySelector(".split-cat").value || null, montant: parseAmount(l.querySelector(".split-amt").value) };
+  }).filter(function(x){ return !isNaN(x.montant) && x.montant > 0; });
+}
+function splitMaj(){
+  var total = parseAmount(inputMontant.value), parts = splitLignes();
+  var somme = parts.reduce(function(s, p){ return s + p.montant; }, 0);
+  var c = currentAddCategory ? getCategory(currentAddCategory) : null;
+  var reste = (isNaN(total) ? 0 : total) - somme;
+  $("splitHint").textContent = t("sp.splitRest", { cat: c ? withIconText(c.emoji, c.nom) : t("sp.mainCat"), v: fmtMoney(Math.max(0, reste)) });
+  $("splitHint").classList.toggle("neg", reste < -0.004);
+}
+function shareMaj(){
+  var nom = $("shareWith").value.trim(), part = parseAmount($("sharePart").value);
+  var h = $("shareHint");
+  if(!nom || isNaN(part) || part <= 0){ h.textContent = t("sp.shareHelp"); return; }
+  var e = currentAddEditing && currentAddEditing.partage;
+  h.textContent = e && e.rembourse ? t("sp.shareRepaid", { name: nom, date: fmtDateOnly(e.rembourse) }) : t("sp.shareWill", { name: nom, v: fmtMoney(part) });
+}
+function ouvrirPanneau(id, ouvrir){
+  var p = $(id), b = $(id === "splitPanel" ? "btnSplit" : "btnShare");
+  p.hidden = !ouvrir;
+  b.classList.toggle("on", ouvrir);
+  b.setAttribute("aria-expanded", String(ouvrir));
+}
+/* À l'ouverture de la fiche : panneaux refermés, partage pré-rempli en
+   modification. */
+function saisieOuverture(){
+  addCatAuto = false;
+  $("addSugg").hidden = true;
+  $("addGuess").hidden = true;
+  $("splitLines").innerHTML = "";
+  ouvrirPanneau("splitPanel", false);
+  var e = currentAddEditing && currentAddEditing.partage;
+  $("shareWith").value = e ? e.avec : "";
+  $("sharePart").value = e ? String(e.part).replace(".", ",") : "";
+  ouvrirPanneau("sharePanel", !!e);
+  if(e) inputMontant.value = String(e.brut).replace(".", ",");
+  $("shareNames").innerHTML = evoNoms().map(function(n){ return '<option value="' + escapeHtml(n) + '">'; }).join("");
+  saisieTypeMaj();
+  shareMaj();
+}
+function saisieTypeMaj(){
+  var dep = currentAddType === "Dépense";
+  $("addOpts").hidden = !dep;
+  $("btnSplit").hidden = !!currentAddEditing;
+  if(!dep){ ouvrirPanneau("splitPanel", false); ouvrirPanneau("sharePanel", false); }
+}
+/* Contrôles avant tout enregistrement : rien n'est modifié si l'un échoue. */
+function saisieValider(montant){
+  if(currentAddType !== "Dépense") return true;
+  if(!$("splitPanel").hidden){
+    var bruts = Array.prototype.map.call($("splitLines").querySelectorAll(".split-line"), function(l){ return { cat: l.querySelector(".split-cat").value, v: l.querySelector(".split-amt").value.trim() }; });
+    for(var i = 0; i < bruts.length; i++){
+      if(!bruts[i].v) continue;
+      var v = parseAmount(bruts[i].v);
+      if(isNaN(v) || v <= 0){ addError.textContent = t("sp.errSplitAmount"); return false; }
+      if(!bruts[i].cat){ addError.textContent = t("sp.errSplitCat"); return false; }
+    }
+    var somme = splitLignes().reduce(function(s, p){ return s + p.montant; }, 0);
+    if(somme >= montant - 0.004 && somme > 0){ addError.textContent = t("sp.errSplitSum", { v: fmtMoney(montant) }); return false; }
+  }
+  if(!$("sharePanel").hidden){
+    var nom = $("shareWith").value.trim(), part = parseAmount($("sharePart").value);
+    if(nom || $("sharePart").value.trim()){
+      if(!nom){ addError.textContent = t("sp.errShareName"); $("shareWith").focus(); return false; }
+      if(isNaN(part) || part <= 0){ addError.textContent = t("sp.errSharePart"); $("sharePart").focus(); return false; }
+      if(part > montant + 0.004){ addError.textContent = t("sp.errShareMax", { v: fmtMoney(montant) }); $("sharePart").focus(); return false; }
+    }
+  }
+  return true;
+}
+function saisiePartage(){
+  if(currentAddType !== "Dépense" || $("sharePanel").hidden) return null;
+  var nom = $("shareWith").value.trim(), part = parseAmount($("sharePart").value);
+  return nom && part > 0 ? { avec: nom, part: Math.round(part * 100) / 100 } : null;
+}
+/* Nouvelle opération : une ou plusieurs (répartition), éventuellement
+   partagée. */
+function saisieLots(tx, montant){
+  var lots = [tx];
+  var p = saisiePartage();
+  if(p){ tx.partage = { avec: p.avec, part: p.part, brut: montant, rembourse: null }; }
+  if(currentAddType === "Dépense" && !$("splitPanel").hidden){
+    var parts = splitLignes();
+    if(parts.length){
+      var g = genId("g"), somme = 0;
+      parts.forEach(function(x){
+        somme += x.montant;
+        lots.push({ id: genId("t"), date: tx.date, type: tx.type, montant: -x.montant, commentaire: tx.commentaire, categorieId: x.cat, groupe: g });
+      });
+      tx.montant = -(Math.round((montant - somme) * 100) / 100);
+      tx.groupe = g;
+      /* Le partage porte alors sur la part restante. */
+      if(tx.partage){ tx.partage.brut = -tx.montant; if(tx.partage.part > tx.partage.brut) tx.partage.part = tx.partage.brut; }
+    }
+  }
+  return lots;
+}
+/* Modification : le montant saisi est ce qui a été payé ; une fois la part
+   de l'autre remboursée, l'opération ne garde que la vôtre. */
+function saisieAppliquerEdition(it){
+  var avant = it.partage, p = saisiePartage();
+  if(p){
+    var brut = Math.abs(it.montant);
+    it.partage = { avec: p.avec, part: Math.min(p.part, brut), brut: brut, rembourse: avant ? avant.rembourse || null : null };
+    if(it.partage.rembourse) it.montant = -(Math.round((brut - it.partage.part) * 100) / 100);
+  } else if(avant) delete it.partage;
+}
+
+/* --- Qui doit quoi --------------------------------------------------------
+   Ce que l'on vous doit vient des dépenses partagées ; ce que vous devez,
+   des dettes notées à part. Une fois réglée, une dépense partagée ne garde
+   que votre part (le solde reste juste), et une dette devient une dépense
+   ordinaire à la date du règlement. */
+function evoNorm(n){ return evoCle(n); }
+function partagesParPersonne(){
+  var p = {};
+  var ajouter = function(nom, sens, montant, el){
+    var k = evoNorm(nom);
+    var x = p[k] || (p[k] = { nom: nom.trim(), me: 0, lui: 0, items: [] });
+    x[sens] += montant;
+    x.items.push(el);
+  };
+  state.transactions.forEach(function(tx){
+    if(tx.partage && !tx.partage.rembourse && tx.partage.part > 0) ajouter(tx.partage.avec, "me", tx.partage.part, { type: "me", tx: tx, montant: tx.partage.part, date: toDateOnlyString(new Date(tx.date)), libelle: tx.commentaire });
+  });
+  (state.dettes || []).forEach(function(d){ ajouter(d.personne, "lui", d.montant, { type: "lui", dette: d, montant: d.montant, date: d.date, libelle: d.libelle }); });
+  return Object.keys(p).map(function(k){ return p[k]; }).sort(function(a, b){ return Math.abs(b.me - b.lui) - Math.abs(a.me - a.lui); });
+}
+function renderPartages(){
+  var host = $("shareLedger");
+  if(!host) return;
+  var pers = partagesParPersonne();
+  if(!pers.length){
+    host.innerHTML = '<div class="card sp-empty"><p>' + escapeHtml(t("sp.empty")) + '</p></div>';
+    return;
+  }
+  var html = '<div class="card sp-card">';
+  pers.forEach(function(x, i){
+    var net = Math.round((x.me - x.lui) * 100) / 100;
+    var titre = net > 0 ? t("sp.owesYou", { name: x.nom, v: fmtMoney(net) }) : (net < 0 ? t("sp.youOwe", { name: x.nom, v: fmtMoney(-net) }) : t("sp.even", { name: x.nom }));
+    html += '<div class="sp-person"><div class="sp-head"><span class="sp-avatar">' + escapeHtml(x.nom.charAt(0).toUpperCase()) + '</span>' +
+      '<p class="sp-title ' + (net > 0 ? "pos" : (net < 0 ? "neg" : "")) + '">' + escapeHtml(titre) + '</p>' +
+      '<button type="button" class="pill-btn" data-sp-settle="' + i + '">' + escapeHtml(t("sp.settleAll")) + '</button></div>';
+    x.items.sort(function(a, b){ return a.date < b.date ? 1 : -1; }).forEach(function(it, j){
+      html += '<div class="sp-item"><button type="button" class="sp-item-main" data-sp-open="' + i + ':' + j + '"><span class="sp-item-lib">' + escapeHtml(it.libelle || t("up.noComment")) + '</span>' +
+        '<span class="sp-item-meta">' + escapeHtml(fmtDateOnly(it.date) + " · " + t(it.type === "me" ? "sp.itemOwed" : "sp.itemOwe")) + '</span></button>' +
+        '<b class="' + (it.type === "me" ? "pos" : "neg") + '">' + escapeHtml(fmtMoney(it.montant)) + '</b>' +
+        '<button type="button" class="sp-tick" data-sp-tick="' + i + ':' + j + '" aria-label="' + escapeHtml(t("sp.markSettled")) + '" title="' + escapeHtml(t("sp.markSettled")) + '">✓</button></div>';
+    });
+    html += '</div>';
+  });
+  html += '</div><p class="section-sub sp-note">' + escapeHtml(t("sp.note")) + '</p>';
+  host.innerHTML = html;
+  host._pers = pers;
+}
+/* Règle des éléments ; renvoie de quoi tout défaire. */
+function reglerPartages(items){
+  var aujourd = todayDateOnlyString(), annul = [];
+  items.forEach(function(it){
+    if(it.type === "me"){
+      var tx = it.tx, avant = { montant: tx.montant, rembourse: tx.partage.rembourse };
+      tx.partage.rembourse = aujourd;
+      tx.montant = -(Math.round((tx.partage.brut - tx.partage.part) * 100) / 100);
+      annul.push(function(){ tx.montant = avant.montant; tx.partage.rembourse = avant.rembourse; });
+    } else {
+      var d = it.dette;
+      var nv = { id: genId("t"), date: dateISOForEntry(aujourd), type: "Dépense", montant: -d.montant, commentaire: t("sp.repayLabel", { name: d.personne, label: d.libelle || "" }).replace(/\s·\s$/, ""), categorieId: d.categorieId || null };
+      state.transactions.push(nv);
+      state.dettes = state.dettes.filter(function(x){ return x.id !== d.id; });
+      annul.push(function(){ state.transactions = state.transactions.filter(function(x){ return x.id !== nv.id; }); if(!state.dettes.some(function(x){ return x.id === d.id; })) state.dettes.push(d); });
+    }
+  });
+  return function(){ annul.forEach(function(f){ f(); }); };
+}
+
+/* Fiche « Noter une dette ». */
+var detteEdition = null;
+function ouvrirDette(d){
+  detteEdition = d || null;
+  $("detteError").textContent = "";
+  $("detteTitle").textContent = t(d ? "sp.debtEdit" : "sp.debtNew");
+  $("dettePersonne").value = d ? d.personne : "";
+  $("detteMontant").value = d ? String(d.montant).replace(".", ",") : "";
+  $("detteLibelle").value = d ? d.libelle || "" : "";
+  $("detteCat").innerHTML = evoOptionsCategories(d ? d.categorieId : null);
+  $("detteDate").value = d ? d.date : todayDateOnlyString();
+  $("detteDate").max = todayDateOnlyString();
+  $("detteNoms").innerHTML = evoNoms().map(function(n){ return '<option value="' + escapeHtml(n) + '">'; }).join("");
+  $("btnDetteDelete").hidden = !d;
+  openSheet($("overlayDette"));
+}
+
+/* --- Relevé bancaire (CSV) -------------------------------------------------
+   Les relevés exportés par les banques varient : séparateur, en-têtes,
+   lignes d'introduction, débit et crédit en deux colonnes, dates au format
+   jj/mm/aaaa ou aaaa-mm-jj. Tout est deviné, et chaque choix reste
+   modifiable avant l'import. Les doublons probables (même date à deux jours
+   près, même montant, libellé proche) sont décochés d'office. */
+function releveChamps(ligne, sep){
+  var out = [], cur = "", q = false;
+  for(var i = 0; i < ligne.length; i++){
+    var c = ligne[i];
+    if(q){ if(c === '"'){ if(ligne[i + 1] === '"'){ cur += '"'; i++; } else q = false; } else cur += c; }
+    else if(c === '"') q = true;
+    else if(c === sep){ out.push(cur.trim()); cur = ""; }
+    else cur += c;
+  }
+  out.push(cur.trim());
+  return out;
+}
+function releveDecouper(texte){
+  var lignes = String(texte || "").replace(/^﻿/, "").split(/\r\n|\n|\r/).filter(function(l){ return l.trim() !== ""; });
+  var best = null;
+  [";", "\t", ",", "|"].forEach(function(sep){
+    var freq = {};
+    lignes.slice(0, 60).forEach(function(l){ var n = releveChamps(l, sep).length; freq[n] = (freq[n] || 0) + 1; });
+    var mode = Object.keys(freq).map(Number).sort(function(a, b){ return freq[b] - freq[a] || b - a; })[0];
+    var score = mode >= 2 ? freq[mode] * Math.min(mode, 8) : 0;
+    if(!best || score > best.score) best = { sep: sep, cols: mode, score: score };
+  });
+  return { sep: best.sep, cols: best.cols, rows: lignes.map(function(l){ return releveChamps(l, best.sep); }) };
+}
+function releveDateBrute(v){
+  var m, s = String(v || "").trim();
+  if((m = s.match(/^(\d{4})[\-\/.](\d{1,2})[\-\/.](\d{1,2})/))) return { a: +m[1], x: +m[2], y: +m[3], iso: true };
+  if((m = s.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/))) return { a: m[3].length === 2 ? 2000 + +m[3] : +m[3], x: +m[1], y: +m[2], iso: false };
+  return null;
+}
+/* jj/mm (usage européen) sauf si la colonne montre clairement mm/jj. */
+function releveDate(v, us){
+  var d = releveDateBrute(v);
+  if(!d) return null;
+  var j, mo;
+  if(d.iso){ mo = d.x; j = d.y; } else if(us){ mo = d.x; j = d.y; } else { j = d.x; mo = d.y; }
+  if(mo < 1 || mo > 12 || j < 1 || j > 31) return null;
+  var dt = new Date(d.a, mo - 1, j);
+  if(dt.getMonth() !== mo - 1) return null;
+  return toDateOnlyString(dt);
+}
+function releveMontant(v){
+  var s = String(v == null ? "" : v).replace(/[\s  ]/g, "").replace(/EUR|€|\$|£/gi, "");
+  if(!s) return null;
+  var neg = /^\(.*\)$/.test(s) || /-$/.test(s);
+  s = s.replace(/[()]/g, "").replace(/-$/, "");
+  var m = s.match(/^([+\-]?)([\d.,']+)$/);
+  if(!m) return null;
+  var corps = m[2], dec = corps.match(/[.,](\d{1,2})$/);
+  var ent = (dec ? corps.slice(0, -dec[0].length) : corps).replace(/[.,']/g, "");
+  if(!ent && !dec) return null;
+  var n = Number((ent || "0") + (dec ? "." + dec[1] : ""));
+  if(!isFinite(n)) return null;
+  return (m[1] === "-" || neg) ? -n : n;
+}
+var RELEVE_INDICES = {
+  date: /^date|date ?op|booking|fecha|^data|datum|تاريخ/,
+  dateValeur: /valeur|value|valuta|wert/,
+  libelle: /libell|label|descr|intitul|wording|benef|payee|concepto|verwendung|buchungstext|comment|^note/,
+  libelle2: /operation|nature|detail|motif|objet/,
+  montant: /montant|amount|betrag|importe|valor|importo|somme|^mont/,
+  debit: /debit|sortie|withdraw|soll|cargo|addebit|depense/,
+  credit: /credit|entree|deposit|haben|abono|accredit|recette/,
+  categorie: /^categ|category|kategorie|categoria/,
+  sousCategorie: /sous.?categ|subcateg|unterkat|subcat/,
+  solde: /solde|balance|saldo/,
+  epargne: /^epargne$|^savings$/
+};
+function releveAnalyser(texte){
+  var d = releveDecouper(texte), rows = d.rows, n = d.cols;
+  /* L'en-tête est la première ligne pleine dont les suivantes portent une
+     date ; les lignes d'introduction (titulaire, numéro de compte) sont
+     ignorées. */
+  var debut = -1;
+  for(var i = 0; i < Math.min(rows.length, 40); i++){
+    if(rows[i].length < n) continue;
+    if(rows[i].some(function(c){ return releveDateBrute(c); })){ debut = i - 1; break; }
+    var suiv = rows.slice(i + 1, i + 4);
+    if(suiv.length && suiv.every(function(r){ return r.some(function(c){ return releveDateBrute(c); }); })){ debut = i; break; }
+  }
+  var entete = debut >= 0 ? rows[debut].map(function(h){ return h; }) : [];
+  var corps = rows.slice(debut + 1).filter(function(r){ return r.length >= Math.max(2, n - 1) && r.some(function(c){ return releveDateBrute(c); }); });
+  var cols = [];
+  for(var c = 0; c < n; c++){
+    var vals = corps.slice(0, 200).map(function(r){ return r[c] || ""; });
+    var nonVides = vals.filter(function(v){ return v; });
+    var dates = nonVides.filter(function(v){ return releveDateBrute(v); }).length;
+    var montants = nonVides.filter(function(v){ return releveMontant(v) !== null; }).length;
+    var lg = nonVides.reduce(function(s, v){ return s + v.length; }, 0) / Math.max(1, nonVides.length);
+    cols.push({ i: c, nom: entete[c] || t("rl.column", { n: c + 1 }), h: normalizeSearch(entete[c] || ""), dates: dates / Math.max(1, nonVides.length), montants: montants / Math.max(1, nonVides.length), remplis: nonVides.length / Math.max(1, vals.length), lg: lg });
+  }
+  var trouve = function(cle, filtre){ for(var k = 0; k < cols.length; k++){ if(RELEVE_INDICES[cle].test(cols[k].h) && (!filtre || filtre(cols[k]))) return cols[k].i; } return -1; };
+  var map = {};
+  map.date = trouve("date", function(x){ return x.dates > 0.6 && !RELEVE_INDICES.dateValeur.test(x.h); });
+  if(map.date < 0) map.date = trouve("date", function(x){ return x.dates > 0.6; });
+  if(map.date < 0){ var bd = cols.filter(function(x){ return x.dates > 0.6; })[0]; map.date = bd ? bd.i : -1; }
+  map.debit = trouve("debit", function(x){ return x.montants > 0.2 || x.remplis < 0.9; });
+  map.credit = trouve("credit", function(x){ return x.montants > 0.2 || x.remplis < 0.9; });
+  if(map.debit < 0 || map.credit < 0 || map.debit === map.credit){ map.debit = -1; map.credit = -1; }
+  map.montant = map.debit >= 0 ? -1 : trouve("montant", function(x){ return x.montants > 0.6; });
+  if(map.montant < 0 && map.debit < 0){
+    var bm = cols.filter(function(x){ return x.i !== map.date && x.montants > 0.8 && !RELEVE_INDICES.solde.test(x.h) && x.dates < 0.3; })[0];
+    map.montant = bm ? bm.i : -1;
+  }
+  map.libelle = trouve("libelle", function(x){ return x.i !== map.date && x.montants < 0.8; });
+  if(map.libelle < 0) map.libelle = trouve("libelle2", function(x){ return x.i !== map.date && x.montants < 0.8 && x.dates < 0.3; });
+  if(map.libelle < 0){
+    var bl = cols.filter(function(x){ return x.i !== map.date && x.i !== map.montant && x.dates < 0.3 && x.montants < 0.5; }).sort(function(a, b){ return b.lg - a.lg; })[0];
+    map.libelle = bl ? bl.i : -1;
+  }
+  map.categorie = trouve("categorie", function(x){ return x.i !== map.libelle && !RELEVE_INDICES.sousCategorie.test(x.h); });
+  map.sousCategorie = trouve("sousCategorie");
+  map.epargne = trouve("epargne");
+  /* Une colonne de dates où le premier nombre dépasse 12 tranche jj/mm ;
+     le second, mm/jj. */
+  var us = false;
+  if(map.date >= 0){
+    var j1 = 0, j2 = 0;
+    corps.forEach(function(r){ var b = releveDateBrute(r[map.date]); if(b && !b.iso){ if(b.x > 12) j1++; if(b.y > 12) j2++; } });
+    us = j2 > 0 && j1 === 0;
+  }
+  return { cols: cols, corps: corps, map: map, us: us, entete: debut >= 0 };
+}
+/* Libellés bancaires : sans préfixe technique ni date accolée, et en
+   minuscules quand ils sont tout en capitales. */
+function releveNettoyer(lib){
+  var s = String(lib || "").replace(/\s+/g, " ").trim();
+  s = s.replace(/^(paiement par carte|paiement cb|achat cb|carte x?\d{0,4}|cb\*?\s?\d{0,4}|prlv sepa|prelevement( sepa)?|prlv|vir(ement)?( sepa)?( recu| emis| instantane)?( de| a)?|facture carte|retrait dab|dab)\b[\s:.\-]*/i, "");
+  s = s.replace(/\s+\d{2}[\/.]\d{2}([\/.]\d{2,4})?(\s+\d{2}[h:]\d{2})?$/, "").replace(/\s+x{2,}\d+$/i, "").trim();
+  if(s && s === s.toUpperCase() && /[A-ZÀ-Ý]/.test(s)){
+    /* Les sigles courts ou sans voyelle (SA, EDF, SNCF) restent en capitales. */
+    s = s.split(" ").map(function(w){
+      if(w.length <= 3 || !/[AEIOUYÀ-Ý]/.test(w)) return w;
+      return w.toLowerCase().replace(/(^|[\-'’(\/])([a-zà-ÿ])/g, function(a, b, c){ return b + c.toUpperCase(); });
+    }).join(" ");
+  }
+  return s || String(lib || "").trim();
+}
+function releveCategorieNommee(nom, sous){
+  var k = evoCle(nom), ks = evoCle(sous);
+  if(!k) return null;
+  var parent = getTopLevelCategories().filter(function(c){ return evoCle(c.nom) === k; })[0];
+  if(!parent) return null;
+  if(ks){ var s = getSubcategories(parent.id).filter(function(c){ return evoCle(c.nom) === ks; })[0]; if(s) return s.id; }
+  return parent.id;
+}
+var releve = null;   // analyse en cours
+function releveLignes(){
+  var A = releve, m = A.map, auj = todayDateOnlyString();
+  var existants = state.transactions.filter(function(x){ return !x.isEpargne; }).map(function(x){ return { d: toDateOnlyString(new Date(x.date)), v: x.montant, r: evoRacine(evoCle(x.commentaire)) }; });
+  return A.corps.map(function(r, i){
+    var date = releveDate(r[m.date], A.us);
+    var v = null;
+    if(m.debit >= 0){
+      var de = releveMontant(r[m.debit]), cr = releveMontant(r[m.credit]);
+      if(de !== null || cr !== null) v = (cr ? Math.abs(cr) : 0) - (de ? Math.abs(de) : 0);
+    } else if(m.montant >= 0) v = releveMontant(r[m.montant]);
+    var brut = m.libelle >= 0 ? r[m.libelle] : "";
+    var lib = A.nettoyer ? releveNettoyer(brut) : String(brut || "").trim();
+    var l = { i: i, date: date, montant: v, libelle: lib, ok: true, motif: "" };
+    if(!date || v === null || !isFinite(v) || Math.abs(v) < 0.005){ l.ok = false; l.motif = "invalid"; return l; }
+    if(m.epargne >= 0 && r[m.epargne]){ l.ok = false; l.motif = "savings"; return l; }
+    if(date > auj){ l.ok = false; l.motif = "future"; }
+    var cat = m.categorie >= 0 ? releveCategorieNommee(r[m.categorie], m.sousCategorie >= 0 ? r[m.sousCategorie] : "") : null;
+    l.cat = cat || devinerCategorie(lib, v < 0 ? -1 : 1) || devinerCategorie(brut, v < 0 ? -1 : 1);
+    var rc = evoRacine(evoCle(lib)), rb = evoRacine(evoCle(brut));
+    var dt = parseDateOnly(date).getTime();
+    l.doublon = existants.some(function(x){
+      return Math.abs(x.v - v) < 0.005 && Math.abs(parseDateOnly(x.d).getTime() - dt) <= 2 * 864e5 && (!x.r || !rc || x.r === rc || x.r === rb);
+    });
+    if(l.doublon && l.ok){ l.ok = false; l.motif = "dup"; }
+    return l;
+  });
+}
+var RELEVE_MAX = 400;
+function renderReleve(){
+  var host = $("rlBody"), A = releve;
+  if(!A){ host.innerHTML = ""; return; }
+  var opt = function(sel, sauf){
+    return '<option value="-1">' + escapeHtml(t("rl.none")) + '</option>' + A.cols.map(function(c){ return '<option value="' + c.i + '"' + (c.i === sel ? " selected" : "") + '>' + escapeHtml(c.nom) + '</option>'; }).join("");
+  };
+  var lignes = A.lignes;
+  var nOk = lignes.filter(function(l){ return l.choisi; }).length, nDup = lignes.filter(function(l){ return l.motif === "dup"; }).length;
+  var html = '<p class="rl-summary">' + escapeHtml(t("rl.read", { n: A.corps.length, file: A.fichier })) + '</p>' +
+    '<div class="rl-map">' +
+      '<label><span>' + escapeHtml(t("rl.colDate")) + '</span><span class="field select-wrap"><select data-rl-map="date">' + opt(A.map.date) + '</select><svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg></span></label>' +
+      '<label><span>' + escapeHtml(t("rl.colLabel")) + '</span><span class="field select-wrap"><select data-rl-map="libelle">' + opt(A.map.libelle) + '</select><svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg></span></label>' +
+      (A.map.debit >= 0
+        ? '<label><span>' + escapeHtml(t("rl.colDebit")) + '</span><span class="field select-wrap"><select data-rl-map="debit">' + opt(A.map.debit) + '</select><svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg></span></label>' +
+          '<label><span>' + escapeHtml(t("rl.colCredit")) + '</span><span class="field select-wrap"><select data-rl-map="credit">' + opt(A.map.credit) + '</select><svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg></span></label>'
+        : '<label><span>' + escapeHtml(t("rl.colAmount")) + '</span><span class="field select-wrap"><select data-rl-map="montant">' + opt(A.map.montant) + '</select><svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg></span></label>') +
+    '</div>' +
+    '<label class="rl-check"><input type="checkbox" id="rlClean"' + (A.nettoyer ? " checked" : "") + '> <span>' + escapeHtml(t("rl.clean")) + '</span></label>' +
+    '<label class="rl-check"><input type="checkbox" id="rlUs"' + (A.us ? " checked" : "") + '> <span>' + escapeHtml(t("rl.usDates")) + '</span></label>' +
+    '<p class="rl-count">' + escapeHtml(t("rl.selected", { n: nOk, total: lignes.length })) + (nDup ? ' · ' + escapeHtml(tn("rl.dups", nDup)) : '') + '</p>' +
+    '<div class="rl-list">';
+  lignes.slice(0, RELEVE_MAX).forEach(function(l){
+    var badge = l.motif === "dup" ? t("rl.badgeDup") : (l.motif === "future" ? t("rl.badgeFuture") : (l.motif === "invalid" ? t("rl.badgeInvalid") : (l.motif === "savings" ? t("rl.badgeSavings") : "")));
+    html += '<div class="rl-row' + (l.choisi ? "" : " off") + '">' +
+      '<input type="checkbox" class="rl-pick" data-rl-pick="' + l.i + '"' + (l.choisi ? " checked" : "") + (l.motif === "invalid" || l.motif === "savings" ? " disabled" : "") + ' aria-label="' + escapeHtml(t("rl.pickAria", { label: l.libelle })) + '">' +
+      '<div class="rl-main"><p class="rl-lib">' + escapeHtml(l.libelle || "—") + '</p><p class="rl-meta">' + escapeHtml(l.date ? fmtDateOnly(l.date) : "?") + (badge ? ' · <span class="rl-badge">' + escapeHtml(badge) + '</span>' : '') + '</p>' +
+        (l.motif === "invalid" || l.motif === "savings" ? '' : '<span class="field select-wrap rl-cat"><select data-rl-cat="' + l.i + '" aria-label="' + escapeHtml(t("common.category")) + '">' + evoOptionsCategories(l.cat) + '</select><svg class="icon" aria-hidden="true"><use href="#icon-chevron"/></svg></span>') + '</div>' +
+      '<b class="rl-amt ' + (l.montant >= 0 ? "pos" : "") + '">' + (l.montant === null || !isFinite(l.montant) ? "—" : escapeHtml(fmtMoneySigned(l.montant))) + '</b></div>';
+  });
+  html += '</div>';
+  if(lignes.length > RELEVE_MAX) html += '<p class="rl-more">' + escapeHtml(t("rl.more", { n: lignes.length - RELEVE_MAX })) + '</p>';
+  host.innerHTML = html;
+  $("rlImport").disabled = !nOk;
+  $("rlImport").textContent = t("rl.import", { n: nOk });
+}
+function releveRecalculer(garderChoix){
+  var avant = {};
+  if(garderChoix && releve.lignes) releve.lignes.forEach(function(l){ avant[l.i] = { choisi: l.choisi, cat: l.catManuelle ? l.cat : undefined }; });
+  releve.lignes = releveLignes();
+  releve.lignes.forEach(function(l){
+    l.choisi = l.ok;
+    var a = avant[l.i];
+    if(a){ if(l.motif !== "invalid" && l.motif !== "savings") l.choisi = a.choisi; if(a.cat !== undefined){ l.cat = a.cat; l.catManuelle = true; } }
+  });
+  renderReleve();
+}
+function ouvrirReleve(){
+  releve = null;
+  $("rlIntro").hidden = false;
+  $("rlBody").innerHTML = "";
+  $("rlError").textContent = "";
+  $("rlImport").hidden = true;
+  $("rlFile").value = "";
+  openSheet($("overlayReleve"));
+}
+function lireReleve(fichier){
+  var lire = function(enc){
+    return new Promise(function(ok, ko){ var r = new FileReader(); r.onload = function(){ ok(String(r.result || "")); }; r.onerror = ko; r.readAsText(fichier, enc); });
+  };
+  /* Beaucoup de banques exportent encore en Windows-1252 : un texte lu en
+     UTF-8 plein de caractères de remplacement est relu dans cet encodage. */
+  return lire("UTF-8").then(function(txt){ return (txt.match(/�/g) || []).length > 2 ? lire("windows-1252") : txt; });
+}
+function importerReleve(){
+  var A = releve;
+  if(!A) return;
+  var choisis = A.lignes.filter(function(l){ return l.choisi && l.date && isFinite(l.montant); });
+  if(!choisis.length) return;
+  var ids = [];
+  choisis.forEach(function(l){
+    var tx = { id: genId("t"), date: dateISOForEntry(l.date), type: l.montant < 0 ? "Dépense" : "Gain", montant: Math.round(l.montant * 100) / 100, commentaire: l.libelle, categorieId: l.cat || null, importe: true };
+    state.transactions.push(tx);
+    ids.push(tx.id);
+  });
+  saveState(); renderAll();
+  closeSheet($("overlayReleve"));
+  releve = null;
+  proposerAnnulation(tn("rl.done", ids.length), function(){ state.transactions = state.transactions.filter(function(x){ return ids.indexOf(x.id) === -1; }); });
+}
+
+/* --- Événements ----------------------------------------------------------- */
+(function(){
+  /* Les variables de la fiche de saisie sont déclarées plus loin dans le
+     code : on passe ici par les éléments eux-mêmes. */
+  $("inputCommentaire").addEventListener("input", devinetteSaisie);
+  $("scheduleCommentaire").addEventListener("input", schedDevinette);
+  $("addSugg").addEventListener("click", function(ev){
+    var b = ev.target.closest("[data-sugg]");
+    if(!b) return;
+    var s = $("addSugg")._sugg[Number(b.getAttribute("data-sugg"))];
+    if(!s) return;
+    inputCommentaire.value = s.libelle;
+    if(s.cat && getCategory(s.cat) && (!currentAddCategory || addCatAuto)){ currentAddCategory = s.cat; addCatAuto = true; renderCategoryPicker($("catPickerAdd"), currentAddCategory, onCatPickAdd); }
+    $("addSugg").hidden = true;
+    devinetteMaj();
+    try{ inputMontant.focus({ preventScroll: true }); }catch(e){}
+  });
+  /* La fiche recalcule son type avant nous : on attend qu'elle ait fini. */
+  $("typeSegment").addEventListener("click", function(){ setTimeout(function(){ saisieTypeMaj(); if(addCatAuto){ currentAddCategory = null; addCatAuto = false; renderCategoryPicker($("catPickerAdd"), null, onCatPickAdd); } devinetteSaisie(); }, 0); });
+  $("btnSplit").addEventListener("click", function(){
+    var ouvrir = $("splitPanel").hidden;
+    ouvrirPanneau("splitPanel", ouvrir);
+    if(ouvrir){ ouvrirPanneau("sharePanel", false); if(!$("splitLines").children.length) $("splitLines").innerHTML = splitLigneHtml(null, ""); splitMaj(); var a = $("splitLines").querySelector(".split-cat"); if(a) try{ a.focus(); }catch(e){} }
+  });
+  $("btnShare").addEventListener("click", function(){
+    var ouvrir = $("sharePanel").hidden;
+    ouvrirPanneau("sharePanel", ouvrir);
+    if(ouvrir){ ouvrirPanneau("splitPanel", false); shareMaj(); try{ $("shareWith").focus(); }catch(e){} }
+  });
+  $("splitAdd").addEventListener("click", function(){ $("splitLines").insertAdjacentHTML("beforeend", splitLigneHtml(null, "")); splitMaj(); });
+  $("splitLines").addEventListener("click", function(ev){ var b = ev.target.closest(".split-del"); if(b){ b.closest(".split-line").remove(); splitMaj(); } });
+  $("splitLines").addEventListener("input", splitMaj);
+  $("splitLines").addEventListener("change", splitMaj);
+  $("inputMontant").addEventListener("input", function(){ if(!$("splitPanel").hidden) splitMaj(); });
+  $("shareWith").addEventListener("input", shareMaj);
+  $("sharePart").addEventListener("input", shareMaj);
+  $("sharePanel").addEventListener("click", function(ev){
+    var b = ev.target.closest("[data-share]");
+    if(!b) return;
+    var tot = parseAmount(inputMontant.value);
+    if(isNaN(tot) || tot <= 0){ addError.textContent = t("op.errAmount"); inputMontant.focus(); return; }
+    var v = b.getAttribute("data-share") === "half" ? Math.round(tot * 50) / 100 : tot;
+    $("sharePart").value = String(v).replace(".", ",");
+    shareMaj();
+  });
+
+  /* Qui doit quoi */
+  $("btnNewDebt").addEventListener("click", function(){ ouvrirDette(null); });
+  $("shareLedger").addEventListener("click", function(ev){
+    var host = $("shareLedger"), pers = host._pers || [], b;
+    if((b = ev.target.closest("[data-sp-settle]"))){
+      var x = pers[Number(b.getAttribute("data-sp-settle"))];
+      if(!x) return;
+      var annuler = reglerPartages(x.items.slice());
+      saveState(); renderAll();
+      proposerAnnulation(t("sp.settledAll", { name: x.nom }), annuler);
+      return;
+    }
+    if((b = ev.target.closest("[data-sp-tick]"))){
+      var ij = b.getAttribute("data-sp-tick").split(":"), p = pers[Number(ij[0])], it = p && p.items[Number(ij[1])];
+      if(!it) return;
+      var ann = reglerPartages([it]);
+      saveState(); renderAll();
+      proposerAnnulation(t("sp.settledOne"), ann);
+      return;
+    }
+    if((b = ev.target.closest("[data-sp-open]"))){
+      var ij2 = b.getAttribute("data-sp-open").split(":"), p2 = pers[Number(ij2[0])], it2 = p2 && p2.items[Number(ij2[1])];
+      if(!it2) return;
+      if(it2.type === "me") openAddSheet({ item: it2.tx }); else ouvrirDette(it2.dette);
+    }
+  });
+  var ovD = $("overlayDette");
+  ovD.addEventListener("click", function(ev){ if(ev.target === ovD || ev.target.closest("#btnDetteCancel")) closeSheet(ovD); });
+  $("btnDetteSave").addEventListener("click", function(){
+    var nom = $("dettePersonne").value.trim(), v = parseAmount($("detteMontant").value), date = $("detteDate").value;
+    if(!nom){ $("detteError").textContent = t("sp.errShareName"); $("dettePersonne").focus(); return; }
+    if(isNaN(v) || v <= 0){ $("detteError").textContent = t("op.errPositive"); $("detteMontant").focus(); return; }
+    if(!date) date = todayDateOnlyString();
+    if(!state.dettes) state.dettes = [];
+    var d = detteEdition || { id: genId("d") };
+    d.personne = nom; d.montant = Math.round(v * 100) / 100; d.libelle = $("detteLibelle").value.trim(); d.categorieId = $("detteCat").value || null; d.date = date;
+    if(!detteEdition) state.dettes.push(d);
+    saveState(); renderAll(); closeSheet(ovD);
+    showToast(t("sp.debtSaved", { name: nom }));
+  });
+  $("btnDetteDelete").addEventListener("click", function(){
+    var d = detteEdition;
+    if(!d) return;
+    state.dettes = (state.dettes || []).filter(function(x){ return x.id !== d.id; });
+    saveState(); renderAll(); closeSheet(ovD);
+    proposerAnnulation(t("sp.debtDeleted"), function(){ if(!state.dettes.some(function(x){ return x.id === d.id; })) state.dettes.push(d); });
+  });
+
+  /* Relevé bancaire */
+  $("btnImportStatement").addEventListener("click", ouvrirReleve);
+  $("actionImportStatement").addEventListener("click", function(){ closeSheet($("overlayFabMenu")); setTimeout(ouvrirReleve, 120); });
+  $("rlPick").addEventListener("click", function(){ $("rlFile").click(); });
+  $("rlFile").addEventListener("change", function(ev){
+    var f = ev.target.files && ev.target.files[0];
+    if(!f) return;
+    $("rlError").textContent = "";
+    lireReleve(f).then(function(txt){
+      var A = releveAnalyser(txt);
+      if(!A.corps.length || A.map.date < 0 || (A.map.montant < 0 && A.map.debit < 0)){ $("rlError").textContent = t("rl.errFormat"); return; }
+      A.fichier = f.name; A.nettoyer = true;
+      releve = A;
+      $("rlIntro").hidden = true;
+      $("rlImport").hidden = false;
+      releveRecalculer(false);
+    }).catch(function(){ $("rlError").textContent = t("rl.errRead"); });
+  });
+  var ovR = $("overlayReleve");
+  ovR.addEventListener("click", function(ev){ if(ev.target === ovR || ev.target.closest("#rlCancel")) closeSheet(ovR); });
+  $("rlBody").addEventListener("change", function(ev){
+    var el = ev.target;
+    if(el.matches("[data-rl-map]")){ releve.map[el.getAttribute("data-rl-map")] = Number(el.value); releveRecalculer(true); return; }
+    if(el.id === "rlClean"){ releve.nettoyer = el.checked; releveRecalculer(true); return; }
+    if(el.id === "rlUs"){ releve.us = el.checked; releveRecalculer(true); return; }
+    var l;
+    if(el.matches("[data-rl-pick]")){ l = releve.lignes[Number(el.getAttribute("data-rl-pick"))]; if(l){ l.choisi = el.checked; el.closest(".rl-row").classList.toggle("off", !el.checked); var n = releve.lignes.filter(function(x){ return x.choisi; }).length; $("rlImport").disabled = !n; $("rlImport").textContent = t("rl.import", { n: n }); var c = $("rlBody").querySelector(".rl-count"); if(c) c.firstChild.textContent = t("rl.selected", { n: n, total: releve.lignes.length }); } return; }
+    if(el.matches("[data-rl-cat]")){ l = releve.lignes[Number(el.getAttribute("data-rl-cat"))]; if(l){ l.cat = el.value || null; l.catManuelle = true; } }
+  });
+  $("rlImport").addEventListener("click", importerReleve);
+})();
 /* @evo:fin */
 
 /* =========================================================================
@@ -13920,6 +14869,7 @@ function renderTxList(host, txsDesc, showEmptyLarge, groupByMonth){
     date.className = "tx-date";
     date.textContent = fmtRowDate(txItem.date);
     meta.appendChild(date);
+    if(txItem.partage) meta.appendChild(partageBadgeEl(txItem));
     main.appendChild(meta);
 
     var amounts = document.createElement("div");
@@ -14403,6 +15353,7 @@ function renderUpcoming(){
       recHost.appendChild(row);
     });
   }
+  renderPartages();
 }
 function freqIdFromParts(unit, amount){
   var f = FREQUENCES.find(function(f){ return f.unit===unit && f.amount===amount; });
@@ -18870,6 +19821,7 @@ function requestRestoreBackup(b){
       state.budgets = (p.budgets && typeof p.budgets === "object") ? p.budgets : {};
       state.epargneGoals = Array.isArray(p.epargneGoals) ? p.epargneGoals : [];
       state.epargneGoalMovements = Array.isArray(p.epargneGoalMovements) ? p.epargneGoalMovements : [];
+      evoLireEtat(p);
       saveState(); renderAll(); renderBackupCard();
       showToast(t("bk.restored"));
     });
@@ -19386,6 +20338,7 @@ var TOUR_CHAPTERS = [
     { key:"type",     fenetre:"overlayAdd", cible:"#typeSegment", libre:true },
     { key:"amount",   fenetre:"overlayAdd", cible:"#overlayAdd .amount-field" },
     { key:"category", fenetre:"overlayAdd", cible:"#catPickerAdd", libre:true },
+    { key:"options",  fenetre:"overlayAdd", cible:"#addOpts" },
     { key:"date",     fenetre:"overlayAdd", cible:function(){ return $("inputDate").parentNode; } },
     { key:"validate", fenetre:"overlayAdd", cible:"#btnValider" }
   ]},
@@ -20100,6 +21053,8 @@ typeSegment.addEventListener("click", function(ev){
 function onCatPickAdd(id){
   currentAddCategory = id;
   renderCategoryPicker($("catPickerAdd"), currentAddCategory, onCatPickAdd);
+  /* Une catégorie touchée à la main n'est plus « devinée ». */
+  saisieCatChoisie();
 }
 function openAddSheet(opts){
   opts = opts || {};
@@ -20130,6 +21085,8 @@ function openAddSheet(opts){
   }
   Array.prototype.forEach.call(typeSegment.querySelectorAll(".segment"), function(s){ s.classList.toggle("active", s.getAttribute("data-type")===currentAddType); });
   renderCategoryPicker($("catPickerAdd"), currentAddCategory, onCatPickAdd);
+  /* Suggestions, répartition et partage : remis à zéro, ou pré-remplis. */
+  saisieOuverture();
   openSheet(overlayAdd);
   /* Le clavier ne s'ouvre plus tout seul. Il masquait la moitié de la fiche et
      imposait un ordre de saisie : pour choisir d'abord une catégorie, ou pour
@@ -20147,6 +21104,8 @@ $("btnValider").addEventListener("click", function(){
   addError.textContent = "";
 
   var signed = currentAddType === "Dépense" ? -amount : amount;
+  /* Répartition et partage : vérifiés avant de toucher à quoi que ce soit. */
+  if(!saisieValider(amount)) return;
 
   var dateChoisie = $("inputDate").value;
   if(!dateChoisie){ addError.textContent = t("sch.errDate"); return; }
@@ -20158,6 +21117,7 @@ $("btnValider").addEventListener("click", function(){
     it.montant = signed;
     it.commentaire = inputCommentaire.value.trim();
     it.categorieId = currentAddCategory;
+    saisieAppliquerEdition(it);
     /* Corriger la date replace l'opération au bon endroit : le tri opéré à
        l'enregistrement recalcule ensuite tous les soldes intermédiaires. */
     if(toDateOnlyString(new Date(it.date)) !== dateChoisie) it.date = dateISOForEntry(dateChoisie);
@@ -20167,8 +21127,11 @@ $("btnValider").addEventListener("click", function(){
   }
 
   var tx = { id: genId("t"), date: dateISOForEntry(dateChoisie), type: currentAddType, montant: signed, commentaire: inputCommentaire.value.trim(), categorieId: currentAddCategory };
-  state.transactions.push(tx);
+  /* Une ou plusieurs opérations (répartition), éventuellement partagée. */
+  var lots = saisieLots(tx, amount);
+  lots.forEach(function(x){ state.transactions.push(x); });
   saveState(); renderAll(); closeSheet(overlayAdd);
+  if(lots.length > 1){ showToast(tn("sp.splitDone", lots.length)); return; }
 
   var totals = computeTotals();
   /* Les budgets n'étaient constatés qu'en consultant leur onglet : on apprenait
@@ -20304,11 +21267,13 @@ function updateScheduleFieldsVisibility(){
 
 function onCatPickSchedule(id){
   scheduleState.categorie = id;
+  schedCatAuto = false;
   renderCategoryPicker($("catPickerSchedule"), scheduleState.categorie, onCatPickSchedule);
 }
 function openScheduleSheet(opts){
   opts = opts || {};
   scheduleState.editing = opts.item || null;
+  schedCatAuto = false;
   scheduleState.mode = opts.mode || "once";
   $("scheduleError").textContent = "";
 
@@ -21599,6 +22564,7 @@ $("btnResetAll").addEventListener("click", function(){
       state.budgets = fresh.budgets;
       state.epargneGoals = fresh.epargneGoals;
       state.epargneGoalMovements = fresh.epargneGoalMovements;
+      evoLireEtat(null);
       saveState(); renderAll();
       showToast(t("dz.done"));
     });
@@ -21622,7 +22588,7 @@ function todayStamp(){
 }
 
 function fullExportPayload(){
-  return {
+  return evoEcrireEtat({
     version: 2,
     creditInitial: state.creditInitial,
     epargneCreditInitial: state.epargneCreditInitial,
@@ -21633,7 +22599,7 @@ function fullExportPayload(){
     budgets: state.budgets,
     epargneGoals: state.epargneGoals,
     epargneGoalMovements: state.epargneGoalMovements
-  };
+  });
 }
 
 $("btnExportJSON").addEventListener("click", function(){
@@ -21725,6 +22691,7 @@ $("fileImport").addEventListener("change", function(ev){
       state.budgets = (parsed.budgets && typeof parsed.budgets === "object") ? parsed.budgets : {};
       state.epargneGoals = Array.isArray(parsed.epargneGoals) ? parsed.epargneGoals : [];
       state.epargneGoalMovements = Array.isArray(parsed.epargneGoalMovements) ? parsed.epargneGoalMovements : [];
+      evoLireEtat(parsed);
       saveState(); renderAll();
       showToast(t("bk.imported"));
     });
@@ -22150,6 +23117,9 @@ function applyRemoteState(incoming, updatedAt){
     state.budgets = (incoming.budgets && typeof incoming.budgets === "object") ? incoming.budgets : {};
     state.epargneGoals = Array.isArray(incoming.epargneGoals) ? incoming.epargneGoals : [];
     state.epargneGoalMovements = Array.isArray(incoming.epargneGoalMovements) ? incoming.epargneGoalMovements : [];
+    /* Un appareil pas encore mis à jour ne connaît pas les nouveaux champs :
+       leur absence ne les efface pas. */
+    evoLireEtat(incoming, true);
     state.__syncMeta = { updatedAt: updatedAt };
     saveState(true);
     renderAll();
@@ -22170,6 +23140,7 @@ function pushStateToCloud(immediat){
     var now = Date.now();
     state.__syncMeta = { updatedAt: now };
     var brut = { creditInitial: state.creditInitial, epargneCreditInitial: state.epargneCreditInitial, transactions: state.transactions, categories: state.categories, scheduledOnce: state.scheduledOnce, recurring: state.recurring, budgets: state.budgets, epargneGoals: state.epargneGoals, epargneGoalMovements: state.epargneGoalMovements };
+    evoEcrireEtat(brut);
 
     gzipToBase64(JSON.stringify(brut)).then(function(comprime){
       /* Sans CompressionStream (navigateur ancien), on écrit l'ancien format :

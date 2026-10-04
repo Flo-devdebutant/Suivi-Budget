@@ -131,6 +131,31 @@ par exemple pour consulter l'application en public.
   - la répartition des dépenses par catégorie, dont chaque part se touche et
     mène aux opérations correspondantes.
 
+## Saisie, partages et relevé bancaire
+
+- **Catégorie devinée** : en tapant un libellé déjà utilisé (« Carrefour »),
+  sa catégorie habituelle est choisie d'office, avec une mention qui le dit ;
+  toucher une autre catégorie l'emporte. Les libellés déjà saisis sont aussi
+  proposés sous le champ. Vaut pour la saisie et les opérations programmées.
+- **Répartir un ticket** sur plusieurs catégories (courses + maison) : chaque
+  part devient une opération, le reste allant à la catégorie choisie.
+- **Partager une dépense** : on indique avec qui et sa part. La page À venir
+  tient la liste **Qui doit quoi**, par personne, avec les dettes notées à
+  part (« Paul a payé pour moi »). Une part remboursée ramène la dépense à
+  votre part ; une dette réglée devient une dépense à la date du règlement.
+  « Annuler » est proposé à chaque fois.
+- **Importer un relevé bancaire** (Réglages ou bouton « + ») : le fichier CSV
+  exporté par la banque est lu sur l'appareil. Séparateur, en-têtes, lignes
+  d'introduction, débit et crédit, formats de date et encodage (UTF-8 ou
+  Windows-1252) sont reconnus ; les libellés sont simplifiés (« CB CARREFOUR
+  03/10 » devient « Carrefour ») et les catégories devinées. Les doublons
+  probables sont décochés d'office, chaque ligne reste modifiable, et
+  l'import peut être annulé.
+
+Les dettes sont enregistrées avec le reste des données : appareil,
+synchronisation (un appareil pas encore mis à jour ne les efface pas),
+sauvegardes et import. Les règles Firestore sont inchangées.
+
 ## Personnaliser l'application
 
 Chacun peut ranger l'application à sa façon, depuis **Réglages ›
