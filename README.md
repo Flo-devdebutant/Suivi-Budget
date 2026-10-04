@@ -109,6 +109,28 @@ intactes, son code est conservé, et il suffit de le relier à votre projet.
 Le **mode discret** (icône d'œil en haut de l'écran) masque les montants,
 par exemple pour consulter l'application en public.
 
+## Historique, analyse et statistiques
+
+- **Historique** : les filtres passent à la ligne au lieu de défiler hors de
+  l'écran. Les catégories les plus utilisées sont proposées d'office ;
+  « + autres » ouvre une fiche avec toutes les catégories, leurs
+  sous-catégories, le nombre d'opérations et le total de la période (et une
+  recherche dès qu'il y a beaucoup de catégories).
+- **Calendrier des dépenses** : chaque jour se touche. Un jour sans opération
+  le dit et propose d'en ajouter une à cette date ; un jour à venir montre ce
+  qui est programmé, ou propose d'en programmer une.
+- **Principales dépenses** : « Les plus fréquentes » sont classées au nombre
+  de fois, puis au montant.
+- **Statistiques**, vue d'ensemble en anneaux, pour le mois ou l'année en
+  cours :
+  - la part des revenus dépensée ;
+  - le taux d'épargne, face à un objectif réglable d'une touche (10 à 30 %) ;
+  - les dépenses fixes et variables (opérations récurrentes et libellés
+    payés chaque mois pour un montant quasi constant) ;
+  - les jours sans dépense, les budgets respectés et l'avancée des objectifs ;
+  - la répartition des dépenses par catégorie, dont chaque part se touche et
+    mène aux opérations correspondantes.
+
 ## Personnaliser l'application
 
 Chacun peut ranger l'application à sa façon, depuis **Réglages ›
