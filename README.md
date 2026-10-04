@@ -145,7 +145,8 @@ n'ont pas les mêmes besoins) : elle est gardée dans le navigateur, hors des
 données, des sauvegardes et de la synchronisation, dont les règles Firestore
 sont inchangées. Une disposition enregistrée par une version précédente est
 reprise telle quelle. Le didacticiel montre toujours la disposition
-d'origine, puis rend la vôtre.
+d'origine, puis rend la vôtre ; son chapitre « Personnaliser » permet de tout
+essayer sans rien enregistrer.
 
 La suppression d'une opération, d'un virement ou d'une opération programmée
 demande toujours confirmation, puis le message propose **Annuler** pendant
@@ -280,11 +281,16 @@ et frais » pour les deux premiers, pas des données officielles.
 
 ## Didacticiel
 
-Une visite interactive en 9 chapitres est proposée à la première ouverture,
+Une visite interactive en 10 chapitres est proposée à la première ouverture,
 et reste accessible depuis le menu « Plus d'options › Didacticiel » ou les
 Réglages, chapitre par chapitre. Le chapitre « Investissement » présente les
 quatre vues de l'onglet, la prochaine étape conseillée, la méthode, le test
 de profil, le simulateur (choix du placement, impôts et frais) et la liste
-des placements, dont on ouvre une fiche d'un geste. Sur un compte vide, elle utilise des données
+des placements, dont on ouvre une fiche d'un geste. Le chapitre
+« Personnaliser » fait essayer le mode Personnaliser d'une page (déplacer,
+masquer, afficher un module, replier une section) puis la fiche
+« Personnaliser l'application » (onglets, page d'ouverture, raccourcis) : les
+essais faits pendant la visite ne sont pas enregistrés, et chacun retrouve sa
+disposition à la fin. Sur un compte vide, elle utilise des données
 d'exemple **en mémoire uniquement** : rien n'est enregistré, synchronisé ni
 sauvegardé pendant la visite, et vos données sont rétablies à la sortie.
