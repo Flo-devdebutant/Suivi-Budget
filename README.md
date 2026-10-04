@@ -156,6 +156,36 @@ Les dettes sont enregistrées avec le reste des données : appareil,
 synchronisation (un appareil pas encore mis à jour ne les efface pas),
 sauvegardes et import. Les règles Firestore sont inchangées.
 
+## Bilan, abonnements, rapport et « et si »
+
+- **Bilan du mois** (onglet Analyse) : le dernier mois terminé en bref, et une
+  fiche détaillée pour chaque mois : excédent ou déficit, chiffres clés
+  comparés au mois précédent, écart à la moyenne des mois d'avant, ce qui a
+  changé par catégorie, budgets tenus ou dépassés, jours sans dépense,
+  objectifs alimentés, plus grosse dépense ponctuelle et conseils tirés des
+  chiffres. Au début de chaque mois, un message propose d'ouvrir le bilan du
+  mois écoulé (une seule fois, propre à l'appareil).
+- **Abonnements et prélèvements** (onglet Analyse) : les opérations
+  récurrentes enregistrées, et les paiements réguliers repérés dans
+  l'historique (même libellé chaque mois, le plus souvent au même montant,
+  depuis au moins trois mois). Total par mois et par an, prochaine échéance,
+  hausses de prix signalées. Toucher un nom montre ses paiements dans
+  l'historique ; « ? » simule l'économie d'une résiliation.
+- **Rapport PDF** (onglet Statistiques, ou depuis la fiche du bilan) : un
+  récapitulatif d'un mois ou d'une année (chiffres clés, mois par mois,
+  dépenses par catégorie avec les budgets, abonnements, plus grosses
+  dépenses ponctuelles, et au choix la liste de toutes les opérations). Il
+  s'ouvre dans la fenêtre d'impression du navigateur, où « Enregistrer au
+  format PDF » le conserve. Tout est préparé sur l'appareil.
+- **Et si…** (onglet Épargne) : une économie mensuelle dans une catégorie, ou
+  la résiliation d'un abonnement, et ce qu'elle change : gain sur un an, taux
+  d'épargne, et date à laquelle chaque objectif serait atteint. Le calcul part
+  du plan d'épargne s'il est renseigné, sinon de ce qui a été épargné en
+  moyenne ces derniers mois ; il ne modifie rien.
+
+Le didacticiel présente ces nouveautés, et chaque section peut être déplacée
+ou masquée depuis la personnalisation.
+
 ## Personnaliser l'application
 
 Chacun peut ranger l'application à sa façon, depuis **Réglages ›
@@ -338,6 +368,8 @@ des placements, dont on ouvre une fiche d'un geste. Le chapitre
 masquer, afficher un module, replier une section) puis la fiche
 « Personnaliser l'application » (onglets, page d'ouverture, raccourcis) : les
 essais faits pendant la visite ne sont pas enregistrés, et chacun retrouve sa
-disposition à la fin. Sur un compte vide, elle utilise des données
+disposition à la fin. Les chapitres « Épargne » et « Analyse » présentent
+aussi le simulateur « Et si… », le bilan du mois, les abonnements et le
+rapport PDF. Sur un compte vide, elle utilise des données
 d'exemple **en mémoire uniquement** : rien n'est enregistré, synchronisé ni
 sauvegardé pendant la visite, et vos données sont rétablies à la sortie.
