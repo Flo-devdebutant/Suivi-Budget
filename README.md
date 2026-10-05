@@ -110,6 +110,8 @@ intactes, son code est conservé, et il suffit de le relier à votre projet.
 | `Ctrl K` / `⌘ K`, `/` | Rechercher une opération, une page ou une action |
 | `N`               | Nouvelle opération |
 | `1` à `9`, `0`    | Changer de page, dans l'ordre de la barre latérale (à l'origine, `8` : Investissement, `0` : Réglages) |
+| `Ctrl` + clic / `⌘` + clic | Dans l'Historique, commencer une sélection par cette opération |
+| `Échap`           | Terminer la sélection |
 
 Le **mode discret** (icône d'œil en haut de l'écran) masque les montants,
 par exemple pour consulter l'application en public.
@@ -152,6 +154,78 @@ par exemple pour consulter l'application en public.
   sous-catégories, libellés les plus coûteux et plus grosses dépenses, avec
   « Voir les opérations » et le réglage du budget. La répartition par
   catégorie, déjà détaillée dans l'onglet Analyse, n'est plus répétée ici.
+
+## Relevés d'anciens mois et soldes
+
+Le **début du suivi** est la date de votre première opération suivie (par
+exemple le 1er août). Le crédit de départ est le solde du compte à ce
+moment-là, et le solde de départ de l'épargne celui du livret. Toute
+opération plus ancienne y est donc déjà comprise.
+
+- **Opérations hors solde** : une opération d'avant le début du suivi
+  (relevé d'un ancien mois, saisie antérieure) compte dans l'historique, les
+  analyses, les statistiques et les bilans, jamais dans le solde du compte,
+  l'épargne, les objectifs ni la part libre. Dans l'historique, la mention
+  « Avant le suivi · hors solde » remplace son solde. La supprimer, la
+  modifier ou réimporter le relevé ne change aucun solde.
+- **Ce qui était faux avant** : l'import prenait pour début du suivi la plus
+  ancienne opération enregistrée. Après un premier relevé ancien (janvier),
+  ce début reculait : les relevés suivants (février, mars…) n'étaient plus
+  compensés, et le solde comme l'épargne d'aujourd'hui changeaient de
+  plusieurs milliers d'euros. Les virements du livret vers le compte
+  faisaient passer la part libre de l'épargne en négatif.
+- **Réparation automatique** : à l'ouverture, l'application rejoue une fois
+  les imports passés, dans l'ordre où ils ont été faits (l'heure de création
+  figure dans chaque opération). Elle retrouve les opérations d'avant le
+  début réel du suivi et ce que l'ancien import avait retranché du crédit de
+  départ, puis rétablit les soldes d'avant les relevés. Les réservations
+  d'objectif nées d'un virement d'un ancien mois sont retirées. Un message
+  montre les soldes avant et après ; il ne s'affiche que si un solde a
+  changé. La réparation se fait aussi sur les données reçues par la
+  synchronisation et sur une sauvegarde restaurée, une seule fois par
+  opération.
+- **Recaler mes soldes** (Réglages › Général, ou depuis ce message) : vous
+  indiquez ce qu'affiche votre banque aujourd'hui pour le compte et
+  l'épargne, et les soldes de départ s'ajustent de l'écart. Les opérations
+  et les objectifs ne bougent pas, et « Annuler » reste possible. Utile si
+  vous aviez corrigé un solde à la main entre-temps.
+- **Saisie datée d'avant le suivi** : l'interrupteur « Compter dans mon
+  solde » apparaît dans la fiche de saisie et dans celle d'un virement
+  d'épargne. Il est désactivé d'office, puisque le crédit de départ contient
+  déjà l'opération ; activé, l'opération compte et devient le nouveau début
+  du suivi.
+- **Avant le début du suivi, le solde n'est pas connu au jour près** (il
+  manque par exemple avril à juillet). La courbe du solde commence donc au
+  premier jour suivi. Les calculs qui ont besoin d'un solde d'ouverture
+  pour un mois plus ancien, comme le taux d'épargne, prennent le crédit de
+  départ. Le crédit de départ est affiché dans les Réglages avec sa date
+  (« 1 500,00 € · au 01/08/2026 »).
+
+Rien ne change pour un suivi commencé par l'import d'un relevé : ces
+opérations restent le point de départ et comptent dans les soldes.
+
+## Supprimer des opérations
+
+- **Sur ordinateur**, survoler une opération fait apparaître une petite
+  corbeille à droite de la ligne. Elle apparaît aussi sur un ordinateur à
+  écran tactile : l'application suit le pointeur réellement utilisé (souris
+  ou doigt) au lieu de se fier à ce qu'annonce le navigateur, qui privait
+  ces ordinateurs de tout moyen de supprimer depuis la liste.
+- **Sur téléphone**, glisser une opération vers la gauche (vers la droite en
+  arabe) dévoile le bouton « Supprimer », qui répond aussitôt, même pendant
+  que la ligne finit de glisser. Le toucher n'est plus perdu, et le clic
+  tardif que le navigateur envoie parfois ensuite ne peut pas valider la
+  confirmation à votre place.
+- **Plusieurs à la fois**, dans l'Historique : « Sélectionner » (au-dessus
+  de la liste), un appui long sur une opération ou `Ctrl` + clic fait des
+  lignes des cases à cocher. La barre du bas indique le nombre d'opérations
+  choisies et leur total, propose « Tout sélectionner » (toutes les
+  opérations qui répondent aux filtres et à la recherche en cours, même
+  celles qui ne sont pas encore affichées) et « Supprimer ». Une
+  confirmation rappelle le nombre et le total, et un message permet
+  d'annuler juste après. Supprimer un virement d'épargne libère aussi ce
+  qu'il réservait dans l'objectif ; « Annuler » le rétablit. La croix,
+  `Échap` ou le changement de page terminent la sélection.
 
 ## Saisie, partages et relevé bancaire
 
@@ -198,11 +272,12 @@ par exemple pour consulter l'application en public.
     (« CB CARREFOUR 26/09/26 »), est celle de l'opération ; la date de débit
     est indiquée à côté.
   - **Mois d'avant le début du suivi** (par exemple les relevés de janvier à
-    juillet quand l'application sert depuis août) : ces opérations rejoignent
-    l'historique, les statistiques et les bilans, sans changer les soldes
-    d'aujourd'hui (compte et épargne). Le crédit de départ est ajusté
-    d'autant, ce que l'écran de vérification annonce ; annuler l'import le
-    rétablit.
+    juillet quand l'application sert depuis août) : ces opérations sont
+    **hors solde**. Elles rejoignent l'historique, les statistiques et les
+    bilans, sans jamais changer les soldes d'aujourd'hui (compte, épargne,
+    objectifs, part libre), quel que soit l'ordre d'import des relevés.
+    L'écran de vérification l'annonce et marque chaque ligne « Hors solde ».
+    Voir « Relevés d'anciens mois et soldes » plus bas.
   - **CSV** : séparateur, en-têtes, lignes d'introduction, débit et crédit,
     formats de date et encodage (UTF-8 ou Windows-1252) sont reconnus.
 
@@ -347,17 +422,8 @@ attribué à ses rentrées exceptionnelles, dans leur limite.
   - une recherche peut être enregistrée sous un nom, avec la période et le
     texte cherché, et rappelée d'un geste en haut de l'historique. Les
     recherches enregistrées sont propres à l'appareil.
-- **Défis et badges** (Épargne) :
-  - **jours sans dépense superflue** (7, 14 ou 30), d'après les catégories que
-    l'on juge superflues (devinées au départ : loisirs, restaurants…) ;
-  - **défi des 52 semaines** (1 € la première semaine, 2 € la deuxième… ou
-    dans l'ordre inverse, avec un montant de départ au choix), suivi par un
-    objectif d'épargne créé pour lui, avec un bouton pour verser la semaine ;
-  - **série** de jours sans dépense superflue et record ;
-  - neuf **badges** tirés des données (premier virement d'épargne, séries de
-    7 et 30 jours, défi réussi, 52 semaines, budgets tenus sur un mois,
-    épargne trois mois de suite, objectif atteint, mois en excédent),
-    annoncés une seule fois.
+- **Défis et badges** (Épargne) : trois défis, une série et neuf badges,
+  détaillés plus bas (« Défis d'épargne »).
 - **Code de verrouillage** (Réglages), facultatif :
   - code à 4 ou 6 chiffres demandé à l'ouverture, et au retour dans
     l'application après le délai choisi (dès la sortie, 1, 5 ou 15 minutes) ;
@@ -371,6 +437,76 @@ attribué à ses rentrées exceptionnelles, dans leur limite.
 
 Les défis sont enregistrés avec le reste des données (synchronisation,
 sauvegardes, import). Les règles Firestore sont inchangées.
+
+## Défis d'épargne
+
+La fiche « Nouveau défi » présente trois défis, un par ligne. Chacun montre
+ses réglages, puis un récapitulatif et le **tableau des versements prévus**
+avant le lancement.
+
+- **Jours sans superflu** (7, 14 ou 30 jours) : aucune dépense dans les
+  catégories jugées superflues (devinées au départ : loisirs, restaurants…).
+  Elles comptent aussi la **série** de jours tenus et son record.
+- **Défi des 52 semaines** : un peu plus chaque semaine.
+  - Le montant de base se choisit (1, 2, 5, 10 € ou un montant libre).
+  - L'ordre est expliqué avec les vrais montants. En croissant : 5 €,
+    10 €, 15 €… jusqu'à 260 €. En décroissant, les 260 € d'abord.
+  - Le récapitulatif donne la 1re et la 52e semaine, le total et la moyenne
+    par mois. Le tableau liste les 52 semaines (date, montant, cumul).
+- **Épargne régulière** : le même montant à intervalle fixe.
+  - Fréquence : chaque jour, chaque semaine, toutes les 2 semaines ou
+    chaque mois.
+  - Durée selon la fréquence : de 7 à 100 jours, de 4 à 52 semaines, 3 mois,
+    6 mois ou 1 an, de 3 mois à 2 ans.
+  - Montant proposé ou libre ; premier versement aujourd'hui, demain, lundi
+    prochain ou le 1er du mois suivant.
+  - L'option **Programmer les virements** (cochée d'office) enregistre
+    chaque versement à son échéance vers l'objectif du défi, comme les
+    autres opérations programmées. Le virement s'arrête de lui-même après la
+    dernière échéance : une opération récurrente peut désormais avoir une
+    date de fin, affichée dans « À venir » (« jusqu'au … »). Arrêter le défi
+    retire son virement programmé.
+
+Chaque défi d'épargne a son objectif d'épargne. Les virements vers cet
+objectif depuis le début du défi comptent en cumul : ce qui est versé couvre
+d'abord les échéances les plus anciennes, et un versement en avance compte
+aussi.
+
+- **La carte d'un défi s'ouvre** : sa fiche montre ce qui est versé, ce qui
+  reste, le prochain versement et le tableau complet.
+  - Chaque ligne a son état : ✓ versé, ● à verser, ! en retard. La ligne en
+    cours est mise en évidence.
+  - Pour des jours sans superflu, la fiche montre le calendrier des jours,
+    datés, avec une légende.
+  - Boutons : virer ce qui est dû, programmer les virements, arrêter le
+    défi.
+- **Rappels d'épargne** (en tête de l'Accueil, seulement quand il y en a),
+  pour un défi des 52 semaines ou d'épargne régulière en cours :
+  - un rappel tant que le versement de la période en cours n'est pas viré,
+    par exemple « 4,00 € à virer cette semaine (semaine 4 sur 52) » ou
+    « 50,00 € à virer ce mois-ci » ;
+  - un rappel de plus quand des versements des périodes précédentes ont été
+    oubliés, par exemple « 2 versements oubliés depuis le 21/09 : 5,00 € à
+    rattraper ».
+
+  Chaque rappel ouvre le virement déjà rempli (montant et libellé). Un
+  versement programmé, enregistré à son échéance, ne laisse aucun rappel. Si
+  l'application s'ouvre sur une autre page, un message le signale une fois
+  par jour. Le sous-onglet « Défis » porte une pastille quand une nouvelle
+  période commence.
+- **Badges** : chacun s'ouvre d'un geste.
+  - La fiche dit ce que le badge récompense et comment l'obtenir.
+  - Elle montre où l'on en est : le record de jours tenus face aux 7 ou 30
+    demandés, le meilleur mois de budgets tenus, les mois d'épargne
+    consécutifs, l'objectif le plus avancé, un défi en cours…
+  - Pour un badge obtenu, elle dit quand (« Obtenu le 12 juin 2026 »,
+    « en août 2026 ») et grâce à quoi.
+  - Elle propose l'action utile : faire un virement, choisir ses dépenses
+    superflues, lancer un défi, voir ses budgets ou ses objectifs.
+
+Les défis d'épargne régulière sont rangés à part dans les données : un
+appareil pas encore mis à jour ne peut pas les effacer en synchronisant. Les
+règles Firestore sont inchangées.
 
 ## Pages en sous-onglets
 
@@ -655,6 +791,10 @@ essais faits pendant la visite ne sont pas enregistrés, et chacun retrouve sa
 disposition à la fin. Les chapitres présentent aussi les nouveautés : la
 devise d'une saisie, la recherche avancée, les défis et badges, le
 simulateur « Et si… », le bilan du mois, les abonnements, le rapport PDF et
-le code de verrouillage. Sur un compte vide, elle utilise des données
+le code de verrouillage. Le chapitre « Historique » montre comment
+supprimer une opération (glissement sur téléphone, corbeille au survol à la
+souris, avec le texte adapté au pointeur utilisé ; en arabe, le doigt animé
+glisse vers la droite, comme la ligne) puis comment en supprimer plusieurs
+avec « Sélectionner ». Sur un compte vide, elle utilise des données
 d'exemple **en mémoire uniquement** : rien n'est enregistré, synchronisé ni
 sauvegardé pendant la visite, et vos données sont rétablies à la sortie.
