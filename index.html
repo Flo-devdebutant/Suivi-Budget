@@ -4433,7 +4433,11 @@ span.field.select-wrap{ display:block; }
 .tr-head, .tr-row{ display:grid; grid-template-columns:minmax(0, 1.25fr) minmax(120px, 1.7fr) minmax(84px, auto) minmax(92px, auto) 70px; gap:12px; align-items:center; }
 .tr-head{ padding:0 4px 6px; font-size:11px; font-weight:750; color:var(--text-3); text-transform:uppercase; letter-spacing:.03em; }
 .tr-head > span:nth-child(n+3){ text-align:end; }
-.tr-months{ display:flex; justify-content:space-between; text-transform:none; letter-spacing:0; }
+/* Douze mois, un par colonne de barre. */
+.tr-months{ display:grid; grid-template-columns:repeat(12, minmax(0, 1fr)); gap:2px; text-transform:none; letter-spacing:0; }
+.tr-months > span{ min-width:0; overflow:hidden; text-align:center; white-space:nowrap; font-size:10.5px; font-weight:700; text-transform:capitalize; }
+.tr-months > span.vide{ opacity:.5; }
+.tr-months > span.cur{ color:var(--text-2); font-weight:850; }
 .tr-row{ width:100%; padding:10px 4px; text-align:start; border-radius:12px; transition:background-color .15s ease; }
 .tr-row + .tr-row{ border-top:1px solid var(--line); }
 .tr-row:hover{ background:var(--surface-2); }
@@ -4459,7 +4463,10 @@ span.field.select-wrap{ display:block; }
 .tr-all{ margin-top:6px; }
 .tr-note{ margin:10px 4px 0; }
 @container content (max-width:620px){
-  .tr-head{ display:none; }
+  /* Téléphone : seule la ligne des mois reste, au-dessus des barres. */
+  .tr-head{ grid-template-columns:minmax(0, 1fr); padding-bottom:2px; }
+  .tr-head > span:not(.tr-months){ display:none; }
+  .tr-months > span{ font-size:9.5px; }
   .tr-row{ grid-template-columns:minmax(0, 1fr) auto; grid-template-areas:"cat avg" "bars bars" "now trend"; row-gap:6px; }
   .tr-cat{ grid-area:cat; } .tr-avg{ grid-area:avg; } .tr-bars{ grid-area:bars; height:26px; }
   .tr-now{ grid-area:now; text-align:start; } .tr-trend{ grid-area:trend; }
@@ -17229,6 +17236,12 @@ function trDonnees(){
   return { mois: mois, suivi: suivi, lignes: lignes, total: total, nTend: nTend };
 }
 function trNomMois(mk, long){ try{ return (long ? monthLongFmt : monthShortFmt2).format(parseDateOnly(mk + "-01")); }catch(e){ return mk; } }
+/* Mois en quatre lettres au plus, pour une colonne de barre (« janv »,
+   « juin », « juil »). Sans abréviation propre (arabe), le numéro du mois. */
+function trMoisCourt(mk){
+  if(currentLang === "ar") return String(Number(mk.slice(5, 7)));
+  return trNomMois(mk).replace(".", "").slice(0, 4);
+}
 function trCat(id){ var c = id === "_none" ? null : getCategory(id); return { c: c, nom: c ? c.nom : t("sr.uncategorized"), ic: c ? iconHtml(c.emoji) : "•", couleur: c ? c.couleur : "var(--text-3)" }; }
 function trTendanceHtml(l){
   if(l.tendance === null) return '<span class="tr-trend" title="' + escapeHtml(t("tr2.trendNone")) + '">—</span>';
@@ -17250,7 +17263,10 @@ function renderStatTendances(){
   host._D = D;
   if(!D.lignes.length){ host.innerHTML = '<p class="ab-empty">' + escapeHtml(t("tr2.empty")) + '</p>'; return; }
   var liste = trTout ? D.lignes : D.lignes.slice(0, 8), courant = currentMonthKey();
-  var html = '<div class="tr-head" aria-hidden="true"><span></span><span class="tr-months"><span>' + escapeHtml(trNomMois(D.mois[0])) + '</span><span>' + escapeHtml(trNomMois(D.mois[11])) + '</span></span>' +
+  /* Le nom de chaque mois au-dessus de sa barre. */
+  var html = '<div class="tr-head" aria-hidden="true"><span></span><span class="tr-months">' + D.mois.map(function(mk, i){
+    return '<span class="' + (i === D.mois.length - 1 ? "cur" : (D.suivi[i] ? "" : "vide")) + '" title="' + escapeHtml(trNomMois(mk, true)) + '">' + escapeHtml(trMoisCourt(mk)) + '</span>';
+  }).join("") + '</span>' +
     '<span>' + escapeHtml(t("tr2.avg")) + '</span><span>' + escapeHtml(t("tr2.now", { month: trNomMois(courant) })) + '</span><span>' + escapeHtml(t("tr2.trend")) + '</span></div>';
   liste.forEach(function(l){
     var cat = trCat(l.id), pctB = l.budget ? Math.round(l.cour / l.budget * 100) : null;
@@ -17292,7 +17308,7 @@ function trdGraphique(l, D, sel){
       svg += '<rect x="' + (cx - larg / 2).toFixed(1) + '" y="' + yy.toFixed(1) + '" width="' + larg.toFixed(1) + '" height="' + Math.max(1, H - bas - yy).toFixed(1) + '" rx="3" class="trd-bar' + (i === n - 1 ? " cur" : "") + (i === sel ? " sel" : "") + '" style="fill:' + cat.couleur + '"/>';
     } else if(!suivi) svg += '<circle cx="' + cx.toFixed(1) + '" cy="' + (H - bas - 2) + '" r="1.6" class="trd-vide"/>';
     if(budgets[i] > 0) svg += '<line x1="' + (cx - larg / 2 - 2).toFixed(1) + '" x2="' + (cx + larg / 2 + 2).toFixed(1) + '" y1="' + y(budgets[i]).toFixed(1) + '" y2="' + y(budgets[i]).toFixed(1) + '" class="trd-budget"/>';
-    svg += '<text x="' + cx.toFixed(1) + '" y="' + (H - 4) + '" class="trd-x' + (i === sel ? " sel" : "") + '">' + escapeHtml(trNomMois(D.mois[i]).replace(".", "").slice(0, 4)) + '</text>';
+    svg += '<text x="' + cx.toFixed(1) + '" y="' + (H - 4) + '" class="trd-x' + (i === sel ? " sel" : "") + '">' + escapeHtml(trMoisCourt(D.mois[i])) + '</text>';
     svg += '<rect x="' + (pas * i).toFixed(1) + '" y="0" width="' + pas.toFixed(1) + '" height="' + H + '" class="trd-hit" data-trd-m="' + i + '"><title>' + escapeHtml(trNomMois(D.mois[i], true) + " : " + fmtMoney(x)) + '</title></rect>';
   });
   if(l.clos) svg += '<line x1="0" x2="' + W + '" y1="' + y(l.moy).toFixed(1) + '" y2="' + y(l.moy).toFixed(1) + '" class="trd-avg"/>';

@@ -138,8 +138,9 @@ par exemple pour consulter l'application en public.
     payés chaque mois pour un montant quasi constant) ;
   - les jours sans dépense, les budgets respectés et l'avancée des objectifs.
 
-  **Catégories sur 12 mois** : chaque catégorie sur douze emplacements fixes
-  (les mois d'avant le début du suivi restent vides), sa part des dépenses,
+  **Catégories sur 12 mois** : chaque catégorie sur douze emplacements fixes,
+  le nom de chaque mois au-dessus de sa barre (les mois d'avant le début du
+  suivi restent vides), sa part des dépenses,
   sa moyenne mensuelle, ce mois-ci face à son budget, et sa tendance (les
   trois derniers mois terminés face aux trois précédents, ou moins quand
   l'historique est court). Toucher une catégorie ouvre sa **fiche** :
