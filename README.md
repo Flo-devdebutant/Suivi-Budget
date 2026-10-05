@@ -225,10 +225,20 @@ sauvegardes et import. Les règles Firestore sont inchangées.
   chiffres. Au début de chaque mois, un message propose d'ouvrir le bilan du
   mois écoulé (une seule fois, propre à l'appareil).
 - **Budgets de chaque mois** : les budgets peuvent changer d'un mois à
-  l'autre. Ceux de chaque mois sont gardés, et chaque mois passé est jugé
-  avec les budgets qui étaient les siens : bilan, rapport, anneau « budgets
-  respectés », badge « budgets tenus ». Les mois enregistrés avant cette
-  version reprennent les budgets actuels.
+  l'autre, et au cours d'un même mois. Chaque mois passé est jugé avec les
+  budgets en vigueur à son **dernier jour** : bilan, rapport, anneau
+  « budgets respectés », badge « budgets tenus ». Les budgets du mois en
+  cours suivent chaque modification, puis sont figés dès que le mois est
+  passé ; un changement fait le 1er du mois suivant ne réécrit pas le mois
+  écoulé. Entre deux appareils synchronisés, ils se fusionnent mois par
+  mois : la valeur suivie la plus récente l'emporte, et un appareil pas
+  encore à jour n'efface rien.
+- **Budgets des mois passés** (onglet Budgets › « Mois passés ») : pour
+  chaque mois terminé, les budgets retenus à côté des dépenses du mois, et
+  la possibilité de les corriger. Les budgets relevés après la fin d'un mois
+  (au premier lancement de la version qui les garde, ou pour les mois
+  d'avant) sont marqués **estimés** : on les vérifie et on les corrige ici.
+  Une correction ne touche que ce mois-là.
 - **Abonnements et prélèvements** (onglet Analyse) : les opérations
   récurrentes enregistrées, et les paiements réguliers repérés dans
   l'historique (même libellé chaque mois, le plus souvent au même montant,
@@ -242,7 +252,12 @@ sauvegardes et import. Les règles Firestore sont inchangées.
 - **Rapport PDF** (onglet Statistiques, ou depuis la fiche du bilan) : un
   récapitulatif d'un mois ou d'une année (chiffres clés, mois par mois,
   dépenses par catégorie avec les budgets, abonnements, plus grosses
-  dépenses ponctuelles, et au choix la liste de toutes les opérations). Il
+  dépenses ponctuelles, et au choix la liste de toutes les opérations).
+  Tous les mois renseignés sont proposés : le mois en cours, le mois
+  dernier et l'année en raccourcis, les autres mois et années dans « Un
+  autre mois ». Pour un mois passé, la colonne « Budget au 30/09/2026 »
+  reprend les budgets du dernier jour du mois ; s'ils sont estimés, la fiche
+  le signale (« Vérifier les budgets ») et le rapport le mentionne. Il
   s'ouvre dans la fenêtre d'impression du navigateur, où « Enregistrer au
   format PDF » le conserve, y compris depuis la fiche du bilan et sur
   téléphone. Tout est préparé sur l'appareil.
@@ -344,7 +359,8 @@ Pour alléger encore les pages :
   réguliers, objectifs, abonnements, partages…) s'arrêtent à cinq lignes,
   avec « Voir tout ».
 - **Mode compact** (Personnaliser) : espacements resserrés et graphiques
-  moins hauts sur téléphone.
+  moins hauts sur téléphone, sans que le bouton « Supprimer » rangé derrière
+  chaque opération ne dépasse de la ligne.
 - **Aperçu des sections** : en mode Personnaliser, chaque section montre une
   miniature de son contenu sous son nom.
 - **Recherche avancée** : la liste des catégories n'a plus de défilement
@@ -371,7 +387,10 @@ Personnalisation** ou le menu « Plus d'options » › **Personnaliser** :
   Sur grand écran, une section peut aussi passer en pleine largeur. Sur
   l'onglet Investissement, chaque vue se range séparément ; sur les pages en
   sous-onglets, chaque section peut changer de sous-onglet, et une
-  miniature de son contenu aide à la reconnaître ;
+  miniature de son contenu aide à la reconnaître. Ouverte depuis
+  Personnaliser (« Sections des pages »), une page y ramène avec
+  « Terminé » : on retrouve la fiche au même endroit, la page modifiée mise
+  en évidence, pour passer directement à la suivante ;
 - **des modules en plus sur l'Accueil**, masqués à l'origine : le graphique
   du solde, l'analyse, les budgets du mois, les objectifs et « Prochaines
   opérations » (les 30 prochains jours, chaque ligne s'ouvre d'un toucher) ;
