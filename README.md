@@ -138,11 +138,18 @@ par exemple pour consulter l'application en public.
     payés chaque mois pour un montant quasi constant) ;
   - les jours sans dépense, les budgets respectés et l'avancée des objectifs.
 
-  Sous les anneaux, **Catégories sur 12 mois** : chaque catégorie mois après
-  mois, sa moyenne mensuelle et sa tendance (les trois derniers mois terminés
-  face aux trois précédents). Toucher une catégorie ouvre ses opérations. La
-  répartition par catégorie, déjà détaillée dans l'onglet Analyse, n'est plus
-  répétée ici.
+  **Catégories sur 12 mois** : chaque catégorie sur douze emplacements fixes
+  (les mois d'avant le début du suivi restent vides), sa part des dépenses,
+  sa moyenne mensuelle, ce mois-ci face à son budget, et sa tendance (les
+  trois derniers mois terminés face aux trois précédents, ou moins quand
+  l'historique est court). Toucher une catégorie ouvre sa **fiche** :
+  graphique des douze mois avec la moyenne et le budget de chaque mois
+  (toucher un mois en donne le détail), chiffres clés, ce qu'il faut en
+  retenir (tendance, mois le plus haut et le plus bas, budget tenu ou
+  dépassé, part d'abonnements, nombre et montant moyen des opérations),
+  sous-catégories, libellés les plus coûteux et plus grosses dépenses, avec
+  « Voir les opérations » et le réglage du budget. La répartition par
+  catégorie, déjà détaillée dans l'onglet Analyse, n'est plus répétée ici.
 
 ## Saisie, partages et relevé bancaire
 
@@ -173,11 +180,27 @@ par exemple pour consulter l'application en public.
     Un virement marqué « SAVG » ou vers un livret est aussi reconnu comme
     mouvement d'épargne. Chaque ligne peut être rangée dans une catégorie, ou
     dans l'épargne globale ou un objectif.
+  - **Doublons** : chaque ligne est comparée à toutes les opérations déjà
+    enregistrées, même saisies sous un autre nom (« Courses » pour
+    « CB CARREFOUR ») : même montant, et le jour de l'achat (à un jour près)
+    ou un débit dans les quatre jours qui suivent la saisie. Une opération
+    enregistrée ne répond qu'à une seule ligne, et la ligne décochée dit à
+    laquelle elle correspond.
   - **PayPal et autres intermédiaires** : un prélèvement du même montant
     qu'une opération programmée, dans les sept jours qui suivent son
-    échéance, y est rapproché. Si l'opération est déjà enregistrée, la ligne
-    est décochée (doublon) ; sinon, elle prend le nom et la catégorie de
-    l'opération programmée (« PayPal Europe » devient « Spotify »).
+    échéance (quatre pour un prélèvement), y est rapproché. Si l'opération
+    est déjà enregistrée, la ligne est décochée (doublon) ; sinon, elle prend
+    le nom et la catégorie de l'opération programmée (« PayPal Europe »
+    devient « Spotify »).
+  - **Paiements par carte** : la date de l'achat, lue dans le libellé
+    (« CB CARREFOUR 26/09/26 »), est celle de l'opération ; la date de débit
+    est indiquée à côté.
+  - **Mois d'avant le début du suivi** (par exemple les relevés de janvier à
+    juillet quand l'application sert depuis août) : ces opérations rejoignent
+    l'historique, les statistiques et les bilans, sans changer les soldes
+    d'aujourd'hui (compte et épargne). Le crédit de départ est ajusté
+    d'autant, ce que l'écran de vérification annonce ; annuler l'import le
+    rétablit.
   - **CSV** : séparateur, en-têtes, lignes d'introduction, débit et crédit,
     formats de date et encodage (UTF-8 ou Windows-1252) sont reconnus.
 
@@ -208,7 +231,11 @@ sauvegardes et import. Les règles Firestore sont inchangées.
   récurrentes enregistrées, et les paiements réguliers repérés dans
   l'historique (même libellé chaque mois, le plus souvent au même montant,
   depuis au moins trois mois). Total par mois et par an, prochaine échéance,
-  hausses de prix signalées. Toucher un nom montre ses paiements dans
+  hausses de prix signalées. Le coût se lit mois par mois : tous les
+  paiements d'un même abonnement dans le mois s'additionnent (crédits
+  achetés en plus, changement de formule payé au prorata), par exemple
+  « 22,00 € en août → 53,71 € en septembre → 109,06 € en octobre », et ce
+  qui a été payé le dernier mois s'affiche quand il diffère du prix prévu. Toucher un nom montre ses paiements dans
   l'historique ; « ? » simule l'économie d'une résiliation.
 - **Rapport PDF** (onglet Statistiques, ou depuis la fiche du bilan) : un
   récapitulatif d'un mois ou d'une année (chiffres clés, mois par mois,
@@ -279,6 +306,48 @@ les règles Firestore sont inchangées.
 Les défis sont enregistrés avec le reste des données (synchronisation,
 sauvegardes, import). Les règles Firestore sont inchangées.
 
+## Pages en sous-onglets
+
+Comme l'onglet Investissement, les pages chargées se découpent en
+sous-onglets, dans une barre qui reste collée sous l'en-tête :
+
+| Page | Sous-onglets |
+|---|---|
+| À venir | Ponctuelles · Régulières · Partages |
+| Épargne | Mon épargne · Simuler · Défis |
+| Analyse | Ce mois · Dépenses · Bilan |
+| Statistiques | Ce mois · Tendances |
+| Réglages | Général · Données et sécurité |
+
+- Chaque page rouvre le dernier sous-onglet consulté (propre à l'appareil).
+- Un **point** signale un sous-onglet qui contient du nouveau : bilan du mois
+  prêt, hausse d'un abonnement, badge gagné ou défi réussi. Il s'efface quand
+  on ouvre ce sous-onglet ; ce qui existait avant cette version n'est pas
+  signalé.
+- Dans Personnaliser, chaque section peut **changer de sous-onglet** (menu
+  « Sous-onglet » de sa barre). Un sous-onglet vidé disparaît de la barre.
+- Les liens et le didacticiel ouvrent d'eux-mêmes le bon sous-onglet.
+
+Pour alléger encore les pages :
+
+- **Accueil épuré** : par défaut, l'Accueil montre le solde, les raccourcis,
+  le solde prévu, le reste à dépenser et les dernières opérations. Le
+  graphique, l'analyse, les budgets du mois, les objectifs et les prochaines
+  opérations s'ajoutent depuis Personnaliser. Une disposition déjà
+  personnalisée est gardée ; « Remettre comme à l'origine » donne la
+  nouvelle.
+- **Sections repliées** : une section repliée garde une ligne de résumé
+  (« Abonnements · 788 € par mois », « 12 jours sans dépense ce mois-ci »…).
+- **Listes courtes** : les longues listes (opérations programmées, paiements
+  réguliers, objectifs, abonnements, partages…) s'arrêtent à cinq lignes,
+  avec « Voir tout ».
+- **Mode compact** (Personnaliser) : espacements resserrés et graphiques
+  moins hauts sur téléphone.
+- **Aperçu des sections** : en mode Personnaliser, chaque section montre une
+  miniature de son contenu sous son nom.
+- **Recherche avancée** : la liste des catégories n'a plus de défilement
+  propre ; toutes sont accessibles en faisant défiler la fiche.
+
 ## Personnaliser l'application
 
 Chacun peut ranger l'application à sa façon, depuis **Réglages ›
@@ -298,12 +367,13 @@ Personnalisation** ou le menu « Plus d'options » › **Personnaliser** :
   bas de chaque page, transforme les sections en cartes que l'on déplace
   (glisser la poignée ⠿ ou flèches) et que l'on masque d'un geste (l'œil).
   Sur grand écran, une section peut aussi passer en pleine largeur. Sur
-  l'onglet Investissement, chaque vue se range séparément ;
-- **des modules en plus sur l'Accueil**, masqués à l'origine : « Reste à
-  dépenser » (le montant disponible par jour jusqu'à la fin du mois) et
-  « Prochaines opérations » (les 30 prochains jours, chaque ligne s'ouvre
-  d'un toucher). Les budgets du mois et les objectifs sont désormais deux
-  sections distinctes.
+  l'onglet Investissement, chaque vue se range séparément ; sur les pages en
+  sous-onglets, chaque section peut changer de sous-onglet, et une
+  miniature de son contenu aide à la reconnaître ;
+- **des modules en plus sur l'Accueil**, masqués à l'origine : le graphique
+  du solde, l'analyse, les budgets du mois, les objectifs et « Prochaines
+  opérations » (les 30 prochains jours, chaque ligne s'ouvre d'un toucher) ;
+- **le mode compact**, qui resserre les espacements sur téléphone.
 
 Hors du mode Personnaliser, chaque section se **replie** d'un toucher sur
 la flèche de son titre, pour raccourcir les pages longues ; le repli est
