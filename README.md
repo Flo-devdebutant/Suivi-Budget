@@ -589,6 +589,57 @@ Les frais des contrats, le rendement des actions et l'inflation de long terme
 (2 %, cible de la BCE) sont des hypothèses, réglables dans le panneau « Impôts
 et frais » pour les deux premiers, pas des données officielles.
 
+## Fiabilité : corrections de l'audit
+
+Un audit complet (chaque page, chaque sous-onglet et chaque fenêtre, dans les
+7 langues, du téléphone de 320 px à l'écran de 1920 px, en clair, en sombre,
+en mode compact, avec un compte vide ou de très gros montants ; chaque bouton
+touché un par un ; calculs de dates, de récurrences et de soldes vérifiés) a
+conduit aux corrections suivantes.
+
+- **Opérations récurrentes en fin de mois** : une opération du 31 passait au
+  28 février, puis restait au 28 tous les mois suivants. Le jour choisi est
+  désormais conservé : le 31 tombe le 28 (ou le 29) en février, le 30 en
+  avril, et revient au 31 en mars. Une opération annuelle du 29 février
+  revient le 29 les années bissextiles. Les récurrences déjà enregistrées
+  retrouvent leur jour d'origine d'après les opérations qu'elles ont
+  produites, sans toucher à une date déplacée à la main.
+- **Montants avec séparateur de milliers** : « 1.234,56 » (allemand, espagnol,
+  italien, portugais), « 1,234.56 » (anglais), « 1 234,56 », « ,5 » ou « 12. »
+  sont acceptés ; une seule virgule ou un seul point reste la décimale.
+- **Opérations programmées lues d'une sauvegarde ou du nuage** : une
+  fréquence inconnue ou un intervalle nul faisait enregistrer la même
+  opération 400 fois au lancement, et une date illisible bloquait le
+  démarrage. La fréquence est réparée (tous les mois par défaut), une date
+  comme « 2027-3-2 » est remise au bon format, une date impossible est
+  écartée.
+- **Montants coupés** (« 10 550,0… ») : les totaux de l'Historique, les cartes
+  des Statistiques, les cases de l'accueil, d'À venir, des abonnements et du
+  bilan resserrent leur police juste assez pour afficher le montant entier ;
+  la date de l'accueil prend sa forme courte (« lun. 5 oct. ») sur un écran
+  étroit.
+- **Lignes d'opération** : quand la date passe à la ligne, le point « · » qui
+  la sépare de la catégorie ne reste plus seul en début de ligne.
+- **Badges des défis** : la description s'affiche en entier, et un mot long
+  ne déborde plus de la case.
+- **Plus grosses dépenses** (Analyse) : sur un écran étroit, la catégorie et
+  la date passent à la ligne au lieu de perdre l'heure.
+- **Mode compact** : les cartes de la page Budgets se resserrent comme le
+  reste de l'application.
+- **Très petits écrans (320 px)** : le résumé des budgets et les anneaux des
+  Statistiques placent leurs chiffres sous l'anneau quand la place manque ;
+  les noms et pastilles des catégories, les réponses du test de profil et le
+  solde affiché sous chaque opération reviennent à la ligne au lieu de
+  sortir de l'écran.
+- **Calendrier des dépenses** : les montants courts restent lisibles dans
+  leur case (« 181 k », « 1,2 M »).
+- **Nombres dans les phrases** : « En moyenne 0,3 opérations par mois » (et
+  non « 0.3 ») ; en arabe, les chiffres restent ceux du reste de
+  l'application.
+
+Les règles Firestore ne changent pas : le jour d'origine d'une récurrence
+est un simple champ de plus, qui suit la synchronisation et les sauvegardes.
+
 ## Didacticiel
 
 Une visite interactive en 10 chapitres est proposée à la première ouverture,
