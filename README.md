@@ -155,6 +155,55 @@ par exemple pour consulter l'application en public.
   « Voir les opérations » et le réglage du budget. La répartition par
   catégorie, déjà détaillée dans l'onglet Analyse, n'est plus répétée ici.
 
+## Relevés d'anciens mois et soldes
+
+Le **début du suivi** est la date de votre première opération suivie (par
+exemple le 1er août). Le crédit de départ est le solde du compte à ce
+moment-là, et le solde de départ de l'épargne celui du livret. Toute
+opération plus ancienne y est donc déjà comprise.
+
+- **Opérations hors solde** : une opération d'avant le début du suivi
+  (relevé d'un ancien mois, saisie antérieure) compte dans l'historique, les
+  analyses, les statistiques et les bilans, jamais dans le solde du compte,
+  l'épargne, les objectifs ni la part libre. Dans l'historique, la mention
+  « Avant le suivi · hors solde » remplace son solde. La supprimer, la
+  modifier ou réimporter le relevé ne change aucun solde.
+- **Ce qui était faux avant** : l'import prenait pour début du suivi la plus
+  ancienne opération enregistrée. Après un premier relevé ancien (janvier),
+  ce début reculait : les relevés suivants (février, mars…) n'étaient plus
+  compensés, et le solde comme l'épargne d'aujourd'hui changeaient de
+  plusieurs milliers d'euros. Les virements du livret vers le compte
+  faisaient passer la part libre de l'épargne en négatif.
+- **Réparation automatique** : à l'ouverture, l'application rejoue une fois
+  les imports passés, dans l'ordre où ils ont été faits (l'heure de création
+  figure dans chaque opération). Elle retrouve les opérations d'avant le
+  début réel du suivi et ce que l'ancien import avait retranché du crédit de
+  départ, puis rétablit les soldes d'avant les relevés. Les réservations
+  d'objectif nées d'un virement d'un ancien mois sont retirées. Un message
+  montre les soldes avant et après ; il ne s'affiche que si un solde a
+  changé. La réparation se fait aussi sur les données reçues par la
+  synchronisation et sur une sauvegarde restaurée, une seule fois par
+  opération.
+- **Recaler mes soldes** (Réglages › Général, ou depuis ce message) : vous
+  indiquez ce qu'affiche votre banque aujourd'hui pour le compte et
+  l'épargne, et les soldes de départ s'ajustent de l'écart. Les opérations
+  et les objectifs ne bougent pas, et « Annuler » reste possible. Utile si
+  vous aviez corrigé un solde à la main entre-temps.
+- **Saisie datée d'avant le suivi** : l'interrupteur « Compter dans mon
+  solde » apparaît dans la fiche de saisie et dans celle d'un virement
+  d'épargne. Il est désactivé d'office, puisque le crédit de départ contient
+  déjà l'opération ; activé, l'opération compte et devient le nouveau début
+  du suivi.
+- **Avant le début du suivi, le solde n'est pas connu au jour près** (il
+  manque par exemple avril à juillet). La courbe du solde commence donc au
+  premier jour suivi. Les calculs qui ont besoin d'un solde d'ouverture
+  pour un mois plus ancien, comme le taux d'épargne, prennent le crédit de
+  départ. Le crédit de départ est affiché dans les Réglages avec sa date
+  (« 1 500,00 € · au 01/08/2026 »).
+
+Rien ne change pour un suivi commencé par l'import d'un relevé : ces
+opérations restent le point de départ et comptent dans les soldes.
+
 ## Supprimer des opérations
 
 - **Sur ordinateur**, survoler une opération fait apparaître une petite
@@ -223,11 +272,12 @@ par exemple pour consulter l'application en public.
     (« CB CARREFOUR 26/09/26 »), est celle de l'opération ; la date de débit
     est indiquée à côté.
   - **Mois d'avant le début du suivi** (par exemple les relevés de janvier à
-    juillet quand l'application sert depuis août) : ces opérations rejoignent
-    l'historique, les statistiques et les bilans, sans changer les soldes
-    d'aujourd'hui (compte et épargne). Le crédit de départ est ajusté
-    d'autant, ce que l'écran de vérification annonce ; annuler l'import le
-    rétablit.
+    juillet quand l'application sert depuis août) : ces opérations sont
+    **hors solde**. Elles rejoignent l'historique, les statistiques et les
+    bilans, sans jamais changer les soldes d'aujourd'hui (compte, épargne,
+    objectifs, part libre), quel que soit l'ordre d'import des relevés.
+    L'écran de vérification l'annonce et marque chaque ligne « Hors solde ».
+    Voir « Relevés d'anciens mois et soldes » plus bas.
   - **CSV** : séparateur, en-têtes, lignes d'introduction, débit et crédit,
     formats de date et encodage (UTF-8 ou Windows-1252) sont reconnus.
 
