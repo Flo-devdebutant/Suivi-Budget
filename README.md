@@ -257,7 +257,7 @@ donc déjà comprise. Les opérations importées ne déplacent jamais ce début.
 Le relevé de référence est enregistré avec le reste des données (appareil,
 synchronisation, sauvegardes). Les règles Firestore sont inchangées.
 
-## Supprimer des opérations
+## Supprimer et classer des opérations
 
 - **Sur ordinateur**, survoler une opération fait apparaître une petite
   corbeille à droite de la ligne. Elle apparaît aussi sur un ordinateur à
@@ -279,6 +279,21 @@ synchronisation, sauvegardes). Les règles Firestore sont inchangées.
   d'annuler juste après. Supprimer un virement d'épargne libère aussi ce
   qu'il réservait dans l'objectif ; « Annuler » le rétablit. La croix,
   `Échap` ou le changement de page terminent la sélection.
+- **Classer plusieurs opérations à la fois** : dans la même barre,
+  « Classer » range les opérations choisies dans une catégorie, ou en
+  virement d'épargne (épargne globale ou objectif). La fiche annonce l'effet
+  sur les soldes avant de valider (« Votre épargne passera de 3 300,00 € à
+  3 700,00 € », ou « Vos soldes ne changent pas : seuls vos bilans et
+  comparatifs en tiennent compte ») ; un message permet d'annuler. Pratique
+  pour ranger d'un coup les virements à une même personne (rechercher son
+  nom, « Tout sélectionner », « Classer »).
+- **Virements d'épargne comptés en dépenses** : quand des opérations
+  importées sans catégorie portent le libellé de vos virements d'épargne
+  (« M Dupont » entre vos propres comptes, par exemple), une carte en haut
+  de l'Historique le signale : ces opérations faussent bilans et
+  comparatifs. « Ranger en virements d'épargne » les range d'un geste, avec
+  l'effet sur l'épargne (aucun pour celles d'avant le début du suivi) et
+  « Annuler » ; « Laisser ainsi » ne les propose plus.
 
 ## Saisie, partages et relevé bancaire
 
@@ -311,6 +326,18 @@ synchronisation, sauvegardes). Les règles Firestore sont inchangées.
     Un virement marqué « SAVG » ou vers un livret est aussi reconnu comme
     mouvement d'épargne. Chaque ligne peut être rangée dans une catégorie, ou
     dans l'épargne globale ou un objectif.
+  - **Virements d'épargne reconnus** : un libellé que vous avez déjà rangé
+    en virement d'épargne (vers ou depuis l'épargne) est proposé comme tel,
+    **dans les deux sens** : les virements du compte vers le livret comme
+    ceux qui en reviennent, avec la mention « Libellé de vos virements
+    d'épargne ». Avant, seuls les virements marqués comme tels par la
+    banque l'étaient ; les autres devenaient des dépenses sans catégorie.
+  - **Même libellé, même choix** : choisir une catégorie, ou un virement
+    d'épargne, pour une ligne l'applique aux autres lignes du même libellé
+    (« Aussi appliqué aux 4 autres lignes « M Dupont » »). Un virement
+    d'épargne vaut dans les deux sens ; une catégorie ne passe qu'aux lignes
+    du même sens (un remboursement n'est pas une dépense). Une ligne changée
+    à la main garde son choix.
   - **Doublons** : chaque ligne est comparée à toutes les opérations déjà
     enregistrées, même saisies sous un autre nom (« Courses » pour
     « CB CARREFOUR ») : même montant, et le jour de l'achat (à un jour près)
