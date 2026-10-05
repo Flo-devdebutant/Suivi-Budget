@@ -347,17 +347,8 @@ attribué à ses rentrées exceptionnelles, dans leur limite.
   - une recherche peut être enregistrée sous un nom, avec la période et le
     texte cherché, et rappelée d'un geste en haut de l'historique. Les
     recherches enregistrées sont propres à l'appareil.
-- **Défis et badges** (Épargne) :
-  - **jours sans dépense superflue** (7, 14 ou 30), d'après les catégories que
-    l'on juge superflues (devinées au départ : loisirs, restaurants…) ;
-  - **défi des 52 semaines** (1 € la première semaine, 2 € la deuxième… ou
-    dans l'ordre inverse, avec un montant de départ au choix), suivi par un
-    objectif d'épargne créé pour lui, avec un bouton pour verser la semaine ;
-  - **série** de jours sans dépense superflue et record ;
-  - neuf **badges** tirés des données (premier virement d'épargne, séries de
-    7 et 30 jours, défi réussi, 52 semaines, budgets tenus sur un mois,
-    épargne trois mois de suite, objectif atteint, mois en excédent),
-    annoncés une seule fois.
+- **Défis et badges** (Épargne) : trois défis, une série et neuf badges,
+  détaillés plus bas (« Défis d'épargne »).
 - **Code de verrouillage** (Réglages), facultatif :
   - code à 4 ou 6 chiffres demandé à l'ouverture, et au retour dans
     l'application après le délai choisi (dès la sortie, 1, 5 ou 15 minutes) ;
@@ -371,6 +362,76 @@ attribué à ses rentrées exceptionnelles, dans leur limite.
 
 Les défis sont enregistrés avec le reste des données (synchronisation,
 sauvegardes, import). Les règles Firestore sont inchangées.
+
+## Défis d'épargne
+
+La fiche « Nouveau défi » présente trois défis, un par ligne. Chacun montre
+ses réglages, puis un récapitulatif et le **tableau des versements prévus**
+avant le lancement.
+
+- **Jours sans superflu** (7, 14 ou 30 jours) : aucune dépense dans les
+  catégories jugées superflues (devinées au départ : loisirs, restaurants…).
+  Elles comptent aussi la **série** de jours tenus et son record.
+- **Défi des 52 semaines** : un peu plus chaque semaine.
+  - Le montant de base se choisit (1, 2, 5, 10 € ou un montant libre).
+  - L'ordre est expliqué avec les vrais montants. En croissant : 5 €,
+    10 €, 15 €… jusqu'à 260 €. En décroissant, les 260 € d'abord.
+  - Le récapitulatif donne la 1re et la 52e semaine, le total et la moyenne
+    par mois. Le tableau liste les 52 semaines (date, montant, cumul).
+- **Épargne régulière** : le même montant à intervalle fixe.
+  - Fréquence : chaque jour, chaque semaine, toutes les 2 semaines ou
+    chaque mois.
+  - Durée selon la fréquence : de 7 à 100 jours, de 4 à 52 semaines, 3 mois,
+    6 mois ou 1 an, de 3 mois à 2 ans.
+  - Montant proposé ou libre ; premier versement aujourd'hui, demain, lundi
+    prochain ou le 1er du mois suivant.
+  - L'option **Programmer les virements** (cochée d'office) enregistre
+    chaque versement à son échéance vers l'objectif du défi, comme les
+    autres opérations programmées. Le virement s'arrête de lui-même après la
+    dernière échéance : une opération récurrente peut désormais avoir une
+    date de fin, affichée dans « À venir » (« jusqu'au … »). Arrêter le défi
+    retire son virement programmé.
+
+Chaque défi d'épargne a son objectif d'épargne. Les virements vers cet
+objectif depuis le début du défi comptent en cumul : ce qui est versé couvre
+d'abord les échéances les plus anciennes, et un versement en avance compte
+aussi.
+
+- **La carte d'un défi s'ouvre** : sa fiche montre ce qui est versé, ce qui
+  reste, le prochain versement et le tableau complet.
+  - Chaque ligne a son état : ✓ versé, ● à verser, ! en retard. La ligne en
+    cours est mise en évidence.
+  - Pour des jours sans superflu, la fiche montre le calendrier des jours,
+    datés, avec une légende.
+  - Boutons : virer ce qui est dû, programmer les virements, arrêter le
+    défi.
+- **Rappels d'épargne** (en tête de l'Accueil, seulement quand il y en a),
+  pour un défi des 52 semaines ou d'épargne régulière en cours :
+  - un rappel tant que le versement de la période en cours n'est pas viré,
+    par exemple « 4,00 € à virer cette semaine (semaine 4 sur 52) » ou
+    « 50,00 € à virer ce mois-ci » ;
+  - un rappel de plus quand des versements des périodes précédentes ont été
+    oubliés, par exemple « 2 versements oubliés depuis le 21/09 : 5,00 € à
+    rattraper ».
+
+  Chaque rappel ouvre le virement déjà rempli (montant et libellé). Un
+  versement programmé, enregistré à son échéance, ne laisse aucun rappel. Si
+  l'application s'ouvre sur une autre page, un message le signale une fois
+  par jour. Le sous-onglet « Défis » porte une pastille quand une nouvelle
+  période commence.
+- **Badges** : chacun s'ouvre d'un geste.
+  - La fiche dit ce que le badge récompense et comment l'obtenir.
+  - Elle montre où l'on en est : le record de jours tenus face aux 7 ou 30
+    demandés, le meilleur mois de budgets tenus, les mois d'épargne
+    consécutifs, l'objectif le plus avancé, un défi en cours…
+  - Pour un badge obtenu, elle dit quand (« Obtenu le 12 juin 2026 »,
+    « en août 2026 ») et grâce à quoi.
+  - Elle propose l'action utile : faire un virement, choisir ses dépenses
+    superflues, lancer un défi, voir ses budgets ou ses objectifs.
+
+Les défis d'épargne régulière sont rangés à part dans les données : un
+appareil pas encore mis à jour ne peut pas les effacer en synchronisant. Les
+règles Firestore sont inchangées.
 
 ## Pages en sous-onglets
 
