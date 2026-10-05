@@ -21168,7 +21168,8 @@ function histTroisiemeCarte(net){
    propres comptes, vers le livret comme depuis le livret. Il compte quand il
    sert plus souvent pour l'épargne que pour une catégorie ; l'objectif retenu
    est celui du dernier virement. */
-function epargneLibelles(){
+function epargneLibelles(){ return cached("idx:epLib", epargneLibellesCalc); }
+function epargneLibellesCalc(){
   var ep = {}, cat = {}, goal = {}, out = {};
   (state.transactions || []).forEach(function(tx){
     var k = evoCle(tx.commentaire);
@@ -21279,10 +21280,15 @@ function epfVus(){
   try{ var v = JSON.parse(window.localStorage.getItem(EPF_CLE) || "[]"); return Array.isArray(v) ? v : []; }catch(e){ return []; }
 }
 function epargneOubliees(){
-  var lib = epargneLibelles(), vus = {}, l = [];
+  var vus = {}, sans = [], l = [];
   epfVus().forEach(function(id){ vus[id] = 1; });
   (state.transactions || []).forEach(function(tx){
-    if(tx.isEpargne || tx.categorieId || tx.importe !== true || vus[tx.id]) return;
+    if(!tx.isEpargne && !tx.categorieId && tx.importe === true && !vus[tx.id]) sans.push(tx);
+  });
+  /* Le plus souvent, rien n'est sans catégorie : inutile de lire les libellés. */
+  if(!sans.length) return l;
+  var lib = epargneLibelles();
+  sans.forEach(function(tx){
     var cible = lib[evoCle(tx.commentaire)];
     if(cible) l.push({ tx: tx, cible: cible });
   });
