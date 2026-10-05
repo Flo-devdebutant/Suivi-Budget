@@ -4706,6 +4706,11 @@ span.field.select-wrap{ display:block; }
 .pr-budnote .link-btn{ min-height:30px; padding:5px 12px; font-size:12.5px; background:var(--surface); box-shadow:0 0 0 1px var(--line) inset; }
 .pr-doc .pr-note{ margin:6pt 0 0; font-size:8.5pt; color:#6B716D; }
 
+/* --- Calendrier : liste du jour --- */
+/* « .cal-tx span » étire le libellé ; la pastille, elle aussi un span,
+   s'étirait avec lui en longue barre. Elle garde sa taille. */
+.cal-tx > .cal-tx-ic{ flex:0 0 28px; }
+
 </style>
 <!--/@app--></head>
 <body><!--@app-->
