@@ -186,6 +186,53 @@ sauvegardes et import. Les règles Firestore sont inchangées.
 Le didacticiel présente ces nouveautés, et chaque section peut être déplacée
 ou masquée depuis la personnalisation.
 
+## Devises, recherche avancée, défis et verrouillage
+
+- **Plusieurs devises** (fiche de saisie) : toucher « € » à côté du montant
+  pour saisir une dépense ou un gain en dollars, livres, francs suisses… (plus
+  de 40 devises). Le **cours est récupéré automatiquement**, celui du jour ou
+  celui de la date de l'opération pour une dépense passée. L'opération est
+  convertie en euros, et son montant d'origine reste affiché dans
+  l'historique. Les cours sont gardés sur l'appareil : hors ligne, le dernier
+  cours connu sert (et c'est signalé). Ils sont rafraîchis au lancement et au
+  retour du réseau. Le cours peut aussi être corrigé à la main, pour reprendre
+  celui du relevé bancaire. Répartition et partage se saisissent dans la même
+  devise, et la devise d'un voyage est reprise pour les saisies suivantes
+  pendant douze heures.
+- **Recherche avancée** (Historique) :
+  - filtres par montant (au moins, au plus, raccourcis « ≥ 100 € »…), par type
+    et par plusieurs catégories à la fois (une catégorie mère couvre ses
+    sous-catégories) ;
+  - opérations partagées ou en devise étrangère ;
+  - les filtres actifs s'affichent en étiquettes que l'on retire d'un geste ;
+  - une recherche peut être enregistrée sous un nom, avec la période et le
+    texte cherché, et rappelée d'un geste en haut de l'historique. Les
+    recherches enregistrées sont propres à l'appareil.
+- **Défis et badges** (Épargne) :
+  - **jours sans dépense superflue** (7, 14 ou 30), d'après les catégories que
+    l'on juge superflues (devinées au départ : loisirs, restaurants…) ;
+  - **défi des 52 semaines** (1 € la première semaine, 2 € la deuxième… ou
+    dans l'ordre inverse, avec un montant de départ au choix), suivi par un
+    objectif d'épargne créé pour lui, avec un bouton pour verser la semaine ;
+  - **série** de jours sans dépense superflue et record ;
+  - neuf **badges** tirés des données (premier virement d'épargne, séries de
+    7 et 30 jours, défi réussi, 52 semaines, budgets tenus sur un mois,
+    épargne trois mois de suite, objectif atteint, mois en excédent),
+    annoncés une seule fois.
+- **Code de verrouillage** (Réglages), facultatif :
+  - code à 4 ou 6 chiffres demandé à l'ouverture, et au retour dans
+    l'application après le délai choisi (dès la sortie, 1, 5 ou 15 minutes) ;
+  - déverrouillage par l'empreinte ou le visage quand l'appareil le permet ;
+  - le code n'est jamais conservé, seulement son empreinte. Il est propre à
+    l'appareil : ni synchronisé, ni sauvegardé, ni exporté ;
+  - après cinq essais, une attente croissante est imposée ;
+  - code oublié : il ne peut pas être récupéré. La seule issue est d'effacer
+    les données de l'appareil (synchronisation comprise), puis de les
+    retrouver par la synchronisation ou une sauvegarde.
+
+Les défis sont enregistrés avec le reste des données (synchronisation,
+sauvegardes, import). Les règles Firestore sont inchangées.
+
 ## Personnaliser l'application
 
 Chacun peut ranger l'application à sa façon, depuis **Réglages ›
@@ -368,8 +415,9 @@ des placements, dont on ouvre une fiche d'un geste. Le chapitre
 masquer, afficher un module, replier une section) puis la fiche
 « Personnaliser l'application » (onglets, page d'ouverture, raccourcis) : les
 essais faits pendant la visite ne sont pas enregistrés, et chacun retrouve sa
-disposition à la fin. Les chapitres « Épargne » et « Analyse » présentent
-aussi le simulateur « Et si… », le bilan du mois, les abonnements et le
-rapport PDF. Sur un compte vide, elle utilise des données
+disposition à la fin. Les chapitres présentent aussi les nouveautés : la
+devise d'une saisie, la recherche avancée, les défis et badges, le
+simulateur « Et si… », le bilan du mois, les abonnements, le rapport PDF et
+le code de verrouillage. Sur un compte vide, elle utilise des données
 d'exemple **en mémoire uniquement** : rien n'est enregistré, synchronisé ni
 sauvegardé pendant la visite, et vos données sont rétablies à la sortie.
