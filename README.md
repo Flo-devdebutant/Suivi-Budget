@@ -123,6 +123,16 @@ par exemple pour consulter l'application en public.
   « + autres » ouvre une fiche avec toutes les catégories, leurs
   sous-catégories, le nombre d'opérations et le total de la période (et une
   recherche dès qu'il y a beaucoup de catégories).
+- **Totaux de l'historique** : Entrées, Sorties, puis le **solde**. Sans
+  filtre de catégorie ni de recherche, la troisième carte donne le solde du
+  compte, le même que l'accueil et que la ligne la plus récente : « Solde
+  actuel » pour une période qui va jusqu'à aujourd'hui, « Solde au 31/08/2026 »
+  pour une période passée, avec le net de la période (entrées moins sorties)
+  dessous. Avant, elle additionnait toutes les opérations listées, y compris
+  celles d'avant le début du suivi (relevés anciens), et sans le crédit de
+  départ : elle ne correspondait pas au solde. Avec un filtre, ou sur une
+  période d'avant le suivi (dont le solde n'est pas connu), elle donne le
+  « Net » de la sélection.
 - **Calendrier des dépenses** : chaque jour se touche. Un jour sans opération
   le dit et propose d'en ajouter une à cette date ; un jour à venir montre ce
   qui est programmé, ou propose d'en programmer une. Les jours à venir qui
@@ -157,10 +167,52 @@ par exemple pour consulter l'application en public.
 
 ## Relevés d'anciens mois et soldes
 
-Le **début du suivi** est la date de votre première opération suivie (par
-exemple le 1er août). Le crédit de départ est le solde du compte à ce
-moment-là, et le solde de départ de l'épargne celui du livret. Toute
-opération plus ancienne y est donc déjà comprise.
+Le **début du suivi** est la date de votre **première saisie** : la plus
+ancienne opération que vous avez saisie vous-même ou que l'application a
+enregistrée (opération programmée, récurrente…), par exemple le 1er août. Le
+crédit de départ est le solde du compte à ce moment-là, et le solde de
+départ de l'épargne celui du livret. Toute opération plus ancienne y est
+donc déjà comprise. Les opérations importées ne déplacent jamais ce début.
+
+- **Vous saisissez déjà vos opérations** : les opérations des relevés
+  datées d'avant votre première saisie ne changent pas vos soldes (voir
+  « Opérations hors solde »). Celles d'après comptent, doublons écartés.
+- **Nouvel utilisateur, qui commence par importer ses relevés** : tant
+  qu'aucune opération n'est saisie, toutes les opérations des relevés
+  comptent, virements d'épargne compris. L'application lit aussi le
+  **solde réel de fin de mois** imprimé sur le relevé (PDF : « Solde en
+  euros », « Nouveau solde »… ; OFX : solde comptable ; CSV : colonne de
+  solde ou ligne « Solde au … »), et ce solde **fait foi** : c'est la base
+  du solde du compte. Avec plusieurs relevés, c'est celui du mois le plus
+  récent, dans n'importe quel ordre d'import (importer juin après juillet
+  ne change pas le solde de juillet).
+- **Pour tous : un relevé plus récent que vos dernières opérations** devient
+  la nouvelle référence du solde. L'écran de vérification l'annonce
+  (« son solde de fin (4 210,00 € au 31/08/2026) fait foi ») et signale un
+  écart si les opérations lues ne mènent pas exactement de son solde
+  d'ouverture à son solde de fin (ligne mal lue). Ensuite :
+  - une opération plus récente que le relevé, ou absente du relevé
+    (paiement pas encore débité, espèces), s'ajoute à ce solde ;
+  - importer un relevé plus ancien, ou supprimer une opération du relevé, ne
+    le change pas ;
+  - Réglages › Général l'affiche (« Relevé du 31/08/2026 : 4 210,00 € ») ;
+    « Recaler mes soldes » décale la référence de l'écart, et saisir un
+    crédit de départ la remplace.
+
+  Le crédit de départ en découle à chaque enregistrement, si bien qu'un
+  appareil pas encore mis à jour affiche le même solde.
+- **Relevés importés d'abord, saisies ensuite** : le suivi part alors du
+  début du relevé de référence. Les opérations entre ce relevé et la
+  première saisie (un mois oublié, importé plus tard) comptent, puisqu'il
+  en faut pour arriver au bon solde.
+- **Virements d'épargne** : ceux des relevés ne comptent dans l'épargne que
+  pour les opérations postérieures au début du suivi. **Exception** : si
+  vous n'utilisez que l'import de relevés, sans jamais saisir d'opération,
+  tous les virements d'épargne comptent ; à vous alors de régler le solde
+  de départ de l'épargne pour qu'il soit juste.
+- **Moyennes par jour** (rythme de dépense, prévisions) : seuls les jours
+  couverts par vos données comptent. Un trou de plusieurs mois entre des
+  relevés anciens et le début du suivi ne fait plus baisser les moyennes.
 
 - **Opérations hors solde** : une opération d'avant le début du suivi
   (relevé d'un ancien mois, saisie antérieure) compte dans l'historique, les
@@ -193,7 +245,8 @@ opération plus ancienne y est donc déjà comprise.
   solde » apparaît dans la fiche de saisie et dans celle d'un virement
   d'épargne. Il est désactivé d'office, puisque le crédit de départ contient
   déjà l'opération ; activé, l'opération compte et devient le nouveau début
-  du suivi.
+  du suivi. Une saisie datée de la période du relevé de référence, ou
+  après, compte sans interrupteur.
 - **Avant le début du suivi, le solde n'est pas connu au jour près** (il
   manque par exemple avril à juillet). La courbe du solde commence donc au
   premier jour suivi. Les calculs qui ont besoin d'un solde d'ouverture
@@ -201,8 +254,8 @@ opération plus ancienne y est donc déjà comprise.
   départ. Le crédit de départ est affiché dans les Réglages avec sa date
   (« 1 500,00 € · au 01/08/2026 »).
 
-Rien ne change pour un suivi commencé par l'import d'un relevé : ces
-opérations restent le point de départ et comptent dans les soldes.
+Le relevé de référence est enregistré avec le reste des données (appareil,
+synchronisation, sauvegardes). Les règles Firestore sont inchangées.
 
 ## Supprimer des opérations
 
@@ -250,9 +303,11 @@ opérations restent le point de départ et comptent dans les soldes.
     recollés. Soldes, totaux, pieds de page et pages de conditions sont
     écartés. Un PDF scanné (sans texte) ou protégé par mot de passe est
     signalé.
-  - **Option System'Épargne (LCL)** : les arrondis notés sous chaque achat
-    ne sont pas des opérations ; les deux virements de quinzaine « TOTAL
-    OPTION SYSTEM' EPARGNE » sont importés comme virements vers l'épargne.
+  - **Option System'Épargne (LCL, facultative)** : les arrondis notés sous
+    chaque achat ne sont pas des opérations ; les deux virements de
+    quinzaine « TOTAL OPTION SYSTEM' EPARGNE » sont importés comme virements
+    vers l'épargne. La mention qui l'explique n'apparaît que pour un relevé
+    qui comporte cette option.
     Un virement marqué « SAVG » ou vers un livret est aussi reconnu comme
     mouvement d'épargne. Chaque ligne peut être rangée dans une catégorie, ou
     dans l'épargne globale ou un objectif.
@@ -271,13 +326,17 @@ opérations restent le point de départ et comptent dans les soldes.
   - **Paiements par carte** : la date de l'achat, lue dans le libellé
     (« CB CARREFOUR 26/09/26 »), est celle de l'opération ; la date de débit
     est indiquée à côté.
-  - **Mois d'avant le début du suivi** (par exemple les relevés de janvier à
-    juillet quand l'application sert depuis août) : ces opérations sont
-    **hors solde**. Elles rejoignent l'historique, les statistiques et les
-    bilans, sans jamais changer les soldes d'aujourd'hui (compte, épargne,
-    objectifs, part libre), quel que soit l'ordre d'import des relevés.
-    L'écran de vérification l'annonce et marque chaque ligne « Hors solde ».
-    Voir « Relevés d'anciens mois et soldes » plus bas.
+  - **Mois d'avant votre première saisie** (par exemple les relevés de
+    janvier à juillet quand vous saisissez vos opérations depuis août) : ces
+    opérations sont **hors solde**. Elles rejoignent l'historique, les
+    statistiques et les bilans, sans jamais changer les soldes d'aujourd'hui
+    (compte, épargne, objectifs, part libre), quel que soit l'ordre d'import
+    des relevés. L'écran de vérification l'annonce (« 140 opérations sont
+    antérieures à votre première saisie (01/08/2026) ») et marque chaque
+    ligne « Hors solde ». Sans aucune saisie, rien n'est hors solde.
+  - **Solde de fin du relevé** : lu sur le relevé, il fait foi quand le
+    relevé est plus récent que vos opérations. Voir « Relevés d'anciens mois
+    et soldes » plus bas.
   - **CSV** : séparateur, en-têtes, lignes d'introduction, débit et crédit,
     formats de date et encodage (UTF-8 ou Windows-1252) sont reconnus.
 
@@ -440,6 +499,10 @@ sauvegardes, import). Les règles Firestore sont inchangées.
 
 ## Défis d'épargne
 
+Le bouton **« Lancer un défi »** est en bas de la carte des défis, sur toute
+sa largeur (« Lancer un autre défi » quand un défi est en cours). Il
+remplace le petit « + Défi » de l'en-tête, peu visible.
+
 La fiche « Nouveau défi » présente trois défis, un par ligne. Chacun montre
 ses réglages, puis un récapitulatif et le **tableau des versements prévus**
 avant le lancement.
@@ -447,6 +510,11 @@ avant le lancement.
 - **Jours sans superflu** (7, 14 ou 30 jours) : aucune dépense dans les
   catégories jugées superflues (devinées au départ : loisirs, restaurants…).
   Elles comptent aussi la **série** de jours tenus et son record.
+  - **Choix des dépenses superflues** : une case par catégorie, ses
+    sous-catégories rangées dessous. Toucher la catégorie la coche en
+    entier (« Toute la catégorie »), toucher une sous-catégorie la coche
+    seule (« 2 sur 3 ») ; cocher toutes les sous-catégories revient à
+    cocher la catégorie.
 - **Défi des 52 semaines** : un peu plus chaque semaine.
   - Le montant de base se choisit (1, 2, 5, 10 € ou un montant libre).
   - L'ordre est expliqué avec les vrais montants. En croissant : 5 €,
@@ -494,7 +562,11 @@ aussi.
   l'application s'ouvre sur une autre page, un message le signale une fois
   par jour. Le sous-onglet « Défis » porte une pastille quand une nouvelle
   période commence.
-- **Badges** : chacun s'ouvre d'un geste.
+- **Badges** : chacun s'ouvre d'un geste. Un badge mensuel (budgets tenus,
+  mois d'épargne…) ne s'obtient que sur un **mois renseigné** : des
+  opérations du début à la fin du mois, ou des mois voisins renseignés. Un
+  seul achat du 31 décembre, importé d'un relevé de janvier, ne suffit plus
+  à valider « Budgets tenus » en décembre.
   - La fiche dit ce que le badge récompense et comment l'obtenir.
   - Elle montre où l'on en est : le record de jours tenus face aux 7 ou 30
     demandés, le meilleur mois de budgets tenus, les mois d'épargne
