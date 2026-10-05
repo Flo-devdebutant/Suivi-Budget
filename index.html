@@ -4772,6 +4772,70 @@ span.field.select-wrap{ display:block; }
 .bi-exc .bi-foot{ margin:6px 0 0; }
 .bi-hero-sub{ margin:-6px 0 12px; text-align:center; font-size:13px; font-weight:700; color:var(--text-3); }
 
+/* Étape 9 : corrections de l'audit. */
+/* Badges des défis : un mot long (« orçamentos ») ne déborde plus de la case. */
+.df-badge b, .df-badge small{ overflow-wrap:anywhere; hyphens:auto; }
+
+/* Ligne d'opération : quand la date passe à la ligne, le point « · » qui la
+   sépare de la catégorie ne reste plus seul en début de ligne. Chaque élément
+   est précédé d'une marge de 12 px ; la zone de 12 px du début de chaque ligne
+   est rognée, et le point, dessiné dans cette marge, disparaît avec elle. */
+.tx-meta{ column-gap:0; margin-inline-start:-12px; clip-path:inset(-6px -6px -6px 12px); }
+[dir="rtl"] .tx-meta{ clip-path:inset(-6px 12px -6px -6px); }
+.tx-meta > *{ margin-inline-start:12px; }
+.tx-meta > * + .tx-date::before, [dir="rtl"] .tx-meta > * + .tx-date::before{
+  display:inline-block; width:12px; margin:0; margin-inline-start:-12px; text-align:center;
+}
+
+/* Description des badges : le texte entier, sans points de suspension. */
+.df-badge small{ -webkit-line-clamp:6; }
+
+/* Plus grosses dépenses : sur un écran étroit, la catégorie et la date
+   passent à la ligne plutôt que de perdre l'heure. */
+.rank-meta{ white-space:normal; text-overflow:clip; }
+
+/* Mode compact : les cartes de budget se resserrent comme le reste. */
+@media (max-width:767px){
+  html.compact .budget-block{ padding:13px 14px; }
+  html.compact .budget-block-head{ margin-bottom:8px; gap:10px; }
+  html.compact .budget-block-icon{ width:36px; height:36px; border-radius:12px; font-size:17px; }
+  html.compact .budget-block-title{ font-size:15px; }
+  html.compact .budget-figures{ margin-bottom:8px; }
+  html.compact .budget-figures b{ font-size:19px; }
+  html.compact .budget-block-meta{ margin-top:7px; }
+  html.compact .budget-block-btn{ margin-top:9px; padding-top:6px; padding-bottom:6px; }
+  html.compact .budget-subs{ margin-top:10px; padding:10px; }
+  html.compact .budget-nolimit{ padding:7px 2px; }
+}
+
+/* --- Très petits écrans (320 px) --- */
+/* Résumé des budgets et anneaux des Statistiques : quand la place manque à
+   côté de l'anneau, les chiffres passent dessous au lieu de sortir de
+   l'écran. */
+.bud-overview{ flex-wrap:wrap; justify-content:center; row-gap:14px; }
+.bud-kpis{ flex:1 1 150px; }
+/* Test de profil : une réponse longue revient à la ligne dans sa pastille. */
+.inv-q-opts .filter-chip{ max-width:100%; flex-shrink:1; }
+@container content (max-width:340px){
+  /* Catégories : le nom garde ses mots entiers, les pastilles reviennent à
+     la ligne plutôt que de déborder. */
+  .cat-card-head, .cat-manage-row{ gap:8px; }
+  .cat-manage-emoji{ width:36px; height:36px; font-size:17px; border-radius:12px; }
+  .cat-manage-name{ font-size:15px; hyphens:auto; }
+  .cat-meta-item{ white-space:normal; max-width:100%; border-radius:10px; }
+  .rank-meta{ overflow-wrap:anywhere; }
+}
+
+/* Ligne d'opération : le solde affiché sous le montant revient à la ligne
+   plutôt que d'écraser le libellé (gros soldes, petit écran). */
+.tx-amounts{ flex-shrink:1; min-width:0; max-width:50%; }
+.tx-solde{ white-space:normal; overflow-wrap:anywhere; }
+@container content (max-width:340px){
+  /* Totaux de l'Historique : un peu plus de place pour les gros montants. */
+  .hist-totals{ gap:6px; }
+  .hist-total{ padding:10px 8px; }
+}
+
 </style>
 <!--/@app--></head>
 <body><!--@app-->
@@ -6616,7 +6680,7 @@ function t(key, params){
 }
 /* Pluriel simple : la plupart des langues visées distinguent 1 / plusieurs. */
 function tn(key, n, params){
-  params = params || {}; params.n = n;
+  params = params || {}; if(params.n === undefined) params.n = n;
   return t(n === 1 ? key + "_1" : key, params);
 }
 
@@ -10004,12 +10068,32 @@ function fmtDateOnly(ymd){ try{ return dateShortFmt.format(parseDateOnly(ymd)); 
 
 function pad(n){ return String(n).padStart(2,"0"); }
 
+/* La virgule et le point sont tous deux acceptés comme séparateur décimal.
+   Un montant écrit avec ses milliers (« 1.234,56 » en allemand, « 1,234.56 »
+   en anglais) était refusé : quand les deux signes figurent, le dernier est
+   la décimale ; un même signe répété sépare des groupes de trois chiffres
+   (« 1.234.567 »). Un signe seul reste la décimale, comme avant. */
 function parseAmount(str){
   if(typeof str !== "string") return NaN;
-  var cleaned = str.trim().replace(/\s/g, "").replace(",", ".");
-  if(cleaned === "") return NaN;
-  if(!/^-?\d+(\.\d+)?$/.test(cleaned)) return NaN;
-  return parseFloat(cleaned);
+  var s = str.trim().replace(/[\s'’]/g, "").replace(/[−–]/g, "-").replace(/^\+/, "");
+  var neg = s.charAt(0) === "-"; if(neg) s = s.slice(1);
+  if(s === "" || !/^[\d.,]+$/.test(s) || !/\d/.test(s)) return NaN;
+  var v = s.lastIndexOf(","), p = s.lastIndexOf(".");
+  if(v !== -1 && p !== -1){
+    var dec = v > p ? "," : ".", mil = dec === "," ? "." : ",";
+    if(s.indexOf(dec) !== s.lastIndexOf(dec)) return NaN;
+    if(!new RegExp("^\\d{1,3}(\\" + mil + "\\d{3})*\\" + dec + "\\d*$").test(s)) return NaN;
+    s = s.split(mil).join("").replace(dec, ".");
+  } else if(v !== -1 || p !== -1){
+    var sep = v !== -1 ? "," : ".";
+    if(s.indexOf(sep) !== s.lastIndexOf(sep)){
+      if(!new RegExp("^\\d{1,3}(\\" + sep + "\\d{3})+$").test(s)) return NaN;
+      s = s.split(sep).join("");
+    } else s = s.replace(sep, ".");
+  }
+  if(!/^\d*\.?\d*$/.test(s) || !/\d/.test(s)) return NaN;
+  var n = parseFloat(s.charAt(0) === "." ? "0" + s : s);
+  return neg ? -n : n;
 }
 
 /* Dates "calendrier" au format YYYY-MM-DD, manipulées en heure locale pour éviter les décalages UTC */
@@ -10028,14 +10112,14 @@ function endOfMonthString(d){
 
 /* Ajoute un intervalle calendaire à une date YYYY-MM-DD, en gérant proprement
    les fins de mois (ex: 31 janvier + 1 mois -> 28/29 février). */
-function addInterval(dateStr, unit, amount){
+function addInterval(dateStr, unit, amount, jour){
   var d = parseDateOnly(dateStr);
   if(unit === "day"){
     d.setDate(d.getDate() + amount);
   } else if(unit === "week"){
     d.setDate(d.getDate() + amount*7);
   } else if(unit === "month" || unit === "year"){
-    var day = d.getDate();
+    var day = jour >= 1 && jour <= 31 ? jour : d.getDate();
     var monthsToAdd = unit === "year" ? amount*12 : amount;
     var totalMonthIndex = d.getMonth() + monthsToAdd;
     var targetYear = d.getFullYear() + Math.floor(totalMonthIndex/12);
@@ -10198,7 +10282,7 @@ function processDueItems(){
       state.transactions.push(tx);
       syncGoalMovementForTransaction(tx);
       appliedCount++; appliedTotal += tx.montant;
-      r.prochaine = addInterval(r.prochaine, r.frequenceUnit, r.frequenceAmount);
+      r.prochaine = addInterval(r.prochaine, r.frequenceUnit, r.frequenceAmount, recJour(r));
       guard++;
     }
   });
@@ -10349,7 +10433,7 @@ function computeForecast(){
           perCategoryUpcoming[cid] = (perCategoryUpcoming[cid]||0) + Math.abs(r.montant);
         }
       }
-      d = addInterval(d, r.frequenceUnit, r.frequenceAmount);
+      d = addInterval(d, r.frequenceUnit, r.frequenceAmount, recJour(r));
       guard++;
     }
   });
@@ -10435,7 +10519,7 @@ function computeEpargneForecast(){
       if(d >= todayStr){
         if(r.montant < 0) upcomingIn += Math.abs(r.montant); else upcomingOut += r.montant;
       }
-      d = addInterval(d, r.frequenceUnit, r.frequenceAmount);
+      d = addInterval(d, r.frequenceUnit, r.frequenceAmount, recJour(r));
       guard++;
     }
   });
@@ -10973,7 +11057,7 @@ function operationsAVenir(horizon){
     var d = r.prochaine, guard = 0;
     while(d && d <= horizon && guard < 400){
       if(d >= today) push(d, r);
-      d = addInterval(d, r.frequenceUnit, r.frequenceAmount);
+      d = addInterval(d, r.frequenceUnit, r.frequenceAmount, recJour(r));
       guard++;
     }
   });
@@ -13654,7 +13738,7 @@ function lyProchaines(jours, max){
     var d = r.prochaine, garde = 0;
     while(d && d <= fin && garde < 400){
       if(d >= debut) l.push({ date: d, item: r, mode: "recurring" });
-      d = addInterval(d, r.frequenceUnit, r.frequenceAmount); garde++;
+      d = addInterval(d, r.frequenceUnit, r.frequenceAmount, recJour(r)); garde++;
     }
   });
   l.sort(function(a, b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
@@ -14414,7 +14498,7 @@ function evoPrevusLe(ymd){
   (state.recurring || []).forEach(function(r){
     if(!r.actif || !r.prochaine) return;
     var d = r.prochaine, garde = 0;
-    while(d < ymd && garde < 400){ d = addInterval(d, r.frequenceUnit, r.frequenceAmount); garde++; }
+    while(d < ymd && garde < 400){ d = addInterval(d, r.frequenceUnit, r.frequenceAmount, recJour(r)); garde++; }
     if(d === ymd) l.push({ item: r, mode: "recurring" });
   });
   return l;
@@ -14787,6 +14871,7 @@ function evoLireEtat(src, garder){
     if(garder && k === "budgetsMois" && typeof bmFusion === "function") v = bmFusion(state.budgetsMois, v);
     state[k] = v;
   });
+  planifNettoyer();
 }
 function evoEcrireEtat(obj){
   var cles = evoClesEtat();
@@ -15313,7 +15398,7 @@ function releveRapprocher(lignes){
     if(!r.actif || !r.prochaine || !isFinite(r.montant) || Math.abs(r.montant) < 0.005) return;
     var nom = r.commentaire || r.label, racine = evoRacine(evoCle(nom));
     for(var k = 1; k < 800; k++){
-      var ds = addInterval(r.prochaine, r.frequenceUnit, -k * (r.frequenceAmount || 1));
+      var ds = addInterval(r.prochaine, r.frequenceUnit, -k * (r.frequenceAmount || 1), recJour(r));
       var d = parseDateOnly(ds).getTime();
       if(d < min - 8 * jour) break;
       if(d > max + 3 * jour) continue;
@@ -17707,7 +17792,7 @@ function renderTendanceDetail(){
   var opsClos = ops.filter(function(tx){ var k = D.mois.indexOf(monthKeyOfDate(tx.date)); return k !== -1 && k < 11 && D.suivi[k]; });
   if(l.clos && opsClos.length){
     var parMois = Math.round(opsClos.length / l.clos * 10) / 10;
-    points.push(tn("tr2.pTicket", parMois, { n: parMois.toLocaleString(getLangDef(currentLang).locale), v: fmtMoney(somme(opsClos.map(function(tx){ return Math.abs(tx.montant); })) / opsClos.length) }));
+    points.push(tn("tr2.pTicket", parMois, { n: parMois.toLocaleString(dvLocale()), v: fmtMoney(somme(opsClos.map(function(tx){ return Math.abs(tx.montant); })) / opsClos.length) }));
   }
   html += '<h3 class="trd-h">' + escapeHtml(t("tr2.dKeys")) + '</h3><ul class="trd-points">' + points.map(function(p){ return '<li>' + escapeHtml(p) + '</li>'; }).join("") + '</ul>';
   /* Sous-catégories. */
@@ -19061,6 +19146,158 @@ function excRapport(txs){
     return '<tr><td>' + escapeHtml(fmtDateOnly(toDateOnlyString(new Date(tx.date)))) + '</td><td>' + escapeHtml(tx.commentaire || t("up.noComment")) + '</td><td>' + escapeHtml(tx.categorieId ? biNomCat(parentCategoryId(tx.categorieId)) : "") + '</td><td class="' + (tx.montant >= 0 ? "pos" : "") + '">' + escapeHtml(fmtMoneySigned(tx.montant)) + '</td></tr>';
   }).join("") + '</tbody></table><p class="pr-note">' + escapeHtml(t("ex.reportNote")) + '</p></section>';
 }
+
+/* =========================================================================
+   ÉTAPE 9 : corrections de l'audit
+   ========================================================================= */
+
+/* --- Récurrences mensuelles et annuelles : le jour d'origine --------------
+   Une opération du 31 passait au 28 février, puis restait au 28 tous les
+   mois suivants : chaque échéance repartait de la précédente, déjà rognée.
+   Le jour choisi par l'utilisateur (r.jour) sert désormais d'ancre : le 31
+   tombe le 28 ou le 29 en février, le 30 en avril, et revient au 31 en
+   mars. Pour une récurrence enregistrée avant cette correction, l'ancre se
+   retrouve dans les opérations qu'elle a déjà produites : la dernière dont
+   le jour était plus tardif, à condition que la suivante soit tombée le
+   dernier jour d'un mois trop court (la trace exacte du rognage). Une date
+   déplacée à la main au 28 reste donc au 28. */
+function recJourDe(ymd){ var j = Number(String(ymd || "").slice(8, 10)); return j >= 1 && j <= 31 ? j : 0; }
+function recJour(r){
+  if(!r || (r.frequenceUnit !== "month" && r.frequenceUnit !== "year")) return 0;
+  var j = Number(r.jour);
+  if(j >= 1 && j <= 31 && Math.floor(j) === j) return j;
+  j = recJourDe(r.prochaine);
+  if(j >= 28 && Array.isArray(state.transactions)){
+    var jours = [];
+    state.transactions.forEach(function(tx){
+      if(tx.recurrentId !== r.id) return;
+      var d = new Date(tx.date); if(isNaN(d.getTime())) return;
+      jours.push(d);
+    });
+    jours.sort(function(a, b){ return a - b; });
+    var k = jours.length - 1;
+    while(k >= 0 && jours[k].getDate() === j) k--;
+    if(k >= 0 && jours[k].getDate() > j){
+      var rogne = k + 1 < jours.length ? jours[k + 1] : parseDateOnly(r.prochaine);
+      var dernier = new Date(rogne.getFullYear(), rogne.getMonth() + 1, 0).getDate();
+      if(rogne.getDate() === dernier) j = jours[k].getDate();
+    }
+  }
+  if(j) r.jour = j;
+  return j;
+}
+/* À l'enregistrement : une nouvelle date redonne son jour à l'ancre ; une
+   date inchangée (le 28 février d'une récurrence du 31) la conserve, ou la
+   retrouve pour une récurrence d'avant cette correction. */
+function recAncrer(r, ancienne){
+  if(!r) return r;
+  if(r.frequenceUnit !== "month" && r.frequenceUnit !== "year"){ delete r.jour; return r; }
+  if(!ancienne || r.prochaine !== ancienne) r.jour = recJourDe(r.prochaine);
+  else if(!(Number(r.jour) >= 1)) recJour(r);
+  return r;
+}
+
+/* --- Montants qui ne tiennent pas : la police se resserre ------------------
+   Sur un téléphone étroit, dans une langue aux mots longs ou avec de gros
+   montants, les totaux finissaient en « 10 550,0… » : un chiffre tronqué
+   n'est pas lisible. Ces cases réduisent leur police juste assez (jusqu'aux
+   deux tiers) pour que le montant tienne en entier. Les points de
+   suspension ne servent plus qu'en dernier recours. */
+var AJ_SEL = ".hist-total b, .stat-card-value, .stat-value, .rhythm-cell b, .up-sum-cell b, .ab-totals b, .bi-kpis b, .hero-chip";
+/* Un texte qui a une version courte (data-court) la prend quand la version
+   longue ne tient pas, même resserrée : « lun. 5 oct. » plutôt que
+   « Lundi 5 oc… ». Les mesures sont faites pour toutes les cases à la fois
+   (une lecture, puis une écriture), pour ne pas recalculer la page case par
+   case pendant une animation. */
+var ajPrevu = false, ajMO = null;
+var AJ_OBS = { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["class", "hidden"] };
+function ajDeborde(el){ return el.scrollWidth > el.clientWidth + 0.5; }
+function ajResserrer(liste){
+  /* Première estimation proportionnelle, puis pas d'un demi-pixel. */
+  var a = liste.map(function(el){
+    var base = parseFloat(getComputedStyle(el).fontSize) || 14;
+    return { el: el, min: Math.max(10, base * 0.66), f: Math.max(Math.max(10, base * 0.66), Math.floor(base * el.clientWidth / el.scrollWidth * 2) / 2) };
+  });
+  a.forEach(function(x){ x.el.style.fontSize = x.f + "px"; });
+  for(var tour = 0; tour < 8 && a.length; tour++){
+    a = a.filter(function(x){ return x.f > x.min && ajDeborde(x.el); });
+    a.forEach(function(x){ x.f = Math.max(x.min, x.f - 0.5); x.el.style.fontSize = x.f + "px"; });
+  }
+}
+function ajusterTout(){
+  ajPrevu = false;
+  /* L'observateur est coupé le temps du réglage : les changements faits ici
+     ne doivent pas en relancer un autre. */
+  if(ajMO) ajMO.disconnect();
+  try{
+    var l = [].slice.call(document.querySelectorAll(AJ_SEL));
+    l.forEach(function(el){
+      var lg = el.getAttribute("data-long");
+      if(lg && el.getAttribute("data-court") && el.textContent !== lg) el.textContent = lg;
+      if(el.style.fontSize) el.style.fontSize = "";
+    });
+    var trop = l.filter(function(el){ return el.clientWidth > 0 && ajDeborde(el); });
+    if(trop.length){
+      ajResserrer(trop);
+      var courts = trop.filter(function(el){ return el.getAttribute("data-court") && ajDeborde(el); });
+      courts.forEach(function(el){ el.textContent = el.getAttribute("data-court"); el.style.fontSize = ""; });
+      courts = courts.filter(ajDeborde);
+      if(courts.length) ajResserrer(courts);
+    }
+  }catch(e){}
+  if(ajMO) ajMO.observe(document.body, AJ_OBS);
+}
+function ajusterBientot(){
+  if(ajPrevu) return;
+  ajPrevu = true;
+  (window.requestAnimationFrame || setTimeout)(ajusterTout);
+}
+(function(){
+  /* Après chaque rendu (contenu remplacé ou page affichée) et à chaque
+     changement de largeur. */
+  if(typeof MutationObserver === "function"){
+    ajMO = new MutationObserver(ajusterBientot);
+    ajMO.observe(document.body, AJ_OBS);
+  }
+  window.addEventListener("resize", ajusterBientot);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(ajusterBientot);
+  ajusterBientot();
+})();
+
+/* --- Opérations programmées lues d'une sauvegarde ou du nuage --------------
+   Elles n'étaient pas contrôlées. Une fréquence inconnue (ou un intervalle
+   nul) laissait la date sur place : au lancement, la même opération était
+   enregistrée 400 fois. Une date illisible faisait échouer le démarrage.
+   La fréquence se répare (tous les mois par défaut) ; une date se remet au
+   format AAAA-MM-JJ quand elle se lit sans ambiguïté, sinon l'élément est
+   écarté, comme une opération illisible l'est déjà. */
+function ymdNormal(s){
+  if(typeof s !== "string") return null;
+  var m = s.trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:$|T)/);
+  if(!m) return null;
+  var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  if(isNaN(d.getTime()) || d.getDate() !== Number(m[3]) || d.getMonth() !== Number(m[2]) - 1) return null;
+  return toDateOnlyString(d);
+}
+function planifNettoyer(){
+  var unites = { day: 1, week: 1, month: 1, year: 1 };
+  var montantOk = function(o){ return o && typeof o === "object" && typeof o.montant === "number" && isFinite(o.montant); };
+  if(Array.isArray(state.recurring)) state.recurring = state.recurring.filter(function(r){
+    if(!montantOk(r)) return false;
+    var d = ymdNormal(r.prochaine); if(!d) return false;
+    r.prochaine = d;
+    if(!unites[r.frequenceUnit]) r.frequenceUnit = "month";
+    var a = Number(r.frequenceAmount);
+    r.frequenceAmount = a >= 1 && a <= 366 && Math.floor(a) === a ? a : 1;
+    return true;
+  });
+  if(Array.isArray(state.scheduledOnce)) state.scheduledOnce = state.scheduledOnce.filter(function(o){
+    if(!montantOk(o)) return false;
+    var d = ymdNormal(o.date); if(!d) return false;
+    o.date = d;
+    return true;
+  });
+}
 /* @evo:fin */
 
 /* =========================================================================
@@ -19188,6 +19425,8 @@ function renderHome(){
       var locH = getLangDef(currentLang).locale;
       if(currentLang === "ar") locH = "ar-u-nu-latn";
       hd.textContent = capitalizeFirst(new Intl.DateTimeFormat(locH, { weekday:"long", day:"numeric", month:"long" }).format(new Date()));
+      hd.setAttribute("data-long", hd.textContent);
+      hd.setAttribute("data-court", capitalizeFirst(new Intl.DateTimeFormat(locH, { weekday:"short", day:"numeric", month:"short" }).format(new Date())));
     }catch(e){ hd.textContent = ""; }
   }
 
@@ -19948,7 +20187,7 @@ function nextUpcomingOperation(){
   state.recurring.forEach(function(r){
     if(!r.actif) return;
     var d = r.prochaine, guard = 0;
-    while(d && d < todayStr && guard < 400){ d = addInterval(d, r.frequenceUnit, r.frequenceAmount); guard++; }
+    while(d && d < todayStr && guard < 400){ d = addInterval(d, r.frequenceUnit, r.frequenceAmount, recJour(r)); guard++; }
     consider(d, r.montant, r.isEpargne, r.commentaire, getCategory(r.categorieId));
   });
   return best;
@@ -22789,7 +23028,8 @@ function fmtCompact(v){
   var loc = getLangDef(currentLang).locale;
   if(currentLang === "ar") loc = "ar-u-nu-latn";
   try{
-    if(v >= 1000) return espacesVisibles(new Intl.NumberFormat(loc, { maximumFractionDigits:1 }).format(v / 1000)) + " k";
+    if(v >= 1e6) return espacesVisibles(new Intl.NumberFormat(loc, { maximumFractionDigits: v >= 1e7 ? 0 : 1 }).format(v / 1e6)) + "\u00a0M";
+    if(v >= 1000) return espacesVisibles(new Intl.NumberFormat(loc, { maximumFractionDigits: v >= 1e4 ? 0 : 1 }).format(v / 1000)) + "\u00a0k";
     return espacesVisibles(new Intl.NumberFormat(loc, { maximumFractionDigits:0 }).format(v));
   }catch(e){ return String(Math.round(v)); }
 }
@@ -23131,7 +23371,7 @@ function upcomingThisMonth(){
     var d = r.prochaine, guard = 0;
     while(d <= endStr && guard < 60){
       if(d >= todayStr) account(r.montant, r.isEpargne);
-      d = addInterval(d, r.frequenceUnit, r.frequenceAmount);
+      d = addInterval(d, r.frequenceUnit, r.frequenceAmount, recJour(r));
       guard++;
     }
   });
@@ -23239,7 +23479,7 @@ function upcomingExpenseByCategory(exact){
     var d = r.prochaine, guard = 0;
     while(d <= endStr && guard < 60){
       if(d >= todayStr) account(r.montant, r.categorieId, r.isEpargne);
-      d = addInterval(d, r.frequenceUnit, r.frequenceAmount);
+      d = addInterval(d, r.frequenceUnit, r.frequenceAmount, recJour(r));
       guard++;
     }
   });
@@ -24674,7 +24914,7 @@ function buildDailySeries(rangeFromKey, rangeToKey){
       var d = r.prochaine, guard = 0;
       while(d <= rangeEndStr && guard < 800){
         if(d > todayStr) futureDeltas[d] = (futureDeltas[d]||0) + r.montant;
-        d = addInterval(d, r.frequenceUnit, r.frequenceAmount);
+        d = addInterval(d, r.frequenceUnit, r.frequenceAmount, recJour(r));
         guard++;
       }
     });
@@ -26068,13 +26308,14 @@ $("btnValiderSchedule").addEventListener("click", function(){
   } else {
     var f = freqById(scheduleFreqSelect.value);
     if(scheduleState.editing){
-      var r = scheduleState.editing;
+      var r = scheduleState.editing, ancienne = r.prochaine;
       r.type = scheduleState.type; r.montant = signed; r.commentaire = commentaire;
       r.categorieId = scheduleState.categorie; r.prochaine = dateVal;
       r.frequenceUnit = f.unit; r.frequenceAmount = f.amount; r.actif = scheduleState.actif;
+      recAncrer(r, ancienne);
       excMarquer(r, schedExc);
     } else {
-      state.recurring.push(excMarquer({ id: genId("r"), label: commentaire, type: scheduleState.type, montant: signed, commentaire: commentaire, categorieId: scheduleState.categorie, frequenceUnit: f.unit, frequenceAmount: f.amount, prochaine: dateVal, actif: scheduleState.actif }, schedExc));
+      state.recurring.push(recAncrer(excMarquer({ id: genId("r"), label: commentaire, type: scheduleState.type, montant: signed, commentaire: commentaire, categorieId: scheduleState.categorie, frequenceUnit: f.unit, frequenceAmount: f.amount, prochaine: dateVal, actif: scheduleState.actif }, schedExc)));
     }
   }
 
@@ -26321,15 +26562,16 @@ function commitEpargneTransfer(amount){
   } else {
     var f = freqById(epargneFreqSelect.value);
     if(epargneState.editing && epargneState.editingMode === "recurring"){
-      var r = epargneState.editing;
+      var r = epargneState.editing, ancienne = r.prochaine;
       r.type = typeStr; r.montant = signed; r.commentaire = commentaire; r.prochaine = dateVal;
       r.frequenceUnit = f.unit; r.frequenceAmount = f.amount; r.actif = epargneState.actif; r.goalId = epargneState.goalId;
+      recAncrer(r, ancienne);
     } else {
       /* Bascule inverse : d'un virement ponctuel existant vers "récurrent". */
       if(epargneState.editing && epargneState.editingMode === "once"){
         state.scheduledOnce = state.scheduledOnce.filter(function(s){ return s.id !== epargneState.editing.id; });
       }
-      state.recurring.push({ id: genId("r"), label: commentaire, type: typeStr, montant: signed, commentaire: commentaire, categorieId: null, frequenceUnit: f.unit, frequenceAmount: f.amount, prochaine: dateVal, actif: epargneState.actif, isEpargne: true, goalId: epargneState.goalId });
+      state.recurring.push(recAncrer({ id: genId("r"), label: commentaire, type: typeStr, montant: signed, commentaire: commentaire, categorieId: null, frequenceUnit: f.unit, frequenceAmount: f.amount, prochaine: dateVal, actif: epargneState.actif, isEpargne: true, goalId: epargneState.goalId }));
     }
   }
 
