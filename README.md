@@ -139,8 +139,9 @@ par exemple pour consulter l'application en public.
   - les jours sans dépense, les budgets respectés et l'avancée des objectifs.
 
   **Catégories sur 12 mois** : chaque catégorie sur douze emplacements fixes,
-  le nom de chaque mois au-dessus de sa barre (les mois d'avant le début du
-  suivi restent vides), sa part des dépenses,
+  le nom de chaque mois au-dessus de sa barre (son initiale quand l'écran est
+  trop étroit ; les mois d'avant le début du suivi restent vides), des
+  colonnes alignées d'une ligne à l'autre, sa part des dépenses,
   sa moyenne mensuelle, ce mois-ci face à son budget, et sa tendance (les
   trois derniers mois terminés face aux trois précédents, ou moins quand
   l'historique est court). Toucher une catégorie ouvre sa **fiche** :

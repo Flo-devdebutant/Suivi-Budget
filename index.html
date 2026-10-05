@@ -4430,14 +4430,21 @@ span.field.select-wrap{ display:block; }
 .cal-scale{ flex-wrap:wrap; }
 
 /* --- Statistiques : catégories sur douze mois --- */
-.tr-head, .tr-row{ display:grid; grid-template-columns:minmax(0, 1.25fr) minmax(120px, 1.7fr) minmax(84px, auto) minmax(92px, auto) 70px; gap:12px; align-items:center; }
+/* Une grille commune (sous-grilles) : chaque colonne prend la largeur de son
+   contenu le plus large, l'en-tête compris, et la zone des barres commence au
+   même endroit sur chaque ligne. Sans sous-grille, des largeurs fixes. */
+.tr-grid{ display:grid; grid-template-columns:minmax(120px, 1fr) minmax(170px, 2fr) auto auto auto; column-gap:14px; }
+.tr-head, .tr-row{ grid-column:1 / -1; display:grid; grid-template-columns:minmax(0, 1fr) minmax(170px, 2fr) 96px 104px 66px; grid-template-columns:subgrid; column-gap:14px; align-items:center; }
 .tr-head{ padding:0 4px 6px; font-size:11px; font-weight:750; color:var(--text-3); text-transform:uppercase; letter-spacing:.03em; }
-.tr-head > span:nth-child(n+3){ text-align:end; }
-/* Douze mois, un par colonne de barre. */
-.tr-months{ display:grid; grid-template-columns:repeat(12, minmax(0, 1fr)); gap:2px; text-transform:none; letter-spacing:0; }
-.tr-months > span{ min-width:0; overflow:hidden; text-align:center; white-space:nowrap; font-size:10.5px; font-weight:700; text-transform:capitalize; }
+.tr-head > span:nth-child(n+3){ text-align:end; white-space:nowrap; }
+/* Douze mois, un par colonne de barre : le nom court (« janv », « juin »),
+   ou l'initiale quand la colonne est trop étroite pour le nom. */
+.tr-months{ container:trm / inline-size; display:grid; grid-template-columns:repeat(12, minmax(0, 1fr)); gap:2px; text-transform:none; letter-spacing:0; }
+.tr-months > span{ min-width:0; display:flex; justify-content:center; white-space:nowrap; font-size:10px; font-weight:700; text-transform:capitalize; }
 .tr-months > span.vide{ opacity:.5; }
 .tr-months > span.cur{ color:var(--text-2); font-weight:850; }
+.tr-mi{ display:none; }
+@container trm (max-width:315.98px){ .tr-ml{ display:none; } .tr-mi{ display:inline; } }
 .tr-row{ width:100%; padding:10px 4px; text-align:start; border-radius:12px; transition:background-color .15s ease; }
 .tr-row + .tr-row{ border-top:1px solid var(--line); }
 .tr-row:hover{ background:var(--surface-2); }
@@ -4452,9 +4459,10 @@ span.field.select-wrap{ display:block; }
 .tr-bars i.zero, .tr-bars i.vide{ height:2px !important; background:var(--line-2); opacity:1; }
 .tr-bars i.vide{ opacity:.45; }
 .tr-avg{ text-align:end; font-size:13px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--text); white-space:nowrap; }
-.tr-unit{ font-size:11px; font-weight:650; color:var(--text-3); margin-inline-start:1px; }
+/* « /mois » : déjà dans l'en-tête de la colonne sur grand écran. */
+.tr-unit{ display:none; font-size:11px; font-weight:650; color:var(--text-3); margin-inline-start:1px; }
 .tr-now{ text-align:end; font-size:12.5px; font-weight:750; font-variant-numeric:tabular-nums; color:var(--text-2); white-space:nowrap; }
-.tr-now small{ font-weight:650; color:var(--text-3); }
+.tr-now small{ display:block; font-size:10.5px; font-weight:650; color:var(--text-3); }
 .tr-now.over{ color:var(--neg); }
 .tr-now-lbl{ display:none; font-weight:650; color:var(--text-3); }
 .tr-trend{ text-align:end; font-size:12px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--text-3); white-space:nowrap; }
@@ -4462,15 +4470,24 @@ span.field.select-wrap{ display:block; }
 .tr-trend.down{ color:var(--pos); }
 .tr-all{ margin-top:6px; }
 .tr-note{ margin:10px 4px 0; }
-@container content (max-width:620px){
-  /* Téléphone : seule la ligne des mois reste, au-dessus des barres. */
+@container content (max-width:820px){
+  /* Téléphone et tablette : une carte par catégorie, barres sur toute la
+     largeur ; seule la ligne des mois reste dans l'en-tête. */
+  .tr-grid{ display:block; }
   .tr-head{ grid-template-columns:minmax(0, 1fr); padding-bottom:2px; }
   .tr-head > span:not(.tr-months){ display:none; }
   .tr-months > span{ font-size:9.5px; }
-  .tr-row{ grid-template-columns:minmax(0, 1fr) auto; grid-template-areas:"cat avg" "bars bars" "now trend"; row-gap:6px; }
+  .tr-row{ grid-template-columns:minmax(0, 1fr) auto; grid-template-areas:"cat avg" "bars bars" "now trend"; column-gap:12px; row-gap:6px; }
   .tr-cat{ grid-area:cat; } .tr-avg{ grid-area:avg; } .tr-bars{ grid-area:bars; height:26px; }
-  .tr-now{ grid-area:now; text-align:start; } .tr-trend{ grid-area:trend; }
+  .tr-unit{ display:inline; }
+  .tr-now{ grid-area:now; text-align:start; white-space:normal; }
+  .tr-now small{ display:inline; font-size:smaller; white-space:nowrap; }
+  .tr-trend{ grid-area:trend; }
   .tr-now-lbl{ display:inline; }
+}
+@container content (max-width:620px){
+  /* Le nom court tient dans une colonne de 23,5 px à cette taille. */
+  @container trm (min-width:304px){ .tr-ml{ display:inline; } .tr-mi{ display:none; } }
 }
 @media (prefers-reduced-motion: reduce){ .tr-row{ transition:none; } }
 
@@ -17242,6 +17259,8 @@ function trMoisCourt(mk){
   if(currentLang === "ar") return String(Number(mk.slice(5, 7)));
   return trNomMois(mk).replace(".", "").slice(0, 4);
 }
+/* Initiale du mois (« J » pour juin), quand la colonne est trop étroite. */
+function trMoisInitiale(mk){ return currentLang === "ar" ? trMoisCourt(mk) : trNomMois(mk).charAt(0).toUpperCase(); }
 function trCat(id){ var c = id === "_none" ? null : getCategory(id); return { c: c, nom: c ? c.nom : t("sr.uncategorized"), ic: c ? iconHtml(c.emoji) : "•", couleur: c ? c.couleur : "var(--text-3)" }; }
 function trTendanceHtml(l){
   if(l.tendance === null) return '<span class="tr-trend" title="' + escapeHtml(t("tr2.trendNone")) + '">—</span>';
@@ -17264,8 +17283,9 @@ function renderStatTendances(){
   if(!D.lignes.length){ host.innerHTML = '<p class="ab-empty">' + escapeHtml(t("tr2.empty")) + '</p>'; return; }
   var liste = trTout ? D.lignes : D.lignes.slice(0, 8), courant = currentMonthKey();
   /* Le nom de chaque mois au-dessus de sa barre. */
-  var html = '<div class="tr-head" aria-hidden="true"><span></span><span class="tr-months">' + D.mois.map(function(mk, i){
-    return '<span class="' + (i === D.mois.length - 1 ? "cur" : (D.suivi[i] ? "" : "vide")) + '" title="' + escapeHtml(trNomMois(mk, true)) + '">' + escapeHtml(trMoisCourt(mk)) + '</span>';
+  var html = '<div class="tr-grid"><div class="tr-head" aria-hidden="true"><span></span><span class="tr-months">' + D.mois.map(function(mk, i){
+    return '<span class="' + (i === D.mois.length - 1 ? "cur" : (D.suivi[i] ? "" : "vide")) + '" title="' + escapeHtml(trNomMois(mk, true)) + '">' +
+      '<span class="tr-ml">' + escapeHtml(trMoisCourt(mk)) + '</span><span class="tr-mi">' + escapeHtml(trMoisInitiale(mk)) + '</span></span>';
   }).join("") + '</span>' +
     '<span>' + escapeHtml(t("tr2.avg")) + '</span><span>' + escapeHtml(t("tr2.now", { month: trNomMois(courant) })) + '</span><span>' + escapeHtml(t("tr2.trend")) + '</span></div>';
   liste.forEach(function(l){
@@ -17279,6 +17299,7 @@ function renderStatTendances(){
         (l.budget ? '<small> / ' + escapeHtml(fmtMoney(l.budget)) + '</small>' : '') + '</span>' +
       trTendanceHtml(l) + '</button>';
   });
+  html += '</div>';
   if(D.lignes.length > liste.length) html += '<button type="button" class="link-btn ghost tr-all" data-tr-all="1">' + escapeHtml(tn("tr2.more", D.lignes.length - liste.length)) + '</button>';
   html += '<p class="section-sub tr-note">' + escapeHtml(D.nTend ? tn("tr2.noteN", D.nTend) : t("tr2.noteNone")) + '</p>';
   host.innerHTML = html;
