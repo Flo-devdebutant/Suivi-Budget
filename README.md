@@ -276,6 +276,55 @@ ou masquée depuis la personnalisation. Les budgets de chaque mois sont
 enregistrés avec le reste des données (synchronisation, sauvegardes, import) ;
 les règles Firestore sont inchangées.
 
+## Gains et dépenses exceptionnels
+
+Un cadeau, une prime, le 13e mois, une régularisation d'impôts, une taxe
+payée en une fois, un revenu d'appoint (garde d'animaux…) ou un gros achat ne
+se répètent pas d'un mois à l'autre. Classée **exceptionnelle**, une
+opération compte toujours dans les soldes, les totaux, les budgets et les
+rapports, qui restent la réalité du compte. En revanche, elle sort de ce qui
+juge un mois « normal » :
+
+- les moyennes et les repères « d'habitude » des observations ;
+- la capacité d'épargne de l'onglet Investissement (« Mis de côté, par mois,
+  d'habitude » et le montant mensuel proposé au simulateur) ;
+- la base du simulateur « Et si… » ;
+- la moyenne et la tendance de « Catégories sur 12 mois » (la fiche indique
+  « dont … exceptionnels ») ;
+- les comparaisons du bilan du mois.
+
+Un mois qui a reçu un cadeau versé sur le livret ne gonfle donc plus la
+capacité d'épargne : ce qu'il a mis de côté au-delà des autres mois est
+attribué à ses rentrées exceptionnelles, dans leur limite.
+
+- **À la saisie** : l'interrupteur « Opération exceptionnelle » de la fiche
+  d'une opération, et de celle d'une opération programmée (le 13e mois en
+  décembre, une taxe annuelle) : l'opération réelle hérite du statut le jour
+  où elle est appliquée. Un libellé déjà classé exceptionnel (« Garde de
+  chats ») fait cocher l'interrupteur d'office la fois suivante.
+- **Repérage** (Analyse › Bilan › « Gains et dépenses exceptionnels ») :
+  l'application propose les opérations des six derniers mois qui sortent de
+  l'ordinaire, sans jamais les écarter d'elle-même. Elle retient :
+  - les rentrées qui ne reviennent pas ;
+  - les grosses dépenses rares (au moins 12 % du revenu habituel et deux fois
+    et demie le coût habituel de leur catégorie) ;
+  - les libellés déjà classés exceptionnels.
+
+  Un geste suffit, « Exceptionnelle » ou « Habituelle » (la suggestion ne
+  revient pas), avec un message pour annuler. Le salaire et les
+  prélèvements réguliers ne sont jamais proposés. La section affiche
+  l'excédent d'un mois habituel et la liste des opérations classées, que
+  l'on peut retirer d'un geste. Une pastille sur le sous-onglet « Bilan » et
+  une observation signalent les suggestions en attente.
+- **Bilan, observations et rapport** : la part exceptionnelle du mois
+  apparaît à part (« Exceptionnel ce mois-ci : 2 600,00 € reçus, 1 038,00 €
+  dépensés ») avec l'excédent hors exceptionnel. L'observation du mois
+  écoulé le juge sur sa part habituelle (« dont 2 600,00 € venus de rentrées
+  exceptionnelles : un mois habituel, environ 300,00 € »). Le rapport PDF
+  liste les opérations exceptionnelles de la période.
+- Le statut est enregistré sur l'opération : il suit la synchronisation, les
+  sauvegardes et l'import, sans modifier les règles Firestore.
+
 ## Devises, recherche avancée, défis et verrouillage
 
 - **Plusieurs devises** (fiche de saisie) : toucher « € » à côté du montant
