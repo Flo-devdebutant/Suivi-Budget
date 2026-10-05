@@ -64,6 +64,11 @@ affichée immédiatement et la version en ligne récupérée en arrière-plan.
 Le numéro de version affiché en bas des **Réglages** indique aussi si
 l'application est disponible hors ligne.
 
+Seule exception : le lecteur de relevés PDF (pdf.js, de Mozilla) est
+téléchargé depuis cdnjs à la première lecture d'un PDF. Son empreinte est
+vérifiée, puis il est gardé sur l'appareil et sert ensuite hors ligne. Le
+relevé lui-même ne quitte jamais l'appareil.
+
 ## Synchronisation entre appareils
 
 La synchronisation passe par **votre propre projet Firebase** (gratuit, sans
@@ -118,7 +123,11 @@ par exemple pour consulter l'application en public.
   recherche dès qu'il y a beaucoup de catégories).
 - **Calendrier des dépenses** : chaque jour se touche. Un jour sans opération
   le dit et propose d'en ajouter une à cette date ; un jour à venir montre ce
-  qui est programmé, ou propose d'en programmer une.
+  qui est programmé, ou propose d'en programmer une. Les jours à venir qui
+  portent une opération programmée ou récurrente sont hachurés, avec leur
+  montant, et le calendrier avance jusqu'à deux mois pour voir ce qui arrive.
+- **Recherche avancée** : le bouton de filtres est dans le champ de recherche,
+  avec le nombre de filtres actifs.
 - **Principales dépenses** : « Les plus fréquentes » sont classées au nombre
   de fois, puis au montant.
 - **Statistiques**, vue d'ensemble en anneaux, pour le mois ou l'année en
@@ -127,9 +136,13 @@ par exemple pour consulter l'application en public.
   - le taux d'épargne, face à un objectif réglable d'une touche (10 à 30 %) ;
   - les dépenses fixes et variables (opérations récurrentes et libellés
     payés chaque mois pour un montant quasi constant) ;
-  - les jours sans dépense, les budgets respectés et l'avancée des objectifs ;
-  - la répartition des dépenses par catégorie, dont chaque part se touche et
-    mène aux opérations correspondantes.
+  - les jours sans dépense, les budgets respectés et l'avancée des objectifs.
+
+  Sous les anneaux, **Catégories sur 12 mois** : chaque catégorie mois après
+  mois, sa moyenne mensuelle et sa tendance (les trois derniers mois terminés
+  face aux trois précédents). Toucher une catégorie ouvre ses opérations. La
+  répartition par catégorie, déjà détaillée dans l'onglet Analyse, n'est plus
+  répétée ici.
 
 ## Saisie, partages et relevé bancaire
 
@@ -144,13 +157,34 @@ par exemple pour consulter l'application en public.
   part (« Paul a payé pour moi »). Une part remboursée ramène la dépense à
   votre part ; une dette réglée devient une dépense à la date du règlement.
   « Annuler » est proposé à chaque fois.
-- **Importer un relevé bancaire** (Réglages ou bouton « + ») : le fichier CSV
-  exporté par la banque est lu sur l'appareil. Séparateur, en-têtes, lignes
-  d'introduction, débit et crédit, formats de date et encodage (UTF-8 ou
-  Windows-1252) sont reconnus ; les libellés sont simplifiés (« CB CARREFOUR
-  03/10 » devient « Carrefour ») et les catégories devinées. Les doublons
-  probables sont décochés d'office, chaque ligne reste modifiable, et
-  l'import peut être annulé.
+- **Importer un relevé bancaire** (Réglages ou bouton « + ») : le relevé
+  téléchargé depuis la banque, en **PDF**, CSV, OFX ou QIF, est lu sur
+  l'appareil.
+  - **PDF** (LCL et la plupart des banques françaises) : colonnes Date,
+    Libellé, Valeur, Débit et Crédit repérées d'après l'en-tête, opérations
+    sur plusieurs pages, détails sur plusieurs lignes (motif du virement,
+    créancier d'origine d'un prélèvement), mots coupés en fin de ligne
+    recollés. Soldes, totaux, pieds de page et pages de conditions sont
+    écartés. Un PDF scanné (sans texte) ou protégé par mot de passe est
+    signalé.
+  - **Option System'Épargne (LCL)** : les arrondis notés sous chaque achat
+    ne sont pas des opérations ; les deux virements de quinzaine « TOTAL
+    OPTION SYSTEM' EPARGNE » sont importés comme virements vers l'épargne.
+    Un virement marqué « SAVG » ou vers un livret est aussi reconnu comme
+    mouvement d'épargne. Chaque ligne peut être rangée dans une catégorie, ou
+    dans l'épargne globale ou un objectif.
+  - **PayPal et autres intermédiaires** : un prélèvement du même montant
+    qu'une opération programmée, dans les sept jours qui suivent son
+    échéance, y est rapproché. Si l'opération est déjà enregistrée, la ligne
+    est décochée (doublon) ; sinon, elle prend le nom et la catégorie de
+    l'opération programmée (« PayPal Europe » devient « Spotify »).
+  - **CSV** : séparateur, en-têtes, lignes d'introduction, débit et crédit,
+    formats de date et encodage (UTF-8 ou Windows-1252) sont reconnus.
+
+  Les libellés sont simplifiés (« CB CARREFOUR 03/10 » devient
+  « Carrefour ») et les catégories devinées. Les doublons probables sont
+  décochés d'office, chaque ligne reste modifiable, et l'import peut être
+  annulé.
 
 Les dettes sont enregistrées avec le reste des données : appareil,
 synchronisation (un appareil pas encore mis à jour ne les efface pas),
@@ -165,6 +199,11 @@ sauvegardes et import. Les règles Firestore sont inchangées.
   objectifs alimentés, plus grosse dépense ponctuelle et conseils tirés des
   chiffres. Au début de chaque mois, un message propose d'ouvrir le bilan du
   mois écoulé (une seule fois, propre à l'appareil).
+- **Budgets de chaque mois** : les budgets peuvent changer d'un mois à
+  l'autre. Ceux de chaque mois sont gardés, et chaque mois passé est jugé
+  avec les budgets qui étaient les siens : bilan, rapport, anneau « budgets
+  respectés », badge « budgets tenus ». Les mois enregistrés avant cette
+  version reprennent les budgets actuels.
 - **Abonnements et prélèvements** (onglet Analyse) : les opérations
   récurrentes enregistrées, et les paiements réguliers repérés dans
   l'historique (même libellé chaque mois, le plus souvent au même montant,
@@ -176,15 +215,22 @@ sauvegardes et import. Les règles Firestore sont inchangées.
   dépenses par catégorie avec les budgets, abonnements, plus grosses
   dépenses ponctuelles, et au choix la liste de toutes les opérations). Il
   s'ouvre dans la fenêtre d'impression du navigateur, où « Enregistrer au
-  format PDF » le conserve. Tout est préparé sur l'appareil.
+  format PDF » le conserve, y compris depuis la fiche du bilan et sur
+  téléphone. Tout est préparé sur l'appareil.
 - **Et si…** (onglet Épargne) : une économie mensuelle dans une catégorie, ou
   la résiliation d'un abonnement, et ce qu'elle change : gain sur un an, taux
   d'épargne, et date à laquelle chaque objectif serait atteint. Le calcul part
   du plan d'épargne s'il est renseigné, sinon de ce qui a été épargné en
-  moyenne ces derniers mois ; il ne modifie rien.
+  moyenne ces derniers mois ; il ne modifie rien. Seuls les abonnements que
+  l'on peut résilier sont proposés, les loisirs d'abord (streaming, jeux,
+  sport…) : les charges essentielles (logement, énergie, eau, assurances,
+  internet, téléphone, crédits) sont laissées de côté, et « + autres » affiche
+  toute la liste.
 
 Le didacticiel présente ces nouveautés, et chaque section peut être déplacée
-ou masquée depuis la personnalisation.
+ou masquée depuis la personnalisation. Les budgets de chaque mois sont
+enregistrés avec le reste des données (synchronisation, sauvegardes, import) ;
+les règles Firestore sont inchangées.
 
 ## Devises, recherche avancée, défis et verrouillage
 
