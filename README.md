@@ -110,6 +110,8 @@ intactes, son code est conservé, et il suffit de le relier à votre projet.
 | `Ctrl K` / `⌘ K`, `/` | Rechercher une opération, une page ou une action |
 | `N`               | Nouvelle opération |
 | `1` à `9`, `0`    | Changer de page, dans l'ordre de la barre latérale (à l'origine, `8` : Investissement, `0` : Réglages) |
+| `Ctrl` + clic / `⌘` + clic | Dans l'Historique, commencer une sélection par cette opération |
+| `Échap`           | Terminer la sélection |
 
 Le **mode discret** (icône d'œil en haut de l'écran) masque les montants,
 par exemple pour consulter l'application en public.
@@ -152,6 +154,29 @@ par exemple pour consulter l'application en public.
   sous-catégories, libellés les plus coûteux et plus grosses dépenses, avec
   « Voir les opérations » et le réglage du budget. La répartition par
   catégorie, déjà détaillée dans l'onglet Analyse, n'est plus répétée ici.
+
+## Supprimer des opérations
+
+- **Sur ordinateur**, survoler une opération fait apparaître une petite
+  corbeille à droite de la ligne. Elle apparaît aussi sur un ordinateur à
+  écran tactile : l'application suit le pointeur réellement utilisé (souris
+  ou doigt) au lieu de se fier à ce qu'annonce le navigateur, qui privait
+  ces ordinateurs de tout moyen de supprimer depuis la liste.
+- **Sur téléphone**, glisser une opération vers la gauche (vers la droite en
+  arabe) dévoile le bouton « Supprimer », qui répond aussitôt, même pendant
+  que la ligne finit de glisser. Le toucher n'est plus perdu, et le clic
+  tardif que le navigateur envoie parfois ensuite ne peut pas valider la
+  confirmation à votre place.
+- **Plusieurs à la fois**, dans l'Historique : « Sélectionner » (au-dessus
+  de la liste), un appui long sur une opération ou `Ctrl` + clic fait des
+  lignes des cases à cocher. La barre du bas indique le nombre d'opérations
+  choisies et leur total, propose « Tout sélectionner » (toutes les
+  opérations qui répondent aux filtres et à la recherche en cours, même
+  celles qui ne sont pas encore affichées) et « Supprimer ». Une
+  confirmation rappelle le nombre et le total, et un message permet
+  d'annuler juste après. Supprimer un virement d'épargne libère aussi ce
+  qu'il réservait dans l'objectif ; « Annuler » le rétablit. La croix,
+  `Échap` ou le changement de page terminent la sélection.
 
 ## Saisie, partages et relevé bancaire
 
@@ -716,6 +741,10 @@ essais faits pendant la visite ne sont pas enregistrés, et chacun retrouve sa
 disposition à la fin. Les chapitres présentent aussi les nouveautés : la
 devise d'une saisie, la recherche avancée, les défis et badges, le
 simulateur « Et si… », le bilan du mois, les abonnements, le rapport PDF et
-le code de verrouillage. Sur un compte vide, elle utilise des données
+le code de verrouillage. Le chapitre « Historique » montre comment
+supprimer une opération (glissement sur téléphone, corbeille au survol à la
+souris, avec le texte adapté au pointeur utilisé ; en arabe, le doigt animé
+glisse vers la droite, comme la ligne) puis comment en supprimer plusieurs
+avec « Sélectionner ». Sur un compte vide, elle utilise des données
 d'exemple **en mémoire uniquement** : rien n'est enregistré, synchronisé ni
 sauvegardé pendant la visite, et vos données sont rétablies à la sortie.
